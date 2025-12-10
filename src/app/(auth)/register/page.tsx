@@ -63,8 +63,20 @@ export default function RegisterPage() {
       const user = await signInWithGoogle()
       setUser(user)
       router.push('/')
-    } catch {
-      setError('حدث خطأ أثناء التسجيل بحساب Google')
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string }
+      console.error('Google Sign-Up Error:', error)
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError('تم إغلاق نافذة التسجيل')
+      } else if (error.code === 'auth/popup-blocked') {
+        setError('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة')
+      } else if (error.code === 'auth/operation-not-allowed') {
+        setError('التسجيل عبر Google غير مفعّل. يرجى تفعيله في Firebase Console')
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setError('هذا الموقع غير مصرح له. يرجى إضافته في Firebase Console')
+      } else {
+        setError('حدث خطأ أثناء التسجيل بحساب Google. يرجى التأكد من تفعيل Google Sign-In في Firebase')
+      }
     } finally {
       setIsLoading(false)
     }

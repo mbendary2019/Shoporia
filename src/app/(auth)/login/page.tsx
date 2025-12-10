@@ -54,8 +54,20 @@ export default function LoginPage() {
       const user = await signInWithGoogle()
       setUser(user)
       router.push(user.role === 'seller' ? '/dashboard' : '/')
-    } catch {
-      setError('حدث خطأ أثناء تسجيل الدخول بحساب Google')
+    } catch (err: unknown) {
+      const error = err as { code?: string; message?: string }
+      console.error('Google Sign-In Error:', error)
+      if (error.code === 'auth/popup-closed-by-user') {
+        setError('تم إغلاق نافذة تسجيل الدخول')
+      } else if (error.code === 'auth/popup-blocked') {
+        setError('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة')
+      } else if (error.code === 'auth/operation-not-allowed') {
+        setError('تسجيل الدخول عبر Google غير مفعّل. يرجى تفعيله في Firebase Console')
+      } else if (error.code === 'auth/unauthorized-domain') {
+        setError('هذا الموقع غير مصرح له. يرجى إضافته في Firebase Console')
+      } else {
+        setError('حدث خطأ أثناء تسجيل الدخول بحساب Google. يرجى التأكد من تفعيل Google Sign-In في Firebase')
+      }
     } finally {
       setIsLoading(false)
     }
