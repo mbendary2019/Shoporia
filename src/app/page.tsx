@@ -69,6 +69,18 @@ const categoryIcons: Record<string, React.ElementType> = {
   computers: Laptop,
 }
 
+// Category Images for Shop by Category section
+const categoryImages = [
+  { id: 'electronics', nameAr: 'إلكترونيات', image: '/images/categories/electronics.jpg' },
+  { id: 'fashion', nameAr: 'أزياء وملابس', image: '/images/categories/fashion.jpg' },
+  { id: 'home', nameAr: 'المنزل والحديقة', image: '/images/categories/home.jpg' },
+  { id: 'beauty', nameAr: 'الجمال والعناية', image: '/images/categories/beauty.jpg' },
+  { id: 'sports', nameAr: 'رياضة', image: '/images/categories/sports.jpg' },
+  { id: 'kids', nameAr: 'أطفال', image: '/images/categories/kids.jpg' },
+  { id: 'food', nameAr: 'طعام ومشروبات', image: '/images/products/cookware.jpg' },
+  { id: 'health', nameAr: 'صحة وأدوية', image: '/images/products/cream.jpg' },
+]
+
 // Mock Products Data
 const featuredProducts = [
   {
@@ -384,18 +396,21 @@ export default function HomePage() {
             </h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {STORE_CATEGORIES.slice(0, 8).map((category) => (
+              {categoryImages.map((cat) => (
                 <Link
-                  key={category.id}
-                  href={`/category/${category.id}`}
+                  key={cat.id}
+                  href={`/category/${cat.id}`}
                   className="group relative overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 aspect-square"
                 >
+                  <Image
+                    src={cat.image}
+                    alt={cat.nameAr}
+                    fill
+                    className="object-cover transition-transform duration-300 group-hover:scale-110"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-10" />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ShoppingBag className="h-24 w-24 text-gray-300 dark:text-gray-600" />
-                  </div>
                   <div className="absolute bottom-0 start-0 end-0 p-4 z-20">
-                    <h3 className="text-lg font-bold text-white">{category.nameAr}</h3>
+                    <h3 className="text-lg font-bold text-white">{cat.nameAr}</h3>
                     <span className="text-sm text-amazon-yellow group-hover:underline">
                       تسوق الآن
                     </span>
