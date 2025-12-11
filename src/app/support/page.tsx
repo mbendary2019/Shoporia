@@ -72,7 +72,7 @@ export default function SupportPage() {
     if (isContactModalOpen && isAuthenticated && user) {
       setFormData(prev => ({
         ...prev,
-        name: user.name || '',
+        name: user.displayName || '',
         email: user.email || '',
       }))
     }
@@ -297,7 +297,7 @@ export default function SupportPage() {
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                disabled={isAuthenticated && !!user?.name}
+                disabled={isAuthenticated && !!user?.displayName}
               />
               <Input
                 label="البريد الإلكتروني"
