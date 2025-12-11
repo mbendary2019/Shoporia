@@ -41,8 +41,15 @@ export function Header() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const searchRef = useRef<HTMLDivElement>(null)
   const categoryRef = useRef<HTMLDivElement>(null)
+  const [isAllCategoriesOpen, setIsAllCategoriesOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
   const { user, isAuthenticated, logout } = useAuthStore()
   const itemCount = useCartStore((state) => state.getItemCount())
+
+  // Handle hydration mismatch for cart count
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -292,7 +299,7 @@ export function Header() {
               <div className="relative">
                 <ShoppingCart className="h-8 w-8" />
                 <span className="absolute -top-1 start-4 flex h-5 min-w-5 items-center justify-center rounded-full bg-amazon-orange text-xs font-bold text-white px-1">
-                  {itemCount}
+                  {isMounted ? itemCount : 0}
                 </span>
               </div>
               <span className="hidden sm:block text-sm font-bold mt-3">السلة</span>
@@ -316,9 +323,9 @@ export function Header() {
         <div className="container-custom">
           <div className="flex items-center gap-1 h-10 overflow-x-auto scrollbar-hide">
             {/* All Categories Button */}
-            <div ref={categoryRef} className="relative">
+            <div className="relative">
               <button
-                onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                onClick={() => setIsAllCategoriesOpen(!isAllCategoriesOpen)}
                 className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap"
               >
                 <Menu className="h-4 w-4" />
@@ -326,10 +333,15 @@ export function Header() {
               </button>
 
               {/* Mega Menu */}
-              {isCategoryOpen && (
+              {isAllCategoriesOpen && (
                 <>
-                  <div className="fixed inset-0 z-40 bg-black/30" onClick={() => setIsCategoryOpen(false)} />
-                  <div className="absolute top-full start-0 mt-1 w-72 bg-white rounded-lg shadow-xl z-50 py-2 max-h-[70vh] overflow-y-auto">
+                  <div
+                    className="fixed inset-0 z-[60] bg-black/30"
+                    onClick={() => setIsAllCategoriesOpen(false)}
+                  />
+                  <div
+                    className="absolute top-full start-0 mt-1 w-72 bg-white rounded-lg shadow-xl z-[70] py-2 max-h-[70vh] overflow-y-auto"
+                  >
                     <div className="px-4 py-2 border-b">
                       <h3 className="font-bold text-gray-900">تسوق حسب القسم</h3>
                     </div>
@@ -338,7 +350,7 @@ export function Header() {
                         key={category.id}
                         href={`/category/${category.id}`}
                         className="flex items-center justify-between px-4 py-3 hover:bg-amazon-orange/10 group"
-                        onClick={() => setIsCategoryOpen(false)}
+                        onClick={() => setIsAllCategoriesOpen(false)}
                       >
                         <span className="text-sm text-gray-700 group-hover:text-amazon-orange">
                           {category.nameAr}

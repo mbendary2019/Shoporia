@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { Avatar, Button } from '@/components/ui'
 import { cn } from '@/utils/cn'
 import {
@@ -24,6 +24,8 @@ import {
   CreditCard,
   FileText,
   Megaphone,
+  Loader2,
+  UserCog,
 } from 'lucide-react'
 
 const navigation = [
@@ -32,6 +34,7 @@ const navigation = [
   { name: 'المنتجات', href: '/admin/products', icon: Package },
   { name: 'الطلبات', href: '/admin/orders', icon: ShoppingCart },
   { name: 'المستخدمين', href: '/admin/users', icon: Users },
+  { name: 'فريق العمل', href: '/admin/team', icon: UserCog },
   { name: 'الكوبونات', href: '/admin/coupons', icon: Tag },
   { name: 'التقييمات', href: '/admin/reviews', icon: MessageSquare },
   { name: 'البلاغات', href: '/admin/reports', icon: Flag },
@@ -48,7 +51,68 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // Check admin authentication
+  useEffect(() => {
+    // Skip auth check for login page
+    if (pathname === '/admin/login') {
+      setIsLoading(false)
+      setIsAuthenticated(true)
+      return
+    }
+
+    const checkAuth = () => {
+      const adminAuth = localStorage.getItem('adminAuth')
+      if (adminAuth) {
+        try {
+          const auth = JSON.parse(adminAuth)
+          if (auth.isAdmin) {
+            setIsAuthenticated(true)
+          } else {
+            router.push('/admin/login')
+          }
+        } catch {
+          router.push('/admin/login')
+        }
+      } else {
+        router.push('/admin/login')
+      }
+      setIsLoading(false)
+    }
+
+    checkAuth()
+  }, [pathname, router])
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminAuth')
+    router.push('/admin/login')
+  }
+
+  // Show loading while checking auth
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
+        <div className="text-center">
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-red-500" />
+          <p className="mt-2 text-gray-500">جاري التحقق...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // For login page, just render children without sidebar
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
+
+  // If not authenticated, don't render (redirect handled in useEffect)
+  if (!isAuthenticated) {
+    return null
+  }
 
   return (
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
@@ -119,13 +183,13 @@ export default function AdminLayout({
 
           {/* Logout */}
           <div className="border-t border-gray-700 p-4">
-            <Link
-              href="/auth/login"
+            <button
+              onClick={handleLogout}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/20"
             >
               <LogOut className="h-5 w-5" />
               تسجيل الخروج
-            </Link>
+            </button>
           </div>
         </div>
       </aside>

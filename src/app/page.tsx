@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 import { STORE_CATEGORIES } from '@/utils/constants'
 import { cn } from '@/utils/cn'
+import { useCartStore } from '@/store'
 
 // Hero Slides
 const heroSlides = [
@@ -177,6 +178,37 @@ const stats = [
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [countdown, setCountdown] = useState({ hours: 5, minutes: 23, seconds: 45 })
+  const { addItem } = useCartStore()
+
+  // Handler to add product to cart
+  const handleAddToCart = (product: typeof featuredProducts[0]) => {
+    // Convert mock product to Product type for cart store
+    const cartProduct = {
+      id: product.id,
+      storeId: product.store.slug,
+      name: product.name,
+      slug: product.id,
+      description: product.name,
+      category: 'general',
+      price: product.price,
+      compareAtPrice: product.compareAtPrice,
+      currency: 'EGP',
+      quantity: 100,
+      trackInventory: false,
+      images: [{ id: '1', url: product.image, order: 0 }],
+      hasVariants: false,
+      status: 'active' as const,
+      isFeatured: true,
+      isDigital: false,
+      viewCount: 0,
+      soldCount: 0,
+      rating: product.rating,
+      reviewCount: product.reviewCount,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+    addItem(cartProduct)
+  }
 
   // Auto-slide hero
   useEffect(() => {
@@ -382,7 +414,11 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={() => handleAddToCart(product)}
+                />
               ))}
             </div>
           </div>

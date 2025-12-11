@@ -75,7 +75,7 @@ export default function RegisterPage() {
       } else if (error.code === 'auth/unauthorized-domain') {
         setError('هذا الموقع غير مصرح له. يرجى إضافته في Firebase Console')
       } else {
-        setError('حدث خطأ أثناء التسجيل بحساب Google. يرجى التأكد من تفعيل Google Sign-In في Firebase')
+        setError('حدث خطأ أثناء التسجيل بحساب Google')
       }
     } finally {
       setIsLoading(false)

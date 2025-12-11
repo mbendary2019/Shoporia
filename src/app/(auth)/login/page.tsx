@@ -9,7 +9,7 @@ import { Button, Input } from '@/components/ui'
 import { loginSchema, type LoginInput } from '@/lib/validations'
 import { signInWithEmail, signInWithGoogle } from '@/services/auth'
 import { useAuthStore } from '@/store'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, Shield } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -66,7 +66,7 @@ export default function LoginPage() {
       } else if (error.code === 'auth/unauthorized-domain') {
         setError('هذا الموقع غير مصرح له. يرجى إضافته في Firebase Console')
       } else {
-        setError('حدث خطأ أثناء تسجيل الدخول بحساب Google. يرجى التأكد من تفعيل Google Sign-In في Firebase')
+        setError('حدث خطأ أثناء تسجيل الدخول بحساب Google')
       }
     } finally {
       setIsLoading(false)
@@ -199,6 +199,20 @@ export default function LoginPage() {
             </Button>
           </Link>
         </div>
+      </div>
+
+      {/* Admin Login Link */}
+      <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <Link href="/admin/login">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20"
+          >
+            <Shield className="h-4 w-4" />
+            دخول لوحة الإدارة
+          </Button>
+        </Link>
       </div>
     </>
   )

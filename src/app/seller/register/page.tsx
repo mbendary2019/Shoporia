@@ -41,9 +41,11 @@ export default function SellerRegisterPage() {
     handleSubmit,
     watch,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm<StoreInput>({
     resolver: zodResolver(storeSchema),
+    mode: 'onChange',
   })
 
   const watchedValues = watch()
@@ -77,8 +79,19 @@ export default function SellerRegisterPage() {
     }
   }
 
-  const nextStep = () => {
-    if (currentStep < steps.length) {
+  const nextStep = async () => {
+    // Validate fields for current step before proceeding
+    let fieldsToValidate: (keyof StoreInput)[] = []
+
+    if (currentStep === 1) {
+      fieldsToValidate = ['name', 'category', 'description']
+    } else if (currentStep === 2) {
+      fieldsToValidate = ['phone']
+    }
+
+    const isValid = await trigger(fieldsToValidate)
+
+    if (isValid && currentStep < steps.length) {
       setCurrentStep(currentStep + 1)
     }
   }

@@ -108,19 +108,35 @@ export async function signInWithEmail(
   return user
 }
 
-// Google Sign In
+// Google Sign In with Popup
 export async function signInWithGoogle(): Promise<User> {
   const provider = new GoogleAuthProvider()
   provider.setCustomParameters({ prompt: 'select_account' })
 
   const { user: firebaseUser } = await signInWithPopup(auth, provider)
 
-  const user = await getUserData(firebaseUser)
-  if (!user) {
-    return await createUserDocument(firebaseUser)
+  // Try to get/create user data in Firestore, but handle offline case
+  try {
+    const user = await getUserData(firebaseUser)
+    if (!user) {
+      return await createUserDocument(firebaseUser)
+    }
+    return user
+  } catch (error) {
+    // If Firestore is offline, return user data from Firebase Auth directly
+    console.warn('Firestore offline, using Firebase Auth data:', error)
+    return {
+      id: firebaseUser.uid,
+      email: firebaseUser.email || '',
+      displayName: firebaseUser.displayName || '',
+      photoURL: firebaseUser.photoURL || undefined,
+      phone: firebaseUser.phoneNumber || undefined,
+      role: 'customer',
+      isVerified: firebaseUser.emailVerified,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
   }
-
-  return user
 }
 
 // Facebook Sign In
