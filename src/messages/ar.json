@@ -55,7 +55,10 @@
     "moreItems": "+{count} منتجات أخرى",
     "showing": "عرض",
     "of": "من",
-    "sortBy": "الترتيب"
+    "sortBy": "الترتيب",
+    "pageNotFound": "الصفحة غير موجودة",
+    "pageNotFoundDescription": "عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "homePage": "الصفحة الرئيسية"
   },
   "auth": {
     "login": "تسجيل الدخول",

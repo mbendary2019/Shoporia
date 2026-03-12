@@ -11,17 +11,17 @@ export default function NotFound() {
       <div className="mx-4 max-w-md text-center">
         <p className="text-8xl font-bold text-primary-500">404</p>
         <h1 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-          {t('pageNotFound') || 'الصفحة غير موجودة'}
+          {t('pageNotFound')}
         </h1>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          {t('pageNotFoundDescription') || 'عذراً، الصفحة التي تبحث عنها غير موجودة أو تم نقلها.'}
+          {t('pageNotFoundDescription')}
         </p>
         <div className="mt-8 flex justify-center gap-3">
           <Link
             href="/"
             className="rounded-lg bg-primary-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-primary-600 transition-colors"
           >
-            {t('homePage') || 'الصفحة الرئيسية'}
+            {t('homePage')}
           </Link>
           <Link
             href="/marketplace"

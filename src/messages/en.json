@@ -55,7 +55,10 @@
     "moreItems": "+{count} more items",
     "showing": "Showing",
     "of": "of",
-    "sortBy": "Sort by"
+    "sortBy": "Sort by",
+    "pageNotFound": "Page Not Found",
+    "pageNotFoundDescription": "Sorry, the page you are looking for does not exist or has been moved.",
+    "homePage": "Home Page"
   },
   "auth": {
     "login": "Login",
