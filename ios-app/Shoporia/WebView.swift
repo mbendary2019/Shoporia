@@ -8,11 +8,7 @@ struct WebView: UIViewRepresentable {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.mediaTypesRequiringUserActionForPlayback = []
-
-        // السماح بتشغيل JavaScript
         configuration.defaultWebpagePreferences.allowsContentJavaScript = true
-
-        // السماح بفتح نوافذ جديدة (مطلوب لـ Google Sign-In)
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -22,7 +18,9 @@ struct WebView: UIViewRepresentable {
         webView.scrollView.bounces = true
         webView.scrollView.showsVerticalScrollIndicator = true
 
-        // استخدام Safe Area بشكل صحيح
+        // User-Agent يشبه Safari العادي - يتجاوز حجب Google لـ embedded WebViews
+        webView.customUserAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
+
         webView.scrollView.contentInsetAdjustmentBehavior = .automatic
 
         // Pull to refresh
@@ -46,7 +44,6 @@ struct WebView: UIViewRepresentable {
 
     class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         var parent: WebView
-        var popupWebView: WKWebView?
 
         init(_ parent: WebView) {
             self.parent = parent
@@ -67,23 +64,13 @@ struct WebView: UIViewRepresentable {
 
         // التعامل مع النوافذ المنبثقة (Google Sign-In popup)
         func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-            // إذا كان الرابط لـ Google Auth، افتحه في نفس الـ WebView
-            if let url = navigationAction.request.url {
-                let host = url.host ?? ""
-                if host.contains("accounts.google.com") || host.contains("googleapis.com") || host.contains("google.com") {
-                    webView.load(navigationAction.request)
-                    return nil
-                }
-            }
-
-            // للنوافذ المنبثقة الأخرى، افتحها في نفس الـ WebView
+            // افتح popup في نفس الـ WebView
             if navigationAction.targetFrame == nil {
                 webView.load(navigationAction.request)
             }
             return nil
         }
 
-        // إغلاق النافذة المنبثقة
         func webViewDidClose(_ webView: WKWebView) {
             // popup closed
         }
@@ -91,12 +78,6 @@ struct WebView: UIViewRepresentable {
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             if let url = navigationAction.request.url {
                 let host = url.host ?? ""
-
-                // السماح بروابط Google Auth
-                if host.contains("accounts.google.com") || host.contains("googleapis.com") || host.contains("google.com") {
-                    decisionHandler(.allow)
-                    return
-                }
 
                 // فتح الروابط الخارجية في Safari
                 if !host.isEmpty &&
@@ -106,7 +87,10 @@ struct WebView: UIViewRepresentable {
                    !host.contains("vercel.app") &&
                    !host.contains("localhost") &&
                    !host.contains("firebasestorage") &&
-                   !host.contains("googleapis") {
+                   !host.contains("googleapis") &&
+                   !host.contains("google.com") &&
+                   !host.contains("gstatic.com") &&
+                   !host.contains("firebaseapp.com") {
                     if navigationAction.navigationType == .linkActivated {
                         UIApplication.shared.open(url)
                         decisionHandler(.cancel)
