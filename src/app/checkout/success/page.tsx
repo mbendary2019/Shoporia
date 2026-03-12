@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button } from '@/components/ui'
 import {
@@ -14,6 +15,9 @@ import {
 import { APP_CONFIG } from '@/utils/constants'
 
 export default function CheckoutSuccessPage() {
+  const t = useTranslations('checkoutSuccess')
+  const tc = useTranslations('common')
+
   const orderNumber = 'SH-ABC123XYZ' // This would come from the order creation
 
   return (
@@ -30,16 +34,16 @@ export default function CheckoutSuccessPage() {
 
             {/* Title */}
             <h1 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">
-              تم استلام طلبك بنجاح!
+              {t('title')}
             </h1>
 
             <p className="mt-3 text-gray-600 dark:text-gray-400">
-              شكراً لك على طلبك. سنقوم بمعالجته وإرساله في أقرب وقت ممكن.
+              {t('description')}
             </p>
 
             {/* Order Number */}
             <div className="mt-6 rounded-lg bg-gray-100 p-4 dark:bg-gray-800">
-              <p className="text-sm text-gray-600 dark:text-gray-400">رقم الطلب</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('orderNumber')}</p>
               <p className="mt-1 text-xl font-bold text-gray-900 dark:text-white">
                 {orderNumber}
               </p>
@@ -53,7 +57,7 @@ export default function CheckoutSuccessPage() {
                     <CheckCircle className="h-5 w-5" />
                   </div>
                   <p className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
-                    تم الطلب
+                    {t('orderPlaced')}
                   </p>
                 </div>
 
@@ -63,7 +67,7 @@ export default function CheckoutSuccessPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 text-gray-400 dark:border-gray-600">
                     <Package className="h-5 w-5" />
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">قيد التجهيز</p>
+                  <p className="mt-2 text-sm text-gray-500">{t('preparing')}</p>
                 </div>
 
                 <div className="h-0.5 flex-1 bg-gray-300 dark:bg-gray-600" />
@@ -72,7 +76,7 @@ export default function CheckoutSuccessPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 text-gray-400 dark:border-gray-600">
                     <Truck className="h-5 w-5" />
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">في الطريق</p>
+                  <p className="mt-2 text-sm text-gray-500">{t('onTheWay')}</p>
                 </div>
 
                 <div className="h-0.5 flex-1 bg-gray-300 dark:bg-gray-600" />
@@ -81,7 +85,7 @@ export default function CheckoutSuccessPage() {
                   <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-gray-300 text-gray-400 dark:border-gray-600">
                     <Home className="h-5 w-5" />
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">تم التوصيل</p>
+                  <p className="mt-2 text-sm text-gray-500">{t('delivered')}</p>
                 </div>
               </div>
             </div>
@@ -89,20 +93,20 @@ export default function CheckoutSuccessPage() {
             {/* Info Box */}
             <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4 text-start dark:border-blue-800 dark:bg-blue-900/20">
               <h3 className="font-medium text-blue-800 dark:text-blue-400">
-                ماذا بعد؟
+                {t('whatNext')}
               </h3>
               <ul className="mt-2 space-y-2 text-sm text-blue-700 dark:text-blue-400">
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span>سيتم إرسال تأكيد الطلب على بريدك الإلكتروني ورقم هاتفك</span>
+                  <span>{t('emailConfirmation')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span>سنقوم بتحديثك بحالة الطلب عبر الرسائل النصية</span>
+                  <span>{t('smsUpdates')}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <CheckCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                  <span>التوصيل المتوقع خلال 3-5 أيام عمل</span>
+                  <span>{t('expectedDelivery')}</span>
                 </li>
               </ul>
             </div>
@@ -112,18 +116,18 @@ export default function CheckoutSuccessPage() {
               <Link href="/account/orders">
                 <Button>
                   <Package className="h-4 w-4" />
-                  تتبع الطلب
+                  {t('trackOrder')}
                 </Button>
               </Link>
               <Link href="/marketplace">
-                <Button variant="outline">متابعة التسوق</Button>
+                <Button variant="outline">{tc('continueShopping')}</Button>
               </Link>
             </div>
 
             {/* Support */}
             <div className="mt-8 border-t border-gray-200 pt-6 dark:border-gray-700">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                هل لديك سؤال؟ تواصل معنا
+                {t('haveQuestion')}
               </p>
               <div className="mt-3 flex items-center justify-center gap-4">
                 <a
@@ -140,7 +144,7 @@ export default function CheckoutSuccessPage() {
                   className="flex items-center gap-2 text-sm text-green-600 hover:underline"
                 >
                   <MessageCircle className="h-4 w-4" />
-                  واتساب
+                  {t('whatsapp')}
                 </a>
               </div>
             </div>

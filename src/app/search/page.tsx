@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 import { generatePageMetadata } from '@/lib/metadata'
 import SearchPage from './search-page'
 
@@ -9,16 +10,17 @@ interface SearchPageProps {
 export async function generateMetadata({
   searchParams,
 }: SearchPageProps): Promise<Metadata> {
+  const t = await getTranslations('metadata')
   const { q } = await searchParams
   if (q) {
     return generatePageMetadata({
-      title: `نتائج البحث: ${q}`,
-      description: `نتائج البحث عن "${q}" على Shoporia. اعثر على أفضل المنتجات والعروض.`,
+      title: t('searchResultsTitle', { query: q }),
+      description: t('searchResultsDescription', { query: q }),
     })
   }
   return generatePageMetadata({
-    title: 'البحث',
-    description: 'ابحث عن المنتجات والمتاجر على Shoporia.',
+    title: t('searchTitle'),
+    description: t('searchDescription'),
   })
 }
 

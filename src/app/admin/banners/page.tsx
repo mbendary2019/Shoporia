@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { Card, Button, Badge, Modal, Input } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   Megaphone,
   Plus,
@@ -63,19 +64,21 @@ const positions = {
 
 export default function BannersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            الإعلانات والبانرات
+            {t('banners')}
           </h1>
-          <p className="text-gray-500">إدارة إعلانات الموقع</p>
+          <p className="text-gray-500">{/* TODO: no exact key for إدارة إعلانات الموقع */}إدارة إعلانات الموقع</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="h-4 w-4" />
-          إضافة بانر
+          {tc('add')}
         </Button>
       </div>
 
@@ -87,7 +90,7 @@ export default function BannersPage() {
               <Megaphone className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">إجمالي البانرات</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}إجمالي البانرات</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">{banners.length}</p>
             </div>
           </div>
@@ -98,7 +101,7 @@ export default function BannersPage() {
               <Eye className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">إجمالي المشاهدات</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}إجمالي المشاهدات</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {banners.reduce((acc, b) => acc + b.views, 0).toLocaleString()}
               </p>
@@ -111,7 +114,7 @@ export default function BannersPage() {
               <LinkIcon className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">إجمالي النقرات</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}إجمالي النقرات</p>
               <p className="text-xl font-bold text-gray-900 dark:text-white">
                 {banners.reduce((acc, b) => acc + b.clicks, 0).toLocaleString()}
               </p>
@@ -168,7 +171,7 @@ export default function BannersPage() {
               <div className="flex gap-2 mt-4">
                 <Button variant="outline" size="sm" className="flex-1">
                   <Edit className="h-4 w-4" />
-                  تعديل
+                  {tc('edit')}
                 </Button>
                 <Button
                   variant="outline"
@@ -190,7 +193,7 @@ export default function BannersPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="إضافة بانر جديد"
+        title={tc('add')}
         size="lg"
       >
         <form className="space-y-4">
@@ -211,10 +214,10 @@ export default function BannersPage() {
           </div>
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" className="flex-1" onClick={() => setIsModalOpen(false)}>
-              إلغاء
+              {tc('cancel')}
             </Button>
             <Button type="submit" className="flex-1 bg-amazon-orange hover:bg-amazon-orangeHover">
-              إضافة البانر
+              {tc('add')}
             </Button>
           </div>
         </form>

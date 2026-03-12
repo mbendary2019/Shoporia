@@ -14,6 +14,7 @@ import { createStore } from '@/services/store'
 import { updateDoc } from 'firebase/firestore'
 import { userDoc } from '@/lib/firebase'
 import type { StoreCategory } from '@/types'
+import { useTranslations } from 'next-intl'
 import {
   Store,
   Sparkles,
@@ -26,20 +27,23 @@ import {
   MapPin,
 } from 'lucide-react'
 
-const steps = [
-  { id: 1, name: 'معلومات المتجر', description: 'الاسم والوصف والفئة' },
-  { id: 2, name: 'معلومات التواصل', description: 'الهاتف والعنوان' },
-  { id: 3, name: 'الوثائق', description: 'البطاقة والرخصة' },
-  { id: 4, name: 'المراجعة', description: 'مراجعة وتأكيد' },
-]
-
 export default function SellerRegisterPage() {
+  const t = useTranslations('seller')
+  const tc = useTranslations('common')
+  const ta = useTranslations('auth')
   const router = useRouter()
   const { user, isAuthenticated } = useAuthStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+
+  const steps = [
+    { id: 1, name: t('step1Name'), description: t('step1Description') },
+    { id: 2, name: t('step2Name'), description: t('step2Description') },
+    { id: 3, name: t('step3Name'), description: t('step3Description') },
+    { id: 4, name: t('step4Name'), description: t('step4Description') },
+  ]
 
   const {
     register,
@@ -136,19 +140,19 @@ export default function SellerRegisterPage() {
           <Card className="mx-4 max-w-md p-8 text-center">
             <Store className="mx-auto h-16 w-16 text-primary-500" />
             <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-              سجل دخولك أولاً
+              {t('loginFirst')}
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              يجب تسجيل الدخول لإنشاء متجرك الخاص
+              {t('loginFirstDescription')}
             </p>
             <div className="mt-6 flex gap-3">
               <Link href="/login" className="flex-1">
                 <Button variant="outline" className="w-full">
-                  تسجيل الدخول
+                  {ta('login')}
                 </Button>
               </Link>
               <Link href="/register" className="flex-1">
-                <Button className="w-full">إنشاء حساب</Button>
+                <Button className="w-full">{ta('createAccount')}</Button>
               </Link>
             </div>
           </Card>
@@ -168,10 +172,10 @@ export default function SellerRegisterPage() {
             {/* Header */}
             <div className="text-center">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                أنشئ متجرك في دقائق
+                {t('registerTitle')}
               </h1>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
-                ابدأ رحلتك في التجارة الإلكترونية مع Shoporia
+                {t('registerSubtitle')}
               </p>
             </div>
 
@@ -235,7 +239,7 @@ export default function SellerRegisterPage() {
                     <div>
                       <div className="flex items-center justify-between">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          اسم المتجر
+                          {t('storeNameLabel')}
                         </label>
                         <Button
                           type="button"
@@ -245,19 +249,19 @@ export default function SellerRegisterPage() {
                           disabled={isGeneratingAI}
                         >
                           <Sparkles className="h-4 w-4" />
-                          {isGeneratingAI ? 'جاري التوليد...' : 'اقتراح AI'}
+                          {isGeneratingAI ? tc('generating') : tc('aiSuggestName') || 'اقتراح AI'}
                         </Button>
                       </div>
                       <Input
-                        placeholder="مثال: متجر الأناقة"
+                        placeholder={t('storeNamePlaceholder')}
                         error={errors.name?.message}
                         {...register('name')}
                       />
                     </div>
 
                     <Select
-                      label="فئة المتجر"
-                      placeholder="اختر فئة المتجر"
+                      label={t('storeCategoryLabel')}
+                      placeholder={t('storeCategoryPlaceholder')}
                       options={STORE_CATEGORIES.map((cat) => ({
                         value: cat.id,
                         label: cat.name,
@@ -270,7 +274,7 @@ export default function SellerRegisterPage() {
                     <div>
                       <div className="flex items-center justify-between">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          وصف المتجر
+                          {t('storeDescriptionLabel')}
                         </label>
                         <Button
                           type="button"
@@ -280,11 +284,11 @@ export default function SellerRegisterPage() {
                           disabled={isGeneratingAI}
                         >
                           <Sparkles className="h-4 w-4" />
-                          {isGeneratingAI ? 'جاري التوليد...' : 'كتابة AI'}
+                          {isGeneratingAI ? tc('generating') : tc('aiWriteDescription') || 'كتابة AI'}
                         </Button>
                       </div>
                       <Textarea
-                        placeholder="اكتب وصفاً مختصراً عن متجرك ومنتجاتك..."
+                        placeholder={t('storeDescriptionPlaceholder')}
                         rows={4}
                         error={errors.description?.message}
                         {...register('description')}
@@ -294,7 +298,7 @@ export default function SellerRegisterPage() {
                     {/* Logo Upload */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        شعار المتجر
+                        {t('storeLogo')}
                       </label>
                       <div className="mt-2 flex items-center gap-4">
                         <div className="flex h-20 w-20 items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 dark:border-gray-600 dark:bg-gray-800">
@@ -302,7 +306,7 @@ export default function SellerRegisterPage() {
                         </div>
                         <Button type="button" variant="outline" size="sm">
                           <Upload className="h-4 w-4" />
-                          رفع صورة
+                          {t('uploadImage')}
                         </Button>
                       </div>
                     </div>
@@ -313,7 +317,7 @@ export default function SellerRegisterPage() {
                 {currentStep === 2 && (
                   <div className="space-y-6">
                     <Input
-                      label="رقم الهاتف"
+                      label={ta('phone')}
                       type="tel"
                       placeholder="01xxxxxxxxx"
                       leftIcon={<Phone className="h-5 w-5" />}
@@ -322,7 +326,7 @@ export default function SellerRegisterPage() {
                     />
 
                     <Input
-                      label="رقم الواتساب (اختياري)"
+                      label={t('whatsappOptional')}
                       type="tel"
                       placeholder="01xxxxxxxxx"
                       leftIcon={<Phone className="h-5 w-5" />}
@@ -331,7 +335,7 @@ export default function SellerRegisterPage() {
                     />
 
                     <Input
-                      label="البريد الإلكتروني (اختياري)"
+                      label={t('emailOptional')}
                       type="email"
                       placeholder="store@example.com"
                       leftIcon={<Mail className="h-5 w-5" />}
@@ -340,8 +344,8 @@ export default function SellerRegisterPage() {
                     />
 
                     <Select
-                      label="المحافظة"
-                      placeholder="اختر المحافظة"
+                      label={tc('governorate') || 'المحافظة'}
+                      placeholder={tc('governoratePlaceholder') || 'اختر المحافظة'}
                       options={GOVERNORATES.map((gov) => ({
                         value: gov.id,
                         label: gov.name,
@@ -352,15 +356,15 @@ export default function SellerRegisterPage() {
                     />
 
                     <Input
-                      label="المدينة"
+                      label={t('city')}
                       placeholder="مثال: مدينة نصر"
                       error={errors.city?.message}
                       {...register('city')}
                     />
 
                     <Textarea
-                      label="العنوان التفصيلي"
-                      placeholder="الشارع، المبنى، الطابق..."
+                      label={t('detailedAddress')}
+                      placeholder={t('detailedAddressPlaceholder')}
                       error={errors.address?.message}
                       {...register('address')}
                     />
@@ -372,30 +376,29 @@ export default function SellerRegisterPage() {
                   <div className="space-y-6">
                     <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
                       <p>
-                        <strong>ملاحظة:</strong> رفع الوثائق اختياري ولكنه يساعد
-                        في التحقق من متجرك وزيادة ثقة العملاء.
+                        <strong>{t('documentsNote').split(':')[0]}:</strong> {t('documentsNote').includes(':') ? t('documentsNote').split(':').slice(1).join(':') : t('documentsNote')}
                       </p>
                     </div>
 
                     {/* National ID */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        صورة البطاقة الشخصية
+                        {t('nationalIdPhoto')}
                       </label>
                       <div className="mt-2 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 dark:border-gray-600">
                         <div className="text-center">
                           <Upload className="mx-auto h-10 w-10 text-gray-400" />
                           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            اسحب الصورة هنا أو{' '}
+                            {t('dragImageOr')}{' '}
                             <button
                               type="button"
                               className="text-primary-500 hover:underline"
                             >
-                              تصفح
+                              {t('browse')}
                             </button>
                           </p>
                           <p className="mt-1 text-xs text-gray-500">
-                            PNG, JPG حتى 5MB
+                            {t('maxImageSize5')}
                           </p>
                         </div>
                       </div>
@@ -404,22 +407,22 @@ export default function SellerRegisterPage() {
                     {/* Commercial Register */}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        السجل التجاري (اختياري)
+                        {t('commercialRegister')}
                       </label>
                       <div className="mt-2 flex items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-6 dark:border-gray-600">
                         <div className="text-center">
                           <Upload className="mx-auto h-10 w-10 text-gray-400" />
                           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                            اسحب الصورة هنا أو{' '}
+                            {t('dragImageOr')}{' '}
                             <button
                               type="button"
                               className="text-primary-500 hover:underline"
                             >
-                              تصفح
+                              {t('browse')}
                             </button>
                           </p>
                           <p className="mt-1 text-xs text-gray-500">
-                            PNG, JPG, PDF حتى 10MB
+                            {t('maxDocSize10')}
                           </p>
                         </div>
                       </div>
@@ -431,18 +434,18 @@ export default function SellerRegisterPage() {
                 {currentStep === 4 && (
                   <div className="space-y-6">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      مراجعة بيانات المتجر
+                      {t('reviewStoreData')}
                     </h3>
 
                     <div className="divide-y divide-gray-200 rounded-lg border border-gray-200 dark:divide-gray-700 dark:border-gray-700">
                       <div className="p-4">
-                        <p className="text-sm text-gray-500">اسم المتجر</p>
+                        <p className="text-sm text-gray-500">{t('storeNameLabel')}</p>
                         <p className="mt-1 font-medium text-gray-900 dark:text-white">
                           {watchedValues.name || '-'}
                         </p>
                       </div>
                       <div className="p-4">
-                        <p className="text-sm text-gray-500">الفئة</p>
+                        <p className="text-sm text-gray-500">{t('storeCategoryLabel')}</p>
                         <p className="mt-1 font-medium text-gray-900 dark:text-white">
                           {STORE_CATEGORIES.find(
                             (c) => c.id === watchedValues.category
@@ -450,19 +453,19 @@ export default function SellerRegisterPage() {
                         </p>
                       </div>
                       <div className="p-4">
-                        <p className="text-sm text-gray-500">الوصف</p>
+                        <p className="text-sm text-gray-500">{t('storeDescriptionLabel')}</p>
                         <p className="mt-1 font-medium text-gray-900 dark:text-white">
                           {watchedValues.description || '-'}
                         </p>
                       </div>
                       <div className="p-4">
-                        <p className="text-sm text-gray-500">رقم الهاتف</p>
+                        <p className="text-sm text-gray-500">{ta('phone')}</p>
                         <p className="mt-1 font-medium text-gray-900 dark:text-white">
                           {watchedValues.phone || '-'}
                         </p>
                       </div>
                       <div className="p-4">
-                        <p className="text-sm text-gray-500">الموقع</p>
+                        <p className="text-sm text-gray-500">{t('city')}</p>
                         <p className="mt-1 font-medium text-gray-900 dark:text-white">
                           {watchedValues.city && watchedValues.governorate
                             ? `${watchedValues.city}, ${GOVERNORATES.find((g) => g.id === watchedValues.governorate)?.nameAr}`
@@ -486,14 +489,14 @@ export default function SellerRegisterPage() {
                           href="/seller/terms"
                           className="text-primary-500 hover:underline"
                         >
-                          شروط وأحكام البائعين
+                          {t('sellerTerms')}
                         </Link>{' '}
                         و{' '}
                         <Link
                           href="/seller/policy"
                           className="text-primary-500 hover:underline"
                         >
-                          سياسة البيع
+                          {t('sellerPolicy')}
                         </Link>
                       </label>
                     </div>
@@ -509,17 +512,17 @@ export default function SellerRegisterPage() {
                     disabled={currentStep === 1}
                   >
                     <ChevronRight className="h-4 w-4" />
-                    السابق
+                    {tc('previous')}
                   </Button>
 
                   {currentStep < steps.length ? (
                     <Button type="button" onClick={nextStep}>
-                      التالي
+                      {tc('next')}
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                   ) : (
                     <Button type="submit" isLoading={isLoading}>
-                      إنشاء المتجر
+                      {t('createStore')}
                     </Button>
                   )}
                 </div>

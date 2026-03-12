@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { Card, Button, Badge } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   Plus,
@@ -64,6 +65,8 @@ export default function AdminCategoriesPage() {
   const [imagePreview, setImagePreview] = useState<string>('')
   const [uploadingImage, setUploadingImage] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   // Form state
   const [formData, setFormData] = useState({
@@ -105,7 +108,7 @@ export default function AdminCategoriesPage() {
       if (err instanceof Error && 'code' in err && (err as Error & { code: string }).code === 'permission-denied') {
         setError('ليس لديك صلاحية للوصول للأقسام')
       } else {
-        setError('حدث خطأ في تحميل الأقسام')
+        setError(tc('error'))
       }
     } finally {
       setLoading(false)
@@ -271,7 +274,7 @@ export default function AdminCategoriesPage() {
       } else if (err instanceof Error) {
         setError(err.message)
       } else {
-        setError(`حدث خطأ غير متوقع. تحقق من Console للتفاصيل.`)
+        setError(tc('error'))
       }
     } finally {
       setSaving(false)
@@ -300,7 +303,7 @@ export default function AdminCategoriesPage() {
       await deleteDoc(doc(db, 'categories', categoryId))
       fetchCategories()
     } catch (_err: unknown) {
-      setError('حدث خطأ في حذف القسم')
+      setError(tc('error'))
     } finally {
       setDeleting(null)
     }
@@ -333,15 +336,16 @@ export default function AdminCategoriesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إدارة الأقسام
+            {t('categoriesSection')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: no exact key for إنشاء وتعديل وحذف أقسام المنتجات */}
             إنشاء وتعديل وحذف أقسام المنتجات
           </p>
         </div>
         <Button onClick={handleAddNew}>
           <Plus className="h-4 w-4 ml-2" />
-          إضافة قسم جديد
+          {tc('add')}
         </Button>
       </div>
 
@@ -358,7 +362,7 @@ export default function AdminCategoriesPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">إجمالي الأقسام</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}إجمالي الأقسام</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {categories.length}
               </p>
@@ -369,7 +373,7 @@ export default function AdminCategoriesPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">الأقسام النشطة</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}الأقسام النشطة</p>
               <p className="text-2xl font-bold text-green-600">
                 {categories.filter(c => c.isActive).length}
               </p>
@@ -380,7 +384,7 @@ export default function AdminCategoriesPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">الأقسام المعطلة</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}الأقسام المعطلة</p>
               <p className="text-2xl font-bold text-red-600">
                 {categories.filter(c => !c.isActive).length}
               </p>
@@ -391,7 +395,7 @@ export default function AdminCategoriesPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">إجمالي المنتجات</p>
+              <p className="text-sm text-gray-500">{t('activeProducts')}</p>
               <p className="text-2xl font-bold text-blue-600">
                 {categories.reduce((sum, c) => sum + (c.productsCount || 0), 0)}
               </p>
@@ -409,7 +413,7 @@ export default function AdminCategoriesPage() {
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="ابحث عن قسم..."
+            placeholder={tc('search')}
             className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           />
         </div>
@@ -424,10 +428,10 @@ export default function AdminCategoriesPage() {
         ) : filteredCategories.length === 0 ? (
           <div className="py-12 text-center">
             <FolderTree className="mx-auto h-12 w-12 text-gray-400" />
-            <p className="mt-4 text-gray-500">لا توجد أقسام</p>
+            <p className="mt-4 text-gray-500">{tc('noResults')}</p>
             <Button onClick={handleAddNew} className="mt-4">
               <Plus className="h-4 w-4 ml-2" />
-              إضافة قسم جديد
+              {tc('add')}
             </Button>
           </div>
         ) : (
@@ -531,7 +535,7 @@ export default function AdminCategoriesPage() {
           <div className="w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-lg bg-white p-6 shadow-xl dark:bg-gray-800">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                {editingCategory ? 'تعديل القسم' : 'إضافة قسم جديد'}
+                {editingCategory ? tc('edit') : tc('add')}
               </h2>
               <button onClick={() => setIsModalOpen(false)}>
                 <X className="h-5 w-5 text-gray-500" />
@@ -667,7 +671,7 @@ export default function AdminCategoriesPage() {
                 onClick={() => setIsModalOpen(false)}
                 disabled={saving}
               >
-                إلغاء
+                {tc('cancel')}
               </Button>
               <Button
                 className="flex-1"
@@ -677,12 +681,12 @@ export default function AdminCategoriesPage() {
                 {saving ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin ml-2" />
-                    {uploadingImage ? 'جاري رفع الصورة...' : 'جاري الحفظ...'}
+                    {uploadingImage ? tc('loading') : tc('loading')}
                   </>
                 ) : (
                   <>
                     <Save className="h-4 w-4 ml-2" />
-                    {editingCategory ? 'حفظ التعديلات' : 'إضافة القسم'}
+                    {tc('save')}
                   </>
                 )}
               </Button>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card, Button, Badge, Modal, Input } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   Users,
   Plus,
@@ -162,6 +163,8 @@ export default function TeamPage() {
     role: '',
     password: '',
   })
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const getRoleById = (roleId: string) => roles.find(r => r.id === roleId)
 
@@ -170,13 +173,13 @@ export default function TeamPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إدارة فريق العمل
+            {t('team')}
           </h1>
-          <p className="text-gray-500">إدارة أعضاء الفريق والصلاحيات</p>
+          <p className="text-gray-500">{/* TODO: no exact key for إدارة أعضاء الفريق والصلاحيات */}إدارة أعضاء الفريق والصلاحيات</p>
         </div>
         <Button onClick={() => setIsAddModalOpen(true)}>
           <Plus className="h-4 w-4" />
-          إضافة عضو جديد
+          {tc('add')}
         </Button>
       </div>
 
@@ -218,6 +221,7 @@ export default function TeamPage() {
       <Card className="overflow-hidden">
         <div className="p-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {/* TODO: no exact key for أعضاء الفريق */}
             أعضاء الفريق ({teamMembers.length})
           </h2>
         </div>
@@ -300,7 +304,7 @@ export default function TeamPage() {
       <Modal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
-        title="إضافة عضو جديد"
+        title={tc('add')}
         size="lg"
       >
         <form className="space-y-4">
@@ -356,10 +360,10 @@ export default function TeamPage() {
               className="flex-1"
               onClick={() => setIsAddModalOpen(false)}
             >
-              إلغاء
+              {tc('cancel')}
             </Button>
             <Button type="submit" className="flex-1 bg-amazon-orange hover:bg-amazon-orangeHover">
-              إضافة العضو
+              {tc('add')}
             </Button>
           </div>
         </form>
@@ -425,11 +429,12 @@ export default function TeamPage() {
                 className="flex-1"
                 onClick={() => setIsPermissionsModalOpen(false)}
               >
+                {/* TODO: no exact key for إغلاق */}
                 إغلاق
               </Button>
               <Button type="button" className="flex-1 bg-amazon-orange hover:bg-amazon-orangeHover">
                 <Edit className="h-4 w-4" />
-                تعديل الصلاحيات
+                {tc('edit')}
               </Button>
             </div>
           </div>

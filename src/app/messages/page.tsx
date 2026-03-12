@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button, Avatar, Badge } from '@/components/ui'
 import { formatDate } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   Send,
@@ -113,6 +114,7 @@ const mockMessages = [
 ]
 
 export default function MessagesPage() {
+  const t = useTranslations('messages')
   const [selectedConversation, setSelectedConversation] = useState<string | null>(
     conversations[0]?.id || null
   )
@@ -152,7 +154,7 @@ export default function MessagesPage() {
               {/* Search Header */}
               <div className="border-b border-gray-200 p-4 dark:border-gray-700">
                 <h1 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
-                  الرسائل
+                  {t('title')}
                 </h1>
                 <div className="relative">
                   <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
@@ -160,7 +162,7 @@ export default function MessagesPage() {
                     type="search"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="ابحث في المحادثات..."
+                    placeholder={t('searchConversations')}
                     className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>
@@ -209,7 +211,7 @@ export default function MessagesPage() {
 
                 {filteredConversations.length === 0 && (
                   <div className="p-8 text-center text-gray-500">
-                    لا توجد محادثات
+                    {t('noConversations')}
                   </div>
                 )}
               </div>
@@ -238,7 +240,7 @@ export default function MessagesPage() {
                         {selectedChat.participant.name}
                       </p>
                       <p className="text-xs text-gray-500">
-                        {selectedChat.participant.isOnline ? 'متصل الآن' : 'غير متصل'}
+                        {selectedChat.participant.isOnline ? t('online') : t('offline')}
                       </p>
                     </div>
                   </div>
@@ -264,7 +266,7 @@ export default function MessagesPage() {
                   {/* Date Divider */}
                   <div className="flex items-center gap-4">
                     <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
-                    <span className="text-xs text-gray-500">اليوم</span>
+                    <span className="text-xs text-gray-500">{t('today')}</span>
                     <div className="flex-1 border-t border-gray-200 dark:border-gray-700" />
                   </div>
 
@@ -321,7 +323,7 @@ export default function MessagesPage() {
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder="اكتب رسالتك..."
+                        placeholder={t('typeMessage')}
                         className="h-10 w-full rounded-full border border-gray-300 bg-white pe-10 ps-4 text-sm focus:border-primary-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                       />
                       <button className="absolute end-3 top-1/2 -translate-y-1/2">
@@ -346,10 +348,10 @@ export default function MessagesPage() {
                     <Send className="h-10 w-10 text-gray-400" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                    رسائلك
+                    {t('yourMessages')}
                   </h3>
                   <p className="mt-1 text-gray-500">
-                    اختر محادثة للبدء في المراسلة
+                    {t('selectConversation')}
                   </p>
                 </div>
               </div>

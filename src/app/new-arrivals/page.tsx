@@ -3,6 +3,7 @@
 import { Header, Footer } from '@/components/layout'
 import { ProductCard, Badge } from '@/components/ui'
 import { Sparkles, Clock } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const newArrivals = [
   {
@@ -104,6 +105,8 @@ const newArrivals = [
 ]
 
 export default function NewArrivalsPage() {
+  const t = useTranslations('pages.newArrivals')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -118,10 +121,10 @@ export default function NewArrivalsPage() {
               </div>
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-white">
-                  جديدنا
+                  {t('title')}
                 </h1>
                 <p className="text-white/70">
-                  أحدث المنتجات المضافة للمتجر
+                  {t('subtitle')}
                 </p>
               </div>
             </div>
@@ -134,16 +137,16 @@ export default function NewArrivalsPage() {
             <div className="flex items-center gap-3 mb-8">
               <Clock className="h-8 w-8 text-purple-600" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                وصل هذا الأسبوع
+                {t('thisWeek')}
               </h2>
-              <Badge className="bg-purple-100 text-purple-700">جديد</Badge>
+              <Badge className="bg-purple-100 text-purple-700">{t('new')}</Badge>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {newArrivals.slice(0, 4).map((product) => (
                 <div key={product.id} className="relative">
                   <Badge className="absolute -top-2 -end-2 z-10 bg-purple-600 text-white">
-                    جديد
+                    {t('new')}
                   </Badge>
                   <ProductCard product={product} />
                 </div>
@@ -158,7 +161,7 @@ export default function NewArrivalsPage() {
             <div className="flex items-center gap-3 mb-8">
               <Sparkles className="h-8 w-8 text-amazon-orange" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                جميع المنتجات الجديدة
+                {t('allNewProducts')}
               </h2>
             </div>
 

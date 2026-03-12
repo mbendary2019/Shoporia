@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Avatar } from '@/components/ui'
 import {
   Store,
@@ -42,6 +43,8 @@ const daysOfWeek = [
 ]
 
 export default function SettingsPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [activeTab, setActiveTab] = useState('store')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -56,15 +59,16 @@ export default function SettingsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إعدادات المتجر
+            {t('settings')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             تخصيص إعدادات متجرك
           </p>
         </div>
         <Button onClick={handleSave} disabled={isLoading}>
           <Save className="h-4 w-4" />
-          {isLoading ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+          {isLoading ? tCommon('loading') : tCommon('save')}
         </Button>
       </div>
 

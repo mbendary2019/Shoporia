@@ -13,50 +13,53 @@ import {
   Truck,
   CreditCard,
 } from 'lucide-react'
-
-const steps = [
-  {
-    step: 1,
-    icon: Package,
-    title: 'قدم طلب الإرجاع',
-    description: 'من صفحة طلباتي',
-  },
-  {
-    step: 2,
-    icon: Truck,
-    title: 'شحن المنتج',
-    description: 'مندوبنا سيستلم المنتج',
-  },
-  {
-    step: 3,
-    icon: CheckCircle,
-    title: 'فحص المنتج',
-    description: 'التحقق من الحالة',
-  },
-  {
-    step: 4,
-    icon: CreditCard,
-    title: 'استرداد المبلغ',
-    description: 'خلال 7-14 يوم عمل',
-  },
-]
-
-const eligibleItems = [
-  'المنتجات في حالتها الأصلية مع جميع الملحقات',
-  'المنتجات بعبوتها الأصلية غير المفتوحة',
-  'المنتجات مع الفاتورة الأصلية',
-  'المنتجات خلال 14 يوم من الاستلام',
-]
-
-const nonEligibleItems = [
-  'المنتجات المستخدمة أو التالفة',
-  'الملابس الداخلية ومستحضرات التجميل المفتوحة',
-  'المنتجات الرقمية والبرامج',
-  'المنتجات المصنوعة حسب الطلب',
-  'المنتجات الغذائية وسريعة التلف',
-]
+import { useTranslations } from 'next-intl'
 
 export default function ReturnsPage() {
+  const t = useTranslations('pages.returns')
+
+  const steps = [
+    {
+      step: 1,
+      icon: Package,
+      title: 'قدم طلب الإرجاع',
+      description: 'من صفحة طلباتي',
+    },
+    {
+      step: 2,
+      icon: Truck,
+      title: 'شحن المنتج',
+      description: 'مندوبنا سيستلم المنتج',
+    },
+    {
+      step: 3,
+      icon: CheckCircle,
+      title: 'فحص المنتج',
+      description: 'التحقق من الحالة',
+    },
+    {
+      step: 4,
+      icon: CreditCard,
+      title: 'استرداد المبلغ',
+      description: 'خلال 7-14 يوم عمل',
+    },
+  ]
+
+  const eligibleItems = [
+    'المنتجات في حالتها الأصلية مع جميع الملحقات',
+    'المنتجات بعبوتها الأصلية غير المفتوحة',
+    'المنتجات مع الفاتورة الأصلية',
+    'المنتجات خلال 14 يوم من الاستلام',
+  ]
+
+  const nonEligibleItems = [
+    'المنتجات المستخدمة أو التالفة',
+    'الملابس الداخلية ومستحضرات التجميل المفتوحة',
+    'المنتجات الرقمية والبرامج',
+    'المنتجات المصنوعة حسب الطلب',
+    'المنتجات الغذائية وسريعة التلف',
+  ]
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -69,10 +72,10 @@ export default function ReturnsPage() {
               <RotateCcw className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              المرتجعات والاستبدال
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              نوفر لك سياسة إرجاع مرنة لضمان رضاك التام
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -85,7 +88,7 @@ export default function ReturnsPage() {
               <div>
                 <span className="text-2xl font-bold text-green-600">14 يوم</span>
                 <span className="text-gray-700 dark:text-gray-300 mr-2">
-                  فترة الإرجاع المجانية
+                  {t('freeReturnPeriod')}
                 </span>
               </div>
             </div>
@@ -96,7 +99,7 @@ export default function ReturnsPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              خطوات الإرجاع
+              {t('returnSteps')}
             </h2>
             <div className="grid md:grid-cols-4 gap-6">
               {steps.map((step) => (
@@ -105,7 +108,7 @@ export default function ReturnsPage() {
                     <step.icon className="h-7 w-7 text-amazon-orange" />
                   </div>
                   <Badge className="mb-2 bg-amazon-orange text-white">
-                    الخطوة {step.step}
+                    {t('step')} {step.step}
                   </Badge>
                   <h3 className="font-bold text-gray-900 dark:text-white mb-1">
                     {step.title}
@@ -128,7 +131,7 @@ export default function ReturnsPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <CheckCircle className="h-6 w-6 text-green-600" />
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white">
-                    المنتجات القابلة للإرجاع
+                    {t('eligibleProducts')}
                   </h3>
                 </div>
                 <ul className="space-y-3">
@@ -146,7 +149,7 @@ export default function ReturnsPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <XCircle className="h-6 w-6 text-red-600" />
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white">
-                    المنتجات غير القابلة للإرجاع
+                    {t('nonEligibleProducts')}
                   </h3>
                 </div>
                 <ul className="space-y-3">
@@ -170,7 +173,7 @@ export default function ReturnsPage() {
                 <AlertCircle className="h-6 w-6 text-amazon-orange shrink-0 mt-1" />
                 <div>
                   <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                    معلومات استرداد المبلغ
+                    {t('refundInfo')}
                   </h3>
                   <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                     <li>• البطاقات الائتمانية: 7-14 يوم عمل</li>
@@ -190,7 +193,7 @@ export default function ReturnsPage() {
             <Link href="/account/orders">
               <Button className="bg-amazon-orange hover:bg-amazon-orangeHover">
                 <RotateCcw className="h-5 w-5 ml-2" />
-                ابدأ طلب إرجاع
+                {t('startReturn')}
               </Button>
             </Link>
           </div>

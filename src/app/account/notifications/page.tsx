@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatDate } from '@/utils/format'
 import {
@@ -92,17 +93,19 @@ const initialNotifications = [
   },
 ]
 
-const filterOptions = [
-  { id: 'all', label: 'الكل' },
-  { id: 'unread', label: 'غير مقروءة' },
-  { id: 'order_status', label: 'الطلبات' },
-  { id: 'promotion', label: 'العروض' },
-  { id: 'message', label: 'الرسائل' },
-]
-
 export default function AccountNotificationsPage() {
+  const t = useTranslations('notification')
+  const tc = useTranslations('common')
   const [notifications, setNotifications] = useState(initialNotifications)
   const [activeFilter, setActiveFilter] = useState('all')
+
+  const filterOptions = [
+    { id: 'all', label: t('all') },
+    { id: 'unread', label: t('unread') },
+    { id: 'order_status', label: t('orders') },
+    { id: 'promotion', label: t('promotions') },
+    { id: 'message', label: t('messages') },
+  ]
 
   const unreadCount = notifications.filter((n) => !n.read).length
 
@@ -136,10 +139,10 @@ export default function AccountNotificationsPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              الإشعارات
+              {t('title')}
             </h1>
             {unreadCount > 0 && (
-              <Badge variant="danger">{unreadCount} جديد</Badge>
+              <Badge variant="danger">{unreadCount} {t('new')}</Badge>
             )}
           </div>
 
@@ -147,12 +150,12 @@ export default function AccountNotificationsPage() {
             {unreadCount > 0 && (
               <Button variant="outline" size="sm" onClick={markAllAsRead}>
                 <Check className="h-4 w-4" />
-                قراءة الكل
+                {t('readAll')}
               </Button>
             )}
             <Button variant="outline" size="sm" onClick={clearAll}>
               <Trash2 className="h-4 w-4" />
-              مسح الكل
+              {t('clearAll')}
             </Button>
             <Button variant="ghost" size="sm">
               <Settings className="h-4 w-4" />
@@ -222,7 +225,7 @@ export default function AccountNotificationsPage() {
                         <button
                           onClick={() => markAsRead(notification.id)}
                           className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
-                          title="تعليم كمقروء"
+                          title={t('markAsRead')}
                         >
                           <Check className="h-4 w-4" />
                         </button>
@@ -230,7 +233,7 @@ export default function AccountNotificationsPage() {
                       <button
                         onClick={() => deleteNotification(notification.id)}
                         className="rounded-lg p-2 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
-                        title="حذف"
+                        title={t('deleteNotification')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -239,7 +242,7 @@ export default function AccountNotificationsPage() {
 
                   {(notification.orderId || notification.productId) && (
                     <Button variant="ghost" size="sm" className="mt-2">
-                      {notification.orderId ? 'عرض الطلب' : 'قيّم المنتج'}
+                      {notification.orderId ? t('viewOrder') : t('rateProduct')}
                     </Button>
                   )}
                 </div>
@@ -251,7 +254,7 @@ export default function AccountNotificationsPage() {
         <Card className="p-12 text-center">
           <Bell className="mx-auto h-12 w-12 text-gray-400" />
           <p className="mt-4 text-gray-600 dark:text-gray-400">
-            لا توجد إشعارات
+            {t('noNotifications')}
           </p>
         </Card>
       )}

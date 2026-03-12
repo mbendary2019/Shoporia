@@ -11,6 +11,7 @@ import {
   CheckCircle,
   Star,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const benefits = [
   {
@@ -45,6 +46,8 @@ const features = [
 ]
 
 export default function CreditCardPage() {
+  const t = useTranslations('pages.creditCard')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -56,13 +59,13 @@ export default function CreditCardPage() {
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="text-white">
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                  بطاقة Shoporia الائتمانية
+                  {t('title')}
                 </h1>
                 <p className="text-white/70 text-lg mb-6">
-                  استمتع بمزايا حصرية وكاش باك على كل مشترياتك
+                  {t('subtitle')}
                 </p>
                 <Button className="bg-amazon-orange hover:bg-amazon-orangeHover text-lg px-8 py-3">
-                  قدم الآن
+                  {t('applyNow')}
                 </Button>
               </div>
               <div className="flex justify-center">
@@ -89,7 +92,7 @@ export default function CreditCardPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              مزايا البطاقة
+              {t('cardBenefits')}
             </h2>
             <div className="grid md:grid-cols-4 gap-6">
               {benefits.map((benefit) => (
@@ -112,7 +115,7 @@ export default function CreditCardPage() {
           <div className="container-custom">
             <div className="max-w-2xl mx-auto">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-                مميزات إضافية
+                {t('additionalFeatures')}
               </h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {features.map((feature) => (
@@ -131,12 +134,12 @@ export default function CreditCardPage() {
           <div className="container-custom text-center">
             <Card className="max-w-xl mx-auto p-8 bg-gradient-to-l from-amazon-orange to-orange-500 text-white">
               <Star className="h-12 w-12 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold mb-2">احصل على بطاقتك الآن</h2>
+              <h2 className="text-2xl font-bold mb-2">{t('getCardNow')}</h2>
               <p className="text-white/80 mb-6">
-                تقديم سهل وسريع - الموافقة خلال دقائق
+                {t('easyApplication')}
               </p>
               <Button className="bg-white text-amazon-orange hover:bg-gray-100">
-                ابدأ التقديم
+                {t('startApplication')}
               </Button>
             </Card>
           </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Input, Textarea, Select, Badge } from '@/components/ui'
 import { productWithVariantsSchema, type ProductWithVariantsInput } from '@/lib/validations'
 import { STORE_CATEGORIES } from '@/utils/constants'
@@ -30,6 +31,8 @@ import {
 export default function NewProductPage() {
   const router = useRouter()
   const { user } = useAuthStore()
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [isLoading, setIsLoading] = useState(false)
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -152,10 +155,10 @@ export default function NewProductPage() {
   }
 
   const tabs = [
-    { id: 'basic', label: 'المعلومات الأساسية', icon: Package },
-    { id: 'pricing', label: 'التسعير', icon: DollarSign },
-    { id: 'inventory', label: 'المخزون', icon: Layers },
-    { id: 'variants', label: 'المتغيرات', icon: Tag },
+    { id: 'basic', label: /* TODO: add translation key */ 'المعلومات الأساسية', icon: Package },
+    { id: 'pricing', label: /* TODO: add translation key */ 'التسعير', icon: DollarSign },
+    { id: 'inventory', label: /* TODO: add translation key */ 'المخزون', icon: Layers },
+    { id: 'variants', label: /* TODO: add translation key */ 'المتغيرات', icon: Tag },
   ]
 
   return (
@@ -177,20 +180,23 @@ export default function NewProductPage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {/* TODO: add translation key */}
               إضافة منتج جديد
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
+              {/* TODO: add translation key */}
               أضف منتج جديد لمتجرك
             </p>
           </div>
         </div>
         <div className="flex gap-3">
           <Button variant="outline" type="button">
+            {/* TODO: add translation key */}
             حفظ كمسودة
           </Button>
           <Button onClick={handleSubmit(onSubmit)} isLoading={isLoading}>
             <Save className="h-4 w-4" />
-            حفظ ونشر
+            {tCommon('save')}
           </Button>
         </div>
       </div>
@@ -242,7 +248,7 @@ export default function NewProductPage() {
                         disabled={isGeneratingAI}
                       >
                         <Sparkles className="h-4 w-4" />
-                        {isGeneratingAI ? 'جاري التوليد...' : 'اقتراح AI'}
+                        {isGeneratingAI ? tCommon('generating') : t('aiSuggestName')}
                       </Button>
                     </div>
                     <Input
@@ -266,7 +272,7 @@ export default function NewProductPage() {
                         disabled={isGeneratingAI}
                       >
                         <Sparkles className="h-4 w-4" />
-                        {isGeneratingAI ? 'جاري التوليد...' : 'كتابة AI'}
+                        {isGeneratingAI ? tCommon('generating') : t('aiWriteDescription')}
                       </Button>
                     </div>
                     <Textarea

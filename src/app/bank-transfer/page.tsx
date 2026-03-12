@@ -10,6 +10,7 @@ import {
   Shield,
   AlertCircle,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const bankAccounts = [
   {
@@ -59,6 +60,8 @@ const steps = [
 ]
 
 export default function BankTransferPage() {
+  const t = useTranslations('pages.bankTransfer')
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
   }
@@ -75,10 +78,10 @@ export default function BankTransferPage() {
               <Building2 className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              التحويل البنكي
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              ادفع عبر التحويل البنكي المباشر لحساباتنا المعتمدة
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -87,7 +90,7 @@ export default function BankTransferPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              خطوات الدفع
+              {t('paymentSteps')}
             </h2>
             <div className="grid md:grid-cols-4 gap-6">
               {steps.map((step) => (
@@ -111,7 +114,7 @@ export default function BankTransferPage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              حساباتنا البنكية
+              {t('bankAccounts')}
             </h2>
             <div className="space-y-4 max-w-3xl mx-auto">
               {bankAccounts.map((account) => (
@@ -120,15 +123,15 @@ export default function BankTransferPage() {
                     <h3 className="font-bold text-lg text-gray-900 dark:text-white">
                       {account.bank}
                     </h3>
-                    <Badge className="bg-green-100 text-green-700">معتمد</Badge>
+                    <Badge className="bg-green-100 text-green-700">{t('approved')}</Badge>
                   </div>
                   <div className="space-y-3 text-sm">
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">اسم الحساب:</span>
+                      <span className="text-gray-600 dark:text-gray-400">{t('accountName')}:</span>
                       <span className="text-gray-900 dark:text-white">{account.accountName}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">رقم الحساب:</span>
+                      <span className="text-gray-600 dark:text-gray-400">{t('accountNumber')}:</span>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-900 dark:text-white font-mono">
                           {account.accountNumber}
@@ -156,7 +159,7 @@ export default function BankTransferPage() {
                       </div>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-gray-600 dark:text-gray-400">الفرع:</span>
+                      <span className="text-gray-600 dark:text-gray-400">{t('branch')}:</span>
                       <span className="text-gray-900 dark:text-white">{account.branch}</span>
                     </div>
                   </div>
@@ -175,7 +178,7 @@ export default function BankTransferPage() {
                   <AlertCircle className="h-6 w-6 text-amazon-orange shrink-0 mt-1" />
                   <div>
                     <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                      ملاحظات هامة
+                      {t('importantNotes')}
                     </h3>
                     <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start gap-2">

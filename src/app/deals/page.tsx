@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Header, Footer } from '@/components/layout'
 import { DealCard, ProductCard, Badge, Card } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import { Zap, Clock, Percent, ArrowLeft } from 'lucide-react'
 
 const dealProducts = [
@@ -90,6 +91,7 @@ const dealProducts = [
 ]
 
 export default function DealsPage() {
+  const t = useTranslations('deals')
   const [countdown, setCountdown] = useState({ hours: 23, minutes: 59, seconds: 59 })
 
   useEffect(() => {
@@ -119,12 +121,12 @@ export default function DealsPage() {
                     <Zap className="h-8 w-8" />
                   </div>
                   <Badge className="bg-amazon-yellow text-amazon-navy text-lg px-4 py-2">
-                    خصومات تصل إلى 70%
+                    {t('discountUpTo70')}
                   </Badge>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-bold mb-2">عروض اليوم</h1>
+                <h1 className="text-4xl md:text-5xl font-bold mb-2">{t('title')}</h1>
                 <p className="text-white/80 text-lg">
-                  احصل على أفضل العروض قبل انتهاء الوقت!
+                  {t('subtitle')}
                 </p>
               </div>
 
@@ -134,21 +136,21 @@ export default function DealsPage() {
                   <div className="bg-white text-amazon-deal px-6 py-4 rounded-lg min-w-[80px]">
                     <span className="text-4xl font-bold">{countdown.hours.toString().padStart(2, '0')}</span>
                   </div>
-                  <span className="text-white/70 text-sm mt-1 block">ساعة</span>
+                  <span className="text-white/70 text-sm mt-1 block">{t('hour')}</span>
                 </div>
                 <span className="text-4xl font-bold text-white">:</span>
                 <div className="text-center">
                   <div className="bg-white text-amazon-deal px-6 py-4 rounded-lg min-w-[80px]">
                     <span className="text-4xl font-bold">{countdown.minutes.toString().padStart(2, '0')}</span>
                   </div>
-                  <span className="text-white/70 text-sm mt-1 block">دقيقة</span>
+                  <span className="text-white/70 text-sm mt-1 block">{t('minute')}</span>
                 </div>
                 <span className="text-4xl font-bold text-white">:</span>
                 <div className="text-center">
                   <div className="bg-white text-amazon-deal px-6 py-4 rounded-lg min-w-[80px]">
                     <span className="text-4xl font-bold">{countdown.seconds.toString().padStart(2, '0')}</span>
                   </div>
-                  <span className="text-white/70 text-sm mt-1 block">ثانية</span>
+                  <span className="text-white/70 text-sm mt-1 block">{t('second')}</span>
                 </div>
               </div>
             </div>
@@ -161,9 +163,9 @@ export default function DealsPage() {
             <div className="flex items-center gap-3 mb-8">
               <Zap className="h-8 w-8 text-amazon-deal" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                عروض خاطفة
+                {t('flashDeals')}
               </h2>
-              <Badge variant="danger">محدودة الكمية</Badge>
+              <Badge variant="danger">{t('limitedQuantity')}</Badge>
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -180,7 +182,7 @@ export default function DealsPage() {
             <div className="flex items-center gap-3 mb-8">
               <Percent className="h-8 w-8 text-amazon-orange" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                جميع العروض
+                {t('allDeals')}
               </h2>
             </div>
 

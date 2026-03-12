@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card, Button, Badge } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   Flag,
   AlertTriangle,
@@ -84,6 +85,7 @@ const typeConfig = {
 
 export default function ReportsPage() {
   const [filter, setFilter] = useState('all')
+  const t = useTranslations('admin')
 
   const filteredReports = filter === 'all'
     ? reports
@@ -94,9 +96,9 @@ export default function ReportsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            البلاغات
+            {t('reports')}
           </h1>
-          <p className="text-gray-500">إدارة البلاغات والشكاوى</p>
+          <p className="text-gray-500">{/* TODO: no exact key for إدارة البلاغات والشكاوى */}إدارة البلاغات والشكاوى</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="warning">{reports.filter(r => r.status === 'pending').length} قيد الانتظار</Badge>
@@ -158,16 +160,19 @@ export default function ReportsPage() {
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm">
                     <Eye className="h-4 w-4" />
+                    {/* TODO: no exact key for عرض */}
                     عرض
                   </Button>
                   {report.status === 'pending' && (
                     <>
                       <Button variant="outline" size="sm" className="text-green-600">
                         <CheckCircle className="h-4 w-4" />
+                        {/* TODO: no exact key for قبول */}
                         قبول
                       </Button>
                       <Button variant="outline" size="sm" className="text-red-600">
                         <XCircle className="h-4 w-4" />
+                        {/* TODO: no exact key for رفض */}
                         رفض
                       </Button>
                     </>

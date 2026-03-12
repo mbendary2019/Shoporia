@@ -7,6 +7,7 @@ import { Header, Footer } from '@/components/layout'
 import { Card, Button, Badge, Input } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
 import { useStore, useStoreProducts } from '@/hooks/queries/use-stores'
+import { useTranslations } from 'next-intl'
 import {
   Store as StoreIcon,
   Star,
@@ -47,6 +48,7 @@ const mockReviews = [
 ]
 
 export default function StorePage() {
+  const t = useTranslations('pages.store')
   const params = useParams()
   const slug = params.slug as string
   const [isFollowing, setIsFollowing] = useState(false)
@@ -65,7 +67,7 @@ export default function StorePage() {
         <main className="flex flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900">
           <div className="text-center">
             <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary-500" />
-            <p className="mt-4 text-gray-600 dark:text-gray-400">جاري تحميل المتجر...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">{t('loadingStore')}</p>
           </div>
         </main>
         <Footer />
@@ -81,13 +83,13 @@ export default function StorePage() {
           <div className="text-center">
             <Package className="mx-auto h-16 w-16 text-gray-300" />
             <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
-              المتجر غير موجود
+              {t('storeNotFound')}
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              عذراً، لم نتمكن من العثور على المتجر المطلوب
+              {t('storeNotFoundDescription')}
             </p>
             <Link href="/marketplace">
-              <Button className="mt-6">تصفح المنتجات</Button>
+              <Button className="mt-6">{t('productsTab')}</Button>
             </Link>
           </div>
         </main>
@@ -152,7 +154,7 @@ export default function StorePage() {
                           {store.name}
                         </h1>
                         {store.status === 'active' && (
-                          <Badge variant="info">موثق</Badge>
+                          <Badge variant="info">{t('verified')}</Badge>
                         )}
                       </div>
                       <p className="mt-1 text-gray-600 dark:text-gray-400">
@@ -166,11 +168,11 @@ export default function StorePage() {
                         onClick={() => setIsFollowing(!isFollowing)}
                       >
                         <Heart className={`h-4 w-4 ${isFollowing ? 'fill-current text-red-500' : ''}`} />
-                        {isFollowing ? 'متابَع' : 'متابعة'}
+                        {isFollowing ? t('following') : t('follow')}
                       </Button>
                       <Button variant="outline">
                         <MessageCircle className="h-4 w-4" />
-                        تواصل
+                        {t('contact')}
                       </Button>
                       <Button variant="outline" size="icon">
                         <Share2 className="h-4 w-4" />
@@ -183,19 +185,19 @@ export default function StorePage() {
                     <div className="flex items-center gap-2">
                       <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
                       <span className="font-semibold text-gray-900 dark:text-white">{store.rating}</span>
-                      <span className="text-gray-500">({store.reviewCount} تقييم)</span>
+                      <span className="text-gray-500">({store.reviewCount} {t('review')})</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <Package className="h-5 w-5" />
-                      <span>{store.productCount} منتج</span>
+                      <span>{store.productCount} {t('product')}</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <Users className="h-5 w-5" />
-                      <span>{0} متابع</span>
+                      <span>{0} {t('follower')}</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <ShoppingBag className="h-5 w-5" />
-                      <span>{store.orderCount}+ طلب</span>
+                      <span>{store.orderCount}+ {t('completedOrder')}</span>
                     </div>
                   </div>
 
@@ -213,11 +215,11 @@ export default function StorePage() {
                     </div>
                     <div className={`flex items-center gap-2 ${isOpen() ? 'text-green-600' : 'text-red-500'}`}>
                       <Clock className="h-4 w-4" />
-                      {isOpen() ? 'مفتوح الآن' : 'مغلق'}
+                      {isOpen() ? t('openNow') : t('closed')}
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <Calendar className="h-4 w-4" />
-                      منذ {new Date(store.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long' })}
+                      {t('since')} {new Date(store.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long' })}
                     </div>
                   </div>
                 </div>
@@ -235,7 +237,7 @@ export default function StorePage() {
                   : 'text-gray-600 hover:text-gray-900 dark:text-gray-400'
               }`}
             >
-              المنتجات ({store.productCount})
+              {t('productsTab')} ({store.productCount})
             </button>
             <button
               onClick={() => setActiveTab('about')}
@@ -245,7 +247,7 @@ export default function StorePage() {
                   : 'text-gray-600 hover:text-gray-900 dark:text-gray-400'
               }`}
             >
-              عن المتجر
+              {t('aboutTab')}
             </button>
             <button
               onClick={() => setActiveTab('reviews')}
@@ -255,7 +257,7 @@ export default function StorePage() {
                   : 'text-gray-600 hover:text-gray-900 dark:text-gray-400'
               }`}
             >
-              التقييمات ({store.reviewCount})
+              {t('reviewsTab')} ({store.reviewCount})
             </button>
           </div>
 
@@ -268,18 +270,18 @@ export default function StorePage() {
                   <Search className="absolute start-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
                   <input
                     type="search"
-                    placeholder="ابحث في منتجات المتجر..."
+                    placeholder={t('searchProducts')}
                     className="h-11 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>
 
                 <div className="flex items-center gap-3">
                   <select className="h-11 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800">
-                    <option>الأحدث</option>
-                    <option>الأكثر مبيعاً</option>
-                    <option>السعر: الأقل للأعلى</option>
-                    <option>السعر: الأعلى للأقل</option>
-                    <option>التقييم</option>
+                    <option>{t('newest')}</option>
+                    <option>{t('bestSelling')}</option>
+                    <option>{t('priceLowHigh')}</option>
+                    <option>{t('priceHighLow')}</option>
+                    <option>{t('rating')}</option>
                   </select>
 
                   <div className="flex rounded-lg border border-gray-300 dark:border-gray-600">
@@ -331,7 +333,7 @@ export default function StorePage() {
 
                       {product.compareAtPrice && (
                         <Badge className="absolute start-3 top-3" variant="danger">
-                          {Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}% خصم
+                          {Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)}% {t('discount')}
                         </Badge>
                       )}
 
@@ -354,7 +356,7 @@ export default function StorePage() {
                         <span className="text-sm font-medium">{product.rating}</span>
                         <span className="text-sm text-gray-500">({product.reviewCount})</span>
                         <span className="mx-2 text-gray-300">|</span>
-                        <span className="text-sm text-gray-500">{product.soldCount} مبيعات</span>
+                        <span className="text-sm text-gray-500">{product.soldCount} {t('sales')}</span>
                       </div>
 
                       <div className="mt-3 flex items-baseline gap-2">
@@ -371,7 +373,7 @@ export default function StorePage() {
                       {viewMode === 'list' && (
                         <Button className="mt-4" size="sm">
                           <ShoppingCart className="h-4 w-4" />
-                          أضف للسلة
+                          {t('addToCart')}
                         </Button>
                       )}
                     </div>
@@ -381,7 +383,7 @@ export default function StorePage() {
 
               {/* Load More */}
               <div className="mt-8 text-center">
-                <Button variant="outline">عرض المزيد</Button>
+                <Button variant="outline">{t('showMore')}</Button>
               </div>
             </div>
           )}
@@ -392,7 +394,7 @@ export default function StorePage() {
               <div className="grid gap-6 md:grid-cols-2">
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    عن المتجر
+                    {t('aboutStore')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                     {store.description}
@@ -401,14 +403,14 @@ export default function StorePage() {
 
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    أوقات العمل
+                    {t('workingHours')}
                   </h3>
-                  <p className="text-gray-500 text-sm">لا تتوفر معلومات أوقات العمل حالياً</p>
+                  <p className="text-gray-500 text-sm">{t('noWorkingHours')}</p>
                 </Card>
 
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    معلومات التواصل
+                    {t('contactInfo')}
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
@@ -416,7 +418,7 @@ export default function StorePage() {
                         <Phone className="h-5 w-5 text-gray-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">الهاتف</p>
+                        <p className="text-sm text-gray-500">{t('phone')}</p>
                         <p className="text-gray-900 dark:text-white">{store.phone}</p>
                       </div>
                     </div>
@@ -425,7 +427,7 @@ export default function StorePage() {
                         <MessageCircle className="h-5 w-5 text-green-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">واتساب</p>
+                        <p className="text-sm text-gray-500">{t('whatsapp')}</p>
                         <p className="text-gray-900 dark:text-white">{store.whatsapp || store.phone}</p>
                       </div>
                     </div>
@@ -434,8 +436,8 @@ export default function StorePage() {
                         <MapPin className="h-5 w-5 text-gray-600" />
                       </div>
                       <div>
-                        <p className="text-sm text-gray-500">العنوان</p>
-                        <p className="text-gray-900 dark:text-white">{store.address || 'غير محدد'}</p>
+                        <p className="text-sm text-gray-500">{t('address')}</p>
+                        <p className="text-gray-900 dark:text-white">{store.address || t('address')}</p>
                       </div>
                     </div>
                   </div>
@@ -443,24 +445,24 @@ export default function StorePage() {
 
                 <Card className="p-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                    إحصائيات المتجر
+                    {t('storeStats')}
                   </h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="rounded-lg bg-gray-50 p-4 text-center dark:bg-gray-800">
                       <p className="text-2xl font-bold text-primary-500">{store.productCount}</p>
-                      <p className="text-sm text-gray-500">منتج</p>
+                      <p className="text-sm text-gray-500">{t('product')}</p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-4 text-center dark:bg-gray-800">
                       <p className="text-2xl font-bold text-primary-500">{store.orderCount}+</p>
-                      <p className="text-sm text-gray-500">طلب مكتمل</p>
+                      <p className="text-sm text-gray-500">{t('completedOrder')}</p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-4 text-center dark:bg-gray-800">
                       <p className="text-2xl font-bold text-primary-500">{0}</p>
-                      <p className="text-sm text-gray-500">متابع</p>
+                      <p className="text-sm text-gray-500">{t('follower')}</p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-4 text-center dark:bg-gray-800">
                       <p className="text-2xl font-bold text-primary-500">{store.rating}</p>
-                      <p className="text-sm text-gray-500">تقييم</p>
+                      <p className="text-sm text-gray-500">{t('review')}</p>
                     </div>
                   </div>
                 </Card>
@@ -491,7 +493,7 @@ export default function StorePage() {
                       ))}
                     </div>
                     <p className="mt-1 text-sm text-gray-500">
-                      {store.reviewCount} تقييم
+                      {store.reviewCount} {t('review')}
                     </p>
                   </div>
 
@@ -552,7 +554,7 @@ export default function StorePage() {
               ))}
 
               <Button variant="outline" className="w-full">
-                عرض المزيد من التقييمات
+                {t('showMoreReviews')}
               </Button>
             </div>
           )}

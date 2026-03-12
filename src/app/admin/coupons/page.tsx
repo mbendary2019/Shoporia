@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatCurrency, formatDate } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   Tag,
@@ -81,6 +82,8 @@ export default function AdminCouponsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [showCreateModal, setShowCreateModal] = useState(false)
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const filteredCoupons = coupons.filter((coupon) => {
     const matchesSearch = coupon.code.toLowerCase().includes(searchQuery.toLowerCase())
@@ -102,15 +105,16 @@ export default function AdminCouponsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إدارة الكوبونات
+            {t('coupons')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: no exact key for إنشاء وإدارة كوبونات الخصم */}
             إنشاء وإدارة كوبونات الخصم
           </p>
         </div>
         <Button onClick={() => setShowCreateModal(true)}>
           <Plus className="h-4 w-4" />
-          إنشاء كوبون
+          {tc('add')}
         </Button>
       </div>
 
@@ -119,7 +123,7 @@ export default function AdminCouponsPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">إجمالي الكوبونات</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}إجمالي الكوبونات</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{coupons.length}</p>
             </div>
             <Tag className="h-8 w-8 text-primary-500" />
@@ -173,7 +177,7 @@ export default function AdminCouponsPage() {
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث بكود الكوبون..."
+              placeholder={tc('search')}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
@@ -212,7 +216,7 @@ export default function AdminCouponsPage() {
                   الاستخدام
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
-                  المتجر
+                  {t('storeColumn')}
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
                   الصلاحية

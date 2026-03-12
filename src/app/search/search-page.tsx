@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
@@ -23,13 +24,6 @@ import { useSearchProducts } from '@/hooks/queries/use-products'
 import type { Product } from '@/types'
 
 const categories = ['الكل', 'إلكترونيات', 'ملابس', 'أزياء', 'عطور']
-const sortOptions = [
-  { id: 'relevance', label: 'الأكثر صلة' },
-  { id: 'price_asc', label: 'السعر: من الأقل للأعلى' },
-  { id: 'price_desc', label: 'السعر: من الأعلى للأقل' },
-  { id: 'rating', label: 'التقييم' },
-  { id: 'newest', label: 'الأحدث' },
-]
 
 // Map Firestore Product to display shape
 function mapProduct(product: Product) {
@@ -49,6 +43,9 @@ function mapProduct(product: Product) {
 }
 
 export default function SearchPage() {
+  const t = useTranslations('search')
+  const tc = useTranslations('common')
+
   const searchParams = useSearchParams()
   const queryParam = searchParams.get('q') || ''
   const categoryParam = searchParams.get('category') || ''
@@ -61,6 +58,14 @@ export default function SearchPage() {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 5000 })
   const [showFilters, setShowFilters] = useState(false)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+
+  const sortOptions = [
+    { id: 'relevance', label: t('sortRelevance') },
+    { id: 'price_asc', label: t('sortPriceAsc') },
+    { id: 'price_desc', label: t('sortPriceDesc') },
+    { id: 'rating', label: t('sortRating') },
+    { id: 'newest', label: t('sortNewest') },
+  ]
 
   const [debouncedQuery, setDebouncedQuery] = useState(searchQuery)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
@@ -131,20 +136,20 @@ export default function SearchPage() {
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث عن منتجات، متاجر، فئات..."
+                placeholder={t('placeholder')}
                 className="h-14 w-full rounded-xl border border-gray-300 bg-white pe-4 ps-12 text-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-gray-600 dark:bg-gray-800"
               />
             </div>
 
             {searchQuery && !isLoading && (
               <p className="mt-4 text-gray-600 dark:text-gray-400">
-                {sortedProducts.length} نتيجة للبحث عن &quot;{searchQuery}&quot;
+                {t('resultsFor', { count: sortedProducts.length, query: searchQuery })}
               </p>
             )}
             {isLoading && (
               <div className="mt-4 flex items-center gap-2 text-gray-500">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>جاري البحث...</span>
+                <span>{tc('searching')}</span>
               </div>
             )}
           </div>
@@ -159,7 +164,7 @@ export default function SearchPage() {
               <Card className="sticky top-4 p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900 dark:text-white">
-                    الفلاتر
+                    {t('filters')}
                   </h3>
                   <button
                     onClick={() => setShowFilters(false)}
@@ -172,7 +177,7 @@ export default function SearchPage() {
                 {/* Categories */}
                 <div className="mb-6">
                   <h4 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    الفئات
+                    {t('categories')}
                   </h4>
                   <div className="space-y-2">
                     {categories.map((category) => (
@@ -194,7 +199,7 @@ export default function SearchPage() {
                 {/* Price Range */}
                 <div className="mb-6">
                   <h4 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    نطاق السعر
+                    {t('priceRange')}
                   </h4>
                   <div className="flex items-center gap-2">
                     <input
@@ -203,7 +208,7 @@ export default function SearchPage() {
                       onChange={(e) =>
                         setPriceRange({ ...priceRange, min: +e.target.value })
                       }
-                      placeholder="من"
+                      placeholder={tc('from')}
                       className="h-10 w-full rounded-lg border border-gray-300 px-3 text-sm dark:border-gray-600 dark:bg-gray-800"
                     />
                     <span className="text-gray-500">-</span>
@@ -213,7 +218,7 @@ export default function SearchPage() {
                       onChange={(e) =>
                         setPriceRange({ ...priceRange, max: +e.target.value })
                       }
-                      placeholder="إلى"
+                      placeholder={tc('to')}
                       className="h-10 w-full rounded-lg border border-gray-300 px-3 text-sm dark:border-gray-600 dark:bg-gray-800"
                     />
                   </div>
@@ -222,7 +227,7 @@ export default function SearchPage() {
                 {/* Rating */}
                 <div className="mb-6">
                   <h4 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    التقييم
+                    {t('rating')}
                   </h4>
                   <div className="space-y-2">
                     {[4, 3, 2, 1].map((rating) => (
@@ -242,14 +247,14 @@ export default function SearchPage() {
                             />
                           ))}
                         </div>
-                        <span>وأعلى</span>
+                        <span>{tc('andAbove')}</span>
                       </button>
                     ))}
                   </div>
                 </div>
 
                 <Button variant="outline" className="w-full">
-                  إعادة تعيين
+                  {tc('reset')}
                 </Button>
               </Card>
             </div>
@@ -263,7 +268,7 @@ export default function SearchPage() {
                   className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm lg:hidden dark:border-gray-600 dark:bg-gray-800"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
-                  الفلاتر
+                  {t('filters')}
                 </button>
 
                 <div className="flex items-center gap-4">
@@ -374,7 +379,7 @@ export default function SearchPage() {
                           {!product.inStock && (
                             <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                               <span className="rounded bg-white px-3 py-1 text-sm font-medium">
-                                نفد المخزون
+                                {t('outOfStock')}
                               </span>
                             </div>
                           )}
@@ -440,10 +445,10 @@ export default function SearchPage() {
                 <Card className="p-12 text-center">
                   <Search className="mx-auto h-12 w-12 text-gray-400" />
                   <p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-                    لا توجد نتائج
+                    {t('noResults')}
                   </p>
                   <p className="mt-2 text-gray-600 dark:text-gray-400">
-                    جرب البحث بكلمات مختلفة أو تصفح الفئات
+                    {t('noResultsDescription')}
                   </p>
                 </Card>
               )}

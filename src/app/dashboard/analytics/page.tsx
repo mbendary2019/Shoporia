@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
 import {
@@ -95,6 +96,9 @@ const statusLabels = {
 }
 
 export default function AnalyticsPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
+  const tOrder = useTranslations('order')
   const [period, setPeriod] = useState('week')
 
   const maxSales = Math.max(...salesByDay.map((d) => d.sales))
@@ -105,9 +109,10 @@ export default function AnalyticsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            التحليلات والتقارير
+            {t('analytics')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             إحصائيات أداء متجرك
           </p>
         </div>
@@ -118,14 +123,15 @@ export default function AnalyticsPage() {
             onChange={(e) => setPeriod(e.target.value)}
             className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800"
           >
-            <option value="today">اليوم</option>
-            <option value="week">هذا الأسبوع</option>
-            <option value="month">هذا الشهر</option>
-            <option value="year">هذا العام</option>
+            <option value="today">{/* TODO: add translation key */}اليوم</option>
+            <option value="week">{/* TODO: add translation key */}هذا الأسبوع</option>
+            <option value="month">{/* TODO: add translation key */}هذا الشهر</option>
+            <option value="year">{/* TODO: add translation key */}هذا العام</option>
           </select>
 
           <Button variant="outline">
             <Download className="h-4 w-4" />
+            {/* TODO: add translation key */}
             تصدير
           </Button>
 
@@ -207,10 +213,10 @@ export default function AnalyticsPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              أفضل المنتجات مبيعاً
+              {t('topSellingProducts')}
             </h2>
             <Button variant="ghost" size="sm">
-              عرض الكل
+              {tCommon('viewAll')}
               <ArrowUpRight className="h-4 w-4" />
             </Button>
           </div>
@@ -252,10 +258,10 @@ export default function AnalyticsPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              آخر الطلبات
+              {t('recentOrders')}
             </h2>
             <Button variant="ghost" size="sm">
-              عرض الكل
+              {tCommon('viewAll')}
               <ArrowUpRight className="h-4 w-4" />
             </Button>
           </div>
@@ -295,6 +301,7 @@ export default function AnalyticsPage() {
         {/* Customer Insights */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+            {/* TODO: add translation key */}
             رؤى العملاء
           </h2>
 
@@ -344,6 +351,7 @@ export default function AnalyticsPage() {
       {/* Traffic Sources */}
       <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          {/* TODO: add translation key */}
           مصادر الزيارات
         </h2>
 

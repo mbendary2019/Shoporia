@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card, Button, Badge, Input } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   FileText,
   Search,
@@ -123,6 +124,8 @@ const levelConfig = {
 export default function LogsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [levelFilter, setLevelFilter] = useState('all')
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const filteredLogs = logs.filter((log) => {
     const matchesSearch = log.description.includes(searchQuery) ||
@@ -137,12 +140,13 @@ export default function LogsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            سجلات النظام
+            {t('logs')}
           </h1>
-          <p className="text-gray-500">تتبع جميع الأنشطة والعمليات</p>
+          <p className="text-gray-500">{/* TODO: no exact key for تتبع جميع الأنشطة والعمليات */}تتبع جميع الأنشطة والعمليات</p>
         </div>
         <Button>
           <Download className="h-4 w-4" />
+          {/* TODO: no exact key for تصدير السجلات */}
           تصدير السجلات
         </Button>
       </div>
@@ -154,7 +158,7 @@ export default function LogsPage() {
             <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="بحث في السجلات..."
+              placeholder={tc('search')}
               className="w-full pr-10 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amazon-orange focus:border-transparent dark:bg-gray-800 dark:border-gray-700"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge } from '@/components/ui'
 import {
   ArrowRight,
@@ -40,6 +41,8 @@ const daysOfWeek = [
 
 export default function NewServicePage() {
   const router = useRouter()
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [activeTab, setActiveTab] = useState('basic')
   const [isLoading, setIsLoading] = useState(false)
 
@@ -157,9 +160,11 @@ export default function NewServicePage() {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {/* TODO: add translation key */}
               إضافة خدمة جديدة
             </h1>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
+              {/* TODO: add translation key */}
               أضف خدمة جديدة لمتجرك
             </p>
           </div>
@@ -167,15 +172,15 @@ export default function NewServicePage() {
 
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => router.push('/dashboard/services')}>
-            إلغاء
+            {tCommon('cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isLoading}>
             {isLoading ? (
-              <>جاري الحفظ...</>
+              <>{tCommon('loading')}</>
             ) : (
               <>
                 <Save className="h-4 w-4" />
-                حفظ الخدمة
+                {tCommon('save')}
               </>
             )}
           </Button>

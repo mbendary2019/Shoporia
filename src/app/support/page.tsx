@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button, Input, Textarea, Modal } from '@/components/ui'
 import { useAuthStore } from '@/store/auth-store'
+import { useTranslations } from 'next-intl'
 import {
   Headphones,
   MessageCircle,
@@ -23,40 +24,9 @@ import {
 } from 'lucide-react'
 import { APP_CONFIG } from '@/utils/constants'
 
-const faqs = [
-  {
-    icon: Package,
-    question: 'كيف أتتبع طلبي؟',
-    answer: 'يمكنك تتبع طلبك من خلال صفحة "طلباتي" في حسابك، أو من خلال رابط التتبع المرسل لك عبر البريد الإلكتروني.',
-  },
-  {
-    icon: CreditCard,
-    question: 'ما هي طرق الدفع المتاحة؟',
-    answer: 'نوفر الدفع عند الاستلام، فودافون كاش، انستاباي، والبطاقات الائتمانية.',
-  },
-  {
-    icon: Truck,
-    question: 'كم تستغرق عملية التوصيل؟',
-    answer: 'التوصيل يستغرق من 2-5 أيام عمل حسب موقعك. خدمة Prime توفر توصيل في اليوم التالي.',
-  },
-  {
-    icon: RotateCcw,
-    question: 'ما هي سياسة الإرجاع؟',
-    answer: 'يمكنك إرجاع المنتج خلال 14 يوم من الاستلام بحالته الأصلية مع الفاتورة.',
-  },
-  {
-    icon: Shield,
-    question: 'هل المنتجات أصلية؟',
-    answer: 'نعم، جميع منتجاتنا أصلية 100% ومضمونة من البائعين المعتمدين.',
-  },
-  {
-    icon: HelpCircle,
-    question: 'كيف أصبح بائعاً؟',
-    answer: 'يمكنك التسجيل كبائع من خلال صفحة "بيع على Shoporia" وإنشاء متجرك مجاناً.',
-  },
-]
-
 export default function SupportPage() {
+  const t = useTranslations('support')
+  const tc = useTranslations('common')
   const { user, isAuthenticated } = useAuthStore()
   const [isContactModalOpen, setIsContactModalOpen] = useState(false)
   const [formData, setFormData] = useState({
@@ -67,6 +37,39 @@ export default function SupportPage() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const faqs = [
+    {
+      icon: Package,
+      question: t('faqTrackOrder'),
+      answer: t('faqTrackOrderAnswer'),
+    },
+    {
+      icon: CreditCard,
+      question: t('faqPaymentMethods'),
+      answer: t('faqPaymentMethodsAnswer'),
+    },
+    {
+      icon: Truck,
+      question: t('faqDeliveryTime'),
+      answer: t('faqDeliveryTimeAnswer'),
+    },
+    {
+      icon: RotateCcw,
+      question: t('faqReturnPolicy'),
+      answer: t('faqReturnPolicyAnswer'),
+    },
+    {
+      icon: Shield,
+      question: t('faqOriginalProducts'),
+      answer: t('faqOriginalProductsAnswer'),
+    },
+    {
+      icon: HelpCircle,
+      question: t('faqBecomeSeller'),
+      answer: t('faqBecomeSellerAnswer'),
+    },
+  ]
 
   // Pre-fill user data when modal opens
   useEffect(() => {
@@ -109,10 +112,10 @@ export default function SupportPage() {
               <Headphones className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              خدمة العملاء
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              نحن هنا لمساعدتك! تواصل معنا بأي طريقة تناسبك
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -126,14 +129,14 @@ export default function SupportPage() {
                   <MessageCircle className="h-8 w-8 text-green-600" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                  واتساب
+                  {t('whatsapp')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  تواصل معنا مباشرة عبر واتساب
+                  {t('whatsappDescription')}
                 </p>
                 <a href={`https://wa.me/${APP_CONFIG.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
                   <Button className="bg-green-600 hover:bg-green-700 w-full">
-                    ابدأ المحادثة
+                    {t('startChat')}
                   </Button>
                 </a>
               </Card>
@@ -143,14 +146,14 @@ export default function SupportPage() {
                   <Phone className="h-8 w-8 text-blue-600" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                  اتصل بنا
+                  {t('callUs')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  19999 - متاح 24/7
+                  19999 - {t('available247')}
                 </p>
                 <a href="tel:19999">
                   <Button variant="outline" className="w-full">
-                    اتصل الآن
+                    {t('callNow')}
                   </Button>
                 </a>
               </Card>
@@ -160,7 +163,7 @@ export default function SupportPage() {
                   <Mail className="h-8 w-8 text-amazon-orange" />
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                  البريد الإلكتروني
+                  {t('email')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   support@shoporia.app
@@ -170,7 +173,7 @@ export default function SupportPage() {
                   className="w-full"
                   onClick={() => setIsContactModalOpen(true)}
                 >
-                  أرسل رسالة
+                  {t('sendMessage')}
                 </Button>
               </Card>
             </div>
@@ -181,7 +184,7 @@ export default function SupportPage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              الأسئلة الشائعة
+              {t('faq')}
             </h2>
 
             <div className="grid md:grid-cols-2 gap-4 max-w-4xl mx-auto">
@@ -211,22 +214,22 @@ export default function SupportPage() {
           <div className="container-custom">
             <Card className="max-w-2xl mx-auto p-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-6">
-                أرسل لنا رسالة
+                {t('sendMessageTitle')}
               </h2>
 
               <form className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Input label="الاسم" placeholder="أدخل اسمك" />
-                  <Input label="البريد الإلكتروني" type="email" placeholder="example@email.com" />
+                  <Input label={t('name')} placeholder={t('namePlaceholder')} />
+                  <Input label={t('email')} type="email" placeholder="example@email.com" />
                 </div>
-                <Input label="الموضوع" placeholder="موضوع الرسالة" />
+                <Input label={t('subject')} placeholder={t('subjectPlaceholder')} />
                 <Textarea
-                  label="الرسالة"
-                  placeholder="اكتب رسالتك هنا..."
+                  label={t('message')}
+                  placeholder={t('messagePlaceholder')}
                   rows={5}
                 />
                 <Button className="w-full bg-amazon-orange hover:bg-amazon-orangeHover">
-                  إرسال الرسالة
+                  {t('sendTheMessage')}
                 </Button>
               </form>
             </Card>
@@ -240,13 +243,13 @@ export default function SupportPage() {
               <div className="flex items-center justify-center gap-3">
                 <MapPin className="h-6 w-6 text-amazon-orange" />
                 <span className="text-gray-600 dark:text-gray-400">
-                  الكويت
+                  {t('available247')}
                 </span>
               </div>
               <div className="flex items-center justify-center gap-3">
                 <Clock className="h-6 w-6 text-amazon-orange" />
                 <span className="text-gray-600 dark:text-gray-400">
-                  متاحون 24/7
+                  {t('available247')}
                 </span>
               </div>
               <div className="flex items-center justify-center gap-3">
@@ -266,8 +269,8 @@ export default function SupportPage() {
       <Modal
         isOpen={isContactModalOpen}
         onClose={() => setIsContactModalOpen(false)}
-        title="تواصل معنا"
-        description="أرسل لنا رسالتك وسنرد عليك في أقرب وقت"
+        title={t('contactUs')}
+        description={t('contactDescription')}
         size="lg"
       >
         {isSubmitted ? (
@@ -276,10 +279,10 @@ export default function SupportPage() {
               <CheckCircle className="h-8 w-8 text-green-600" />
             </div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-              تم إرسال رسالتك بنجاح!
+              {t('messageSent')}
             </h3>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              سنتواصل معك في أقرب وقت ممكن
+              {t('messageReply')}
             </p>
           </div>
         ) : (
@@ -287,21 +290,21 @@ export default function SupportPage() {
             {/* User Info Notice */}
             {isAuthenticated && user && (
               <div className="rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                تم ملء بياناتك تلقائياً من حسابك
+                {t('autoFillNotice')}
               </div>
             )}
 
             <div className="grid gap-4 md:grid-cols-2">
               <Input
-                label="الاسم"
-                placeholder="أدخل اسمك"
+                label={t('name')}
+                placeholder={t('namePlaceholder')}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
                 disabled={isAuthenticated && !!user?.displayName}
               />
               <Input
-                label="البريد الإلكتروني"
+                label={t('email')}
                 type="email"
                 placeholder="example@email.com"
                 value={formData.email}
@@ -312,16 +315,16 @@ export default function SupportPage() {
             </div>
 
             <Input
-              label="الموضوع"
-              placeholder="موضوع الرسالة"
+              label={t('subject')}
+              placeholder={t('subjectPlaceholder')}
               value={formData.subject}
               onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
               required
             />
 
             <Textarea
-              label="الرسالة"
-              placeholder="اكتب رسالتك هنا..."
+              label={t('message')}
+              placeholder={t('messagePlaceholder')}
               rows={5}
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -335,7 +338,7 @@ export default function SupportPage() {
                 className="flex-1"
                 onClick={() => setIsContactModalOpen(false)}
               >
-                إلغاء
+                {tc('cancel')}
               </Button>
               <Button
                 type="submit"
@@ -348,12 +351,12 @@ export default function SupportPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    جاري الإرسال...
+                    {tc('sending')}
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <Send className="h-4 w-4" />
-                    إرسال الرسالة
+                    {t('sendTheMessage')}
                   </span>
                 )}
               </Button>

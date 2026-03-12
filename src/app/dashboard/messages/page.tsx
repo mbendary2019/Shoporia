@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Avatar, Badge } from '@/components/ui'
 import { formatDate } from '@/utils/format'
 import {
@@ -146,6 +147,9 @@ const quickReplies = [
 ]
 
 export default function DashboardMessagesPage() {
+  const t = useTranslations('dashboard')
+  const tMessages = useTranslations('messages')
+  const tCommon = useTranslations('common')
   const [selectedConversation, setSelectedConversation] = useState<string | null>(
     conversations[0]?.id || null
   )
@@ -182,15 +186,17 @@ export default function DashboardMessagesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            الرسائل
+            {t('messages')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             إدارة محادثات العملاء
           </p>
         </div>
         {totalUnread > 0 && (
           <Badge variant="primary" className="self-start">
-            {totalUnread} رسائل غير مقروءة
+            {/* TODO: add translation key */}
+            {totalUnread} {tMessages('unread')}
           </Badge>
         )}
       </div>
@@ -210,16 +216,16 @@ export default function DashboardMessagesPage() {
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث عن عميل..."
+                placeholder={`${tCommon('search')}...`}
                 className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
               />
             </div>
 
             <div className="flex gap-2">
               {[
-                { key: 'all', label: 'الكل' },
-                { key: 'unread', label: 'غير مقروء' },
-                { key: 'starred', label: 'مميز' },
+                { key: 'all', label: tCommon('all') },
+                { key: 'unread', label: tMessages('unread') }, // TODO: add translation key if missing
+                { key: 'starred', label: tMessages('starred') }, // TODO: add translation key if missing
               ].map((item) => (
                 <button
                   key={item.key}
@@ -271,7 +277,7 @@ export default function DashboardMessagesPage() {
                   <div className="flex items-center justify-between">
                     <p className="truncate text-sm text-gray-500">
                       {conv.lastMessage.senderId === 'store' && (
-                        <span className="text-gray-400">أنت: </span>
+                        <span className="text-gray-400">{tMessages('you')}: </span>
                       )}
                       {conv.lastMessage.content}
                     </p>
@@ -292,7 +298,7 @@ export default function DashboardMessagesPage() {
 
             {filteredConversations.length === 0 && (
               <div className="p-8 text-center text-gray-500">
-                لا توجد محادثات
+                {tCommon('noResults')}
               </div>
             )}
           </div>
@@ -327,9 +333,9 @@ export default function DashboardMessagesPage() {
                   </div>
                   <p className="text-xs text-gray-500">
                     {selectedChat.customer.isOnline ? (
-                      <span className="text-green-500">متصل الآن</span>
+                      <span className="text-green-500">{tMessages('online')}</span>
                     ) : (
-                      'آخر ظهور منذ ساعة'
+                      tMessages('offline')
                     )}
                   </p>
                 </div>
@@ -361,6 +367,7 @@ export default function DashboardMessagesPage() {
                   </span>
                 </div>
                 <Button variant="ghost" size="sm">
+                  {/* TODO: add translation key */}
                   عرض الطلب
                 </Button>
               </div>
@@ -435,7 +442,7 @@ export default function DashboardMessagesPage() {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="اكتب رسالتك..."
+                    placeholder={tMessages('writeMessage')}
                     className="h-10 w-full rounded-full border border-gray-300 bg-white pe-10 ps-4 text-sm focus:border-primary-500 focus:outline-none dark:border-gray-600 dark:bg-gray-800"
                   />
                   <button className="absolute end-3 top-1/2 -translate-y-1/2">
@@ -460,10 +467,10 @@ export default function DashboardMessagesPage() {
                 <Send className="h-10 w-10 text-gray-400" />
               </div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                رسائل العملاء
+                {tMessages('yourMessages')}
               </h3>
               <p className="mt-1 text-gray-500">
-                اختر محادثة للرد على استفسارات العملاء
+                {tMessages('selectConversation')}
               </p>
             </div>
           </div>

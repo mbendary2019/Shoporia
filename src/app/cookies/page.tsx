@@ -3,6 +3,7 @@
 import { Header, Footer } from '@/components/layout'
 import { Card, Badge } from '@/components/ui'
 import { Cookie, Settings, BarChart3, Target, Shield } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const cookieTypes = [
   {
@@ -36,6 +37,8 @@ const cookieTypes = [
 ]
 
 export default function CookiesPage() {
+  const t = useTranslations('pages.cookies')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -48,10 +51,10 @@ export default function CookiesPage() {
               <Cookie className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              إشعار الكوكيز
+              {t('title')}
             </h1>
             <p className="text-white/70">
-              آخر تحديث: 10 ديسمبر 2024
+              {t('lastUpdated')}
             </p>
           </div>
         </section>
@@ -75,7 +78,7 @@ export default function CookiesPage() {
         <section className="py-8">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              أنواع الكوكيز التي نستخدمها
+              {t('cookieTypes')}
             </h2>
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {cookieTypes.map((type) => (
@@ -90,9 +93,9 @@ export default function CookiesPage() {
                           {type.name}
                         </h3>
                         {!type.canDisable ? (
-                          <Badge className="bg-gray-200 text-gray-700">مطلوبة</Badge>
+                          <Badge className="bg-gray-200 text-gray-700">{t('required')}</Badge>
                         ) : (
-                          <Badge className="bg-green-100 text-green-700">اختيارية</Badge>
+                          <Badge className="bg-green-100 text-green-700">{t('optional')}</Badge>
                         )}
                       </div>
                       <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">

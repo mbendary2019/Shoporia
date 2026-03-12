@@ -12,6 +12,7 @@ import {
   Download,
   Mail,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const stats = [
   { label: 'حجم المعاملات السنوي', value: '$500M+', icon: DollarSign },
@@ -28,6 +29,8 @@ const reports = [
 ]
 
 export default function InvestorsPage() {
+  const t = useTranslations('pages.investors')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -40,10 +43,10 @@ export default function InvestorsPage() {
               <BarChart3 className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              علاقات المستثمرين
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              نبني مستقبل التجارة الإلكترونية في منطقة الشرق الأوسط وشمال أفريقيا
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -71,7 +74,7 @@ export default function InvestorsPage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              لماذا Shoporia؟
+              {t('whyShoporia')}
             </h2>
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <Card className="p-6">
@@ -106,7 +109,7 @@ export default function InvestorsPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              التقارير والمستندات
+              {t('reportsAndDocs')}
             </h2>
             <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
               {reports.map((report) => (
@@ -139,10 +142,10 @@ export default function InvestorsPage() {
             <Card className="max-w-xl mx-auto p-8">
               <Mail className="h-12 w-12 text-amazon-orange mx-auto mb-4" />
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                تواصل مع فريق علاقات المستثمرين
+                {t('contactInvestorRelations')}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 mb-6">
-                للاستفسارات والمعلومات الإضافية
+                {t('forInquiries')}
               </p>
               <Button className="bg-amazon-orange hover:bg-amazon-orangeHover">
                 <Mail className="h-4 w-4 ml-2" />

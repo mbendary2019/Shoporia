@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { useAuthStore } from '@/store'
 import { useNotificationStore } from '@/store'
 import { getStoreByOwnerId } from '@/services/store'
@@ -27,17 +28,6 @@ import {
   Sparkles,
 } from 'lucide-react'
 
-const navigation = [
-  { name: 'لوحة التحكم', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'المنتجات', href: '/dashboard/products', icon: Package },
-  { name: 'الطلبات', href: '/dashboard/orders', icon: ShoppingCart },
-  { name: 'الحجوزات', href: '/dashboard/bookings', icon: Calendar },
-  { name: 'العملاء', href: '/dashboard/customers', icon: Users },
-  { name: 'التحليلات', href: '/dashboard/analytics', icon: BarChart3 },
-  { name: 'AI Assistant', href: '/dashboard/ai', icon: Sparkles },
-  { name: 'الإعدادات', href: '/dashboard/settings', icon: Settings },
-]
-
 export default function DashboardLayout({
   children,
 }: {
@@ -45,6 +35,20 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname()
   const { user, logout } = useAuthStore()
+  const t = useTranslations('dashboard')
+  const tAuth = useTranslations('auth')
+  const tCommon = useTranslations('common')
+
+  const navigation = [
+    { name: t('title'), href: '/dashboard', icon: LayoutDashboard },
+    { name: t('products'), href: '/dashboard/products', icon: Package },
+    { name: t('orders'), href: '/dashboard/orders', icon: ShoppingCart },
+    { name: t('bookings'), href: '/dashboard/bookings', icon: Calendar },
+    { name: t('customers'), href: '/dashboard/customers', icon: Users },
+    { name: t('analytics'), href: '/dashboard/analytics', icon: BarChart3 },
+    { name: 'AI Assistant', href: '/dashboard/ai', icon: Sparkles },
+    { name: t('settings'), href: '/dashboard/settings', icon: Settings },
+  ]
   const unreadCount = useNotificationStore((state) => state.getUnreadCount())
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
@@ -144,6 +148,7 @@ export default function DashboardLayout({
                   className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
                 >
                   <HelpCircle className="h-5 w-5" />
+                  {/* TODO: add translation key for 'المساعدة' */}
                   المساعدة
                 </Link>
               </li>
@@ -153,7 +158,7 @@ export default function DashboardLayout({
                   className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                 >
                   <LogOut className="h-5 w-5" />
-                  تسجيل الخروج
+                  {tAuth('logout')}
                 </button>
               </li>
             </ul>
@@ -178,7 +183,7 @@ export default function DashboardLayout({
             <button className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700">
               <Store className="h-4 w-4 text-gray-500" />
               <span className="font-medium text-gray-900 dark:text-white">
-                {storeName || 'متجري'}
+                {storeName || t('title')}
               </span>
               <ChevronDown className="h-4 w-4 text-gray-500" />
             </button>
@@ -189,6 +194,7 @@ export default function DashboardLayout({
             {/* View Store */}
             <Link href={`/store/${storeSlug || 'my-store'}`} target="_blank">
               <Button variant="outline" size="sm">
+                {/* TODO: add translation key for 'عرض المتجر' */}
                 عرض المتجر
               </Button>
             </Link>
@@ -217,7 +223,7 @@ export default function DashboardLayout({
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
                   {user?.displayName}
                 </p>
-                <p className="text-xs text-gray-500">مالك المتجر</p>
+                <p className="text-xs text-gray-500">{/* TODO: add translation key for 'مالك المتجر' */}مالك المتجر</p>
               </div>
             </div>
           </div>

@@ -12,6 +12,7 @@ import {
   ArrowLeftRight,
   CheckCircle,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const features = [
   {
@@ -46,6 +47,8 @@ const paymentMethods = [
 ]
 
 export default function PayPage() {
+  const t = useTranslations('pages.pay')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -63,15 +66,15 @@ export default function PayPage() {
                   <span className="text-2xl font-bold">Shoporia Pay</span>
                 </div>
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                  محفظتك الرقمية الذكية
+                  {t('title')}
                 </h1>
                 <p className="text-white/70 text-lg mb-6">
-                  ادفع واستلم الأموال بسهولة وأمان من أي مكان
+                  {t('subtitle')}
                 </p>
                 <div className="flex gap-4">
                   <Button className="bg-white text-green-700 hover:bg-gray-100">
                     <Smartphone className="h-5 w-5 ml-2" />
-                    حمّل التطبيق
+                    {t('downloadApp')}
                   </Button>
                 </div>
               </div>
@@ -81,7 +84,7 @@ export default function PayPage() {
                     <div className="w-full h-full bg-gradient-to-b from-green-600 to-green-800 rounded-[2.5rem] flex flex-col items-center justify-center p-6">
                       <Wallet className="h-16 w-16 text-white mb-4" />
                       <div className="text-white text-center">
-                        <div className="text-sm text-white/70">رصيدك</div>
+                        <div className="text-sm text-white/70">{t('balance')}</div>
                         <div className="text-3xl font-bold">5,250 ج.م</div>
                       </div>
                     </div>
@@ -115,7 +118,7 @@ export default function PayPage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom text-center">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-              طرق الشحن المتاحة
+              {t('availableTopUp')}
             </h2>
             <div className="flex flex-wrap justify-center gap-4">
               {paymentMethods.map((method) => (
@@ -135,7 +138,7 @@ export default function PayPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              كيف تبدأ
+              {t('howToStart')}
             </h2>
             <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
               {[

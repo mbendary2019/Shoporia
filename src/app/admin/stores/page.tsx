@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
 import { formatCurrency, formatDate } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   Filter,
@@ -86,17 +87,19 @@ const stores = [
   },
 ]
 
-const statusConfig = {
-  active: { label: 'نشط', variant: 'success' as const },
-  pending: { label: 'قيد المراجعة', variant: 'warning' as const },
-  suspended: { label: 'موقوف', variant: 'danger' as const },
-  rejected: { label: 'مرفوض', variant: 'danger' as const },
-}
-
 export default function AdminStoresPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [selectedStore, setSelectedStore] = useState<string | null>(null)
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
+
+  const statusConfig = {
+    active: { label: t('activeProducts').split(' ')[0] || 'نشط', variant: 'success' as const }, // TODO: need dedicated status keys
+    pending: { label: 'قيد المراجعة', variant: 'warning' as const }, // TODO: no exact key
+    suspended: { label: 'موقوف', variant: 'danger' as const }, // TODO: no exact key
+    rejected: { label: 'مرفوض', variant: 'danger' as const }, // TODO: no exact key
+  }
 
   const filteredStores = stores.filter((store) => {
     const matchesSearch =
@@ -113,9 +116,10 @@ export default function AdminStoresPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إدارة المتاجر
+            {t('stores')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: no exact key for إدارة ومراجعة جميع متاجر المنصة */}
             إدارة ومراجعة جميع متاجر المنصة
           </p>
         </div>
@@ -135,7 +139,7 @@ export default function AdminStoresPage() {
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث باسم المتجر أو المالك..."
+              placeholder={tc('search')}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
@@ -169,21 +173,26 @@ export default function AdminStoresPage() {
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
-                  المتجر
+                  {t('storeColumn')}
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
+                  {/* TODO: no exact key for المالك */}
                   المالك
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
+                  {/* TODO: no exact key for الإحصائيات */}
                   الإحصائيات
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
+                  {/* TODO: no exact key for الحالة */}
                   الحالة
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
+                  {/* TODO: no exact key for التاريخ */}
                   التاريخ
                 </th>
                 <th className="px-4 py-3 text-center text-sm font-medium text-gray-500">
+                  {/* TODO: no exact key for الإجراءات */}
                   الإجراءات
                 </th>
               </tr>
@@ -279,9 +288,11 @@ export default function AdminStoresPage() {
           </p>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" disabled>
+              {/* TODO: no exact key for السابق */}
               السابق
             </Button>
             <Button size="sm" variant="outline">
+              {/* TODO: no exact key for التالي */}
               التالي
             </Button>
           </div>

@@ -1,5 +1,8 @@
+'use client'
+
 import { Card, Badge } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 import {
   TrendingUp,
   TrendingDown,
@@ -11,41 +14,6 @@ import {
   ArrowDownRight,
   MoreHorizontal,
 } from 'lucide-react'
-
-const stats = [
-  {
-    name: 'إجمالي المبيعات',
-    value: 125430,
-    change: 12.5,
-    changeType: 'increase',
-    icon: DollarSign,
-    format: 'currency',
-  },
-  {
-    name: 'الطلبات',
-    value: 456,
-    change: 8.2,
-    changeType: 'increase',
-    icon: ShoppingCart,
-    format: 'number',
-  },
-  {
-    name: 'المنتجات',
-    value: 89,
-    change: -2.4,
-    changeType: 'decrease',
-    icon: Package,
-    format: 'number',
-  },
-  {
-    name: 'العملاء',
-    value: 1234,
-    change: 15.3,
-    changeType: 'increase',
-    icon: Users,
-    format: 'number',
-  },
-]
 
 const recentOrders = [
   {
@@ -96,23 +64,56 @@ const statusColors: Record<string, 'warning' | 'info' | 'default' | 'success'> =
   delivered: 'success',
 }
 
-const statusLabels: Record<string, string> = {
-  pending: 'قيد الانتظار',
-  confirmed: 'مؤكد',
-  shipped: 'تم الشحن',
-  delivered: 'تم التوصيل',
-}
-
 export default function DashboardPage() {
+  const t = useTranslations('dashboard')
+  const tOrder = useTranslations('order')
+  const tCommon = useTranslations('common')
+  const tProduct = useTranslations('product')
+
+  const stats = [
+    {
+      name: t('totalSales'),
+      value: 125430,
+      change: 12.5,
+      changeType: 'increase',
+      icon: DollarSign,
+      format: 'currency',
+    },
+    {
+      name: t('orders'),
+      value: 456,
+      change: 8.2,
+      changeType: 'increase',
+      icon: ShoppingCart,
+      format: 'number',
+    },
+    {
+      name: t('products'),
+      value: 89,
+      change: -2.4,
+      changeType: 'decrease',
+      icon: Package,
+      format: 'number',
+    },
+    {
+      name: t('customers'),
+      value: 1234,
+      change: 15.3,
+      changeType: 'increase',
+      icon: Users,
+      format: 'number',
+    },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          لوحة التحكم
+          {t('title')}
         </h1>
         <p className="mt-1 text-gray-600 dark:text-gray-400">
-          مرحباً بك! إليك نظرة عامة على أداء متجرك
+          {t('welcomeMessage')}
         </p>
       </div>
 
@@ -159,10 +160,10 @@ export default function DashboardPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              أحدث الطلبات
+              {t('recentOrders')}
             </h2>
             <button className="text-sm text-primary-500 hover:underline">
-              عرض الكل
+              {tCommon('viewAll')}
             </button>
           </div>
 
@@ -171,16 +172,18 @@ export default function DashboardPage() {
               <thead>
                 <tr className="border-b border-gray-200 dark:border-gray-700">
                   <th className="pb-3 text-start text-sm font-medium text-gray-500">
-                    رقم الطلب
+                    {tOrder('orderNumber')}
                   </th>
                   <th className="pb-3 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'العميل' */}
                     العميل
                   </th>
                   <th className="pb-3 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'المبلغ' */}
                     المبلغ
                   </th>
                   <th className="pb-3 text-start text-sm font-medium text-gray-500">
-                    الحالة
+                    {tOrder('status')}
                   </th>
                 </tr>
               </thead>
@@ -198,7 +201,7 @@ export default function DashboardPage() {
                     </td>
                     <td className="py-3">
                       <Badge variant={statusColors[order.status]}>
-                        {statusLabels[order.status]}
+                        {tOrder(`statuses.${order.status}`)}
                       </Badge>
                     </td>
                   </tr>
@@ -212,10 +215,10 @@ export default function DashboardPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              المنتجات الأكثر مبيعاً
+              {t('topSellingProducts')}
             </h2>
             <button className="text-sm text-primary-500 hover:underline">
-              عرض الكل
+              {tCommon('viewAll')}
             </button>
           </div>
 
@@ -234,7 +237,7 @@ export default function DashboardPage() {
                       {product.name}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {product.sales} مبيعات
+                      {product.sales} {tProduct('sales')}
                     </p>
                   </div>
                 </div>
@@ -255,27 +258,27 @@ export default function DashboardPage() {
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 dark:text-white">
-              توصيات الذكاء الاصطناعي
+              {t('aiRecommendations')}
             </h3>
             <ul className="mt-2 space-y-2 text-sm text-gray-600 dark:text-gray-400">
               <li className="flex items-start gap-2">
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-primary-500" />
                 <span>
-                  <strong>زيادة السعر:</strong> المنتج &quot;سماعات بلوتوث&quot; لديه
+                  <strong>{t('priceIncrease')}:</strong> المنتج &quot;سماعات بلوتوث&quot; لديه
                   طلب مرتفع، يمكنك زيادة السعر بنسبة 5-10%
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-yellow-500" />
                 <span>
-                  <strong>تنبيه المخزون:</strong> المنتج &quot;قميص قطن رجالي&quot;
+                  <strong>{t('stockAlert')}:</strong> المنتج &quot;قميص قطن رجالي&quot;
                   سينفذ خلال 3 أيام
                 </span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-green-500" />
                 <span>
-                  <strong>فرصة:</strong> المنافسون رفعوا أسعارهم، هذا وقت مناسب
+                  <strong>{t('opportunity')}:</strong> المنافسون رفعوا أسعارهم، هذا وقت مناسب
                   لحملة ترويجية
                 </span>
               </li>

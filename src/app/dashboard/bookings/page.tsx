@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
 import { formatCurrency, formatDate } from '@/utils/format'
 import {
@@ -145,6 +146,9 @@ const getWeekDates = (date: Date) => {
 }
 
 export default function BookingsPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
+  const tOrder = useTranslations('order')
   const [view, setView] = useState<'list' | 'calendar'>('list')
   const [filterStatus, setFilterStatus] = useState('')
   const [currentDate, setCurrentDate] = useState(new Date())
@@ -179,9 +183,10 @@ export default function BookingsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            الحجوزات
+            {t('bookings')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             إدارة حجوزات الخدمات
           </p>
         </div>
@@ -192,6 +197,7 @@ export default function BookingsPage() {
             size="sm"
             onClick={() => setView('list')}
           >
+            {/* TODO: add translation key */}
             قائمة
           </Button>
           <Button
@@ -199,6 +205,7 @@ export default function BookingsPage() {
             size="sm"
             onClick={() => setView('calendar')}
           >
+            {/* TODO: add translation key */}
             تقويم
           </Button>
         </div>
@@ -257,7 +264,7 @@ export default function BookingsPage() {
                 <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <input
                   type="search"
-                  placeholder="ابحث برقم الحجز أو اسم العميل..."
+                  placeholder={`${tCommon('search')}...`}
                   className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                 />
               </div>
@@ -268,11 +275,11 @@ export default function BookingsPage() {
                   onChange={(e) => setFilterStatus(e.target.value)}
                   className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800"
                 >
-                  <option value="">كل الحالات</option>
-                  <option value="pending">قيد الانتظار</option>
-                  <option value="confirmed">مؤكد</option>
-                  <option value="completed">مكتمل</option>
-                  <option value="cancelled">ملغي</option>
+                  <option value="">{/* TODO: add translation key */}كل الحالات</option>
+                  <option value="pending">{tOrder('statuses.pending')}</option>
+                  <option value="confirmed">{tOrder('statuses.confirmed')}</option>
+                  <option value="completed">{/* TODO: add translation key */}مكتمل</option>
+                  <option value="cancelled">{tOrder('statuses.cancelled')}</option>
                 </select>
 
                 <input
@@ -400,6 +407,7 @@ export default function BookingsPage() {
                 <ChevronRight className="h-4 w-4" />
               </Button>
               <Button variant="outline" size="sm" onClick={() => setCurrentDate(new Date())}>
+                {/* TODO: add translation key */}
                 اليوم
               </Button>
               <Button variant="outline" size="sm" onClick={handleNextWeek}>
@@ -470,6 +478,7 @@ export default function BookingsPage() {
           <Card className="w-full max-w-md p-6">
             <div className="mb-4 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {/* TODO: add translation key */}
                 تفاصيل الحجز
               </h3>
               <button onClick={() => setSelectedBooking(null)}>
@@ -535,11 +544,11 @@ export default function BookingsPage() {
                   <>
                     <Button className="flex-1">
                       <CheckCircle className="h-4 w-4" />
-                      تأكيد
+                      {tCommon('confirm')}
                     </Button>
                     <Button variant="outline" className="flex-1 text-red-600">
                       <XCircle className="h-4 w-4" />
-                      رفض
+                      {tCommon('cancel')}
                     </Button>
                   </>
                 )}
@@ -548,7 +557,7 @@ export default function BookingsPage() {
                   className="flex-1"
                   onClick={() => setSelectedBooking(null)}
                 >
-                  إغلاق
+                  {tCommon('close')}
                 </Button>
               </div>
             </div>

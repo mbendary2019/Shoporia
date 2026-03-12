@@ -1,6 +1,7 @@
 'use client'
 
 import { Card } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   BarChart3,
   TrendingUp,
@@ -12,45 +13,6 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from 'lucide-react'
-
-const stats = [
-  {
-    title: 'إجمالي المبيعات',
-    value: '125,430',
-    unit: 'ج.م',
-    change: '+12.5%',
-    isPositive: true,
-    icon: DollarSign,
-    color: 'bg-green-500',
-  },
-  {
-    title: 'الطلبات',
-    value: '1,234',
-    unit: 'طلب',
-    change: '+8.2%',
-    isPositive: true,
-    icon: ShoppingCart,
-    color: 'bg-blue-500',
-  },
-  {
-    title: 'المستخدمين الجدد',
-    value: '456',
-    unit: 'مستخدم',
-    change: '+15.3%',
-    isPositive: true,
-    icon: Users,
-    color: 'bg-purple-500',
-  },
-  {
-    title: 'الزيارات',
-    value: '45,678',
-    unit: 'زيارة',
-    change: '-3.2%',
-    isPositive: false,
-    icon: Eye,
-    color: 'bg-orange-500',
-  },
-]
 
 const topProducts = [
   { name: 'آيفون 15 برو ماكس', sales: 234, revenue: 585000 },
@@ -69,13 +31,54 @@ const topStores = [
 ]
 
 export default function AnalyticsPage() {
+  const t = useTranslations('admin')
+
+  const stats = [
+    {
+      title: t('salesColumn'),
+      value: '125,430',
+      unit: 'ج.م',
+      change: '+12.5%',
+      isPositive: true,
+      icon: DollarSign,
+      color: 'bg-green-500',
+    },
+    {
+      title: t('orders'),
+      value: '1,234',
+      unit: 'طلب',
+      change: '+8.2%',
+      isPositive: true,
+      icon: ShoppingCart,
+      color: 'bg-blue-500',
+    },
+    {
+      title: t('users'),
+      value: '456',
+      unit: 'مستخدم',
+      change: '+15.3%',
+      isPositive: true,
+      icon: Users,
+      color: 'bg-purple-500',
+    },
+    {
+      title: 'الزيارات', // TODO: no exact key
+      value: '45,678',
+      unit: 'زيارة',
+      change: '-3.2%',
+      isPositive: false,
+      icon: Eye,
+      color: 'bg-orange-500',
+    },
+  ]
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          التقارير والإحصائيات
+          {t('analytics')}
         </h1>
-        <p className="text-gray-500">نظرة عامة على أداء المنصة</p>
+        <p className="text-gray-500">{t('platformOverview')}</p>
       </div>
 
       {/* Stats Grid */}
@@ -116,6 +119,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            {/* TODO: no exact key for المبيعات الشهرية */}
             المبيعات الشهرية
           </h3>
           <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -128,6 +132,7 @@ export default function AnalyticsPage() {
 
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            {/* TODO: no exact key for نمو المستخدمين */}
             نمو المستخدمين
           </h3>
           <div className="h-64 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg">
@@ -143,6 +148,7 @@ export default function AnalyticsPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            {/* TODO: no exact key for أفضل المنتجات مبيعاً */}
             أفضل المنتجات مبيعاً
           </h3>
           <div className="space-y-4">
@@ -172,7 +178,7 @@ export default function AnalyticsPage() {
 
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            أفضل المتاجر أداءً
+            {t('topStores')}
           </h3>
           <div className="space-y-4">
             {topStores.map((store, index) => (

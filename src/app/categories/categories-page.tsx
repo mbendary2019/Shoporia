@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Badge } from '@/components/ui'
 import {
@@ -22,154 +23,157 @@ import {
   Camera,
 } from 'lucide-react'
 
-const categories = [
-  {
-    id: 'electronics',
-    name: 'إلكترونيات',
-    nameEn: 'Electronics',
-    icon: Laptop,
-    color: 'bg-blue-500',
-    count: 1234,
-    subcategories: ['هواتف', 'لابتوب', 'سماعات', 'ساعات ذكية', 'إكسسوارات'],
-  },
-  {
-    id: 'fashion',
-    name: 'أزياء',
-    nameEn: 'Fashion',
-    icon: Shirt,
-    color: 'bg-pink-500',
-    count: 2567,
-    subcategories: ['ملابس رجالي', 'ملابس نسائي', 'أطفال', 'أحذية', 'حقائب'],
-  },
-  {
-    id: 'beauty',
-    name: 'جمال وعناية',
-    nameEn: 'Beauty',
-    icon: Sparkles,
-    color: 'bg-purple-500',
-    count: 890,
-    subcategories: ['عطور', 'مكياج', 'عناية بالبشرة', 'عناية بالشعر'],
-  },
-  {
-    id: 'home',
-    name: 'المنزل',
-    nameEn: 'Home',
-    icon: Home,
-    color: 'bg-green-500',
-    count: 1456,
-    subcategories: ['أثاث', 'ديكور', 'مطبخ', 'حمام', 'إضاءة'],
-  },
-  {
-    id: 'sports',
-    name: 'رياضة',
-    nameEn: 'Sports',
-    icon: Dumbbell,
-    color: 'bg-orange-500',
-    count: 567,
-    subcategories: ['ملابس رياضية', 'أجهزة', 'مكملات', 'معدات'],
-  },
-  {
-    id: 'kids',
-    name: 'أطفال',
-    nameEn: 'Kids',
-    icon: Baby,
-    color: 'bg-yellow-500',
-    count: 789,
-    subcategories: ['ملابس', 'ألعاب', 'مستلزمات', 'تعليم'],
-  },
-  {
-    id: 'books',
-    name: 'كتب',
-    nameEn: 'Books',
-    icon: BookOpen,
-    color: 'bg-red-500',
-    count: 345,
-    subcategories: ['روايات', 'تطوير ذات', 'تعليمية', 'دينية'],
-  },
-  {
-    id: 'food',
-    name: 'طعام',
-    nameEn: 'Food',
-    icon: Utensils,
-    color: 'bg-amber-500',
-    count: 234,
-    subcategories: ['حلويات', 'مشروبات', 'صحي', 'مستورد'],
-  },
-  {
-    id: 'automotive',
-    name: 'سيارات',
-    nameEn: 'Automotive',
-    icon: Car,
-    color: 'bg-slate-500',
-    count: 456,
-    subcategories: ['إكسسوارات', 'قطع غيار', 'زيوت', 'إطارات'],
-  },
-  {
-    id: 'gaming',
-    name: 'ألعاب',
-    nameEn: 'Gaming',
-    icon: Gamepad2,
-    color: 'bg-indigo-500',
-    count: 678,
-    subcategories: ['بلايستيشن', 'إكس بوكس', 'PC', 'إكسسوارات'],
-  },
-  {
-    id: 'health',
-    name: 'صحة',
-    nameEn: 'Health',
-    icon: Heart,
-    color: 'bg-rose-500',
-    count: 321,
-    subcategories: ['فيتامينات', 'أجهزة طبية', 'عناية شخصية'],
-  },
-  {
-    id: 'watches',
-    name: 'ساعات',
-    nameEn: 'Watches',
-    icon: Watch,
-    color: 'bg-teal-500',
-    count: 234,
-    subcategories: ['كلاسيك', 'ذكية', 'رياضية', 'فاخرة'],
-  },
-  {
-    id: 'gifts',
-    name: 'هدايا',
-    nameEn: 'Gifts',
-    icon: Gift,
-    color: 'bg-fuchsia-500',
-    count: 567,
-    subcategories: ['مناسبات', 'شخصية', 'شركات', 'أطفال'],
-  },
-  {
-    id: 'art',
-    name: 'فن وحرف',
-    nameEn: 'Art',
-    icon: Palette,
-    color: 'bg-cyan-500',
-    count: 189,
-    subcategories: ['لوحات', 'أدوات', 'هاند ميد', 'تطريز'],
-  },
-  {
-    id: 'music',
-    name: 'موسيقى',
-    nameEn: 'Music',
-    icon: Music,
-    color: 'bg-violet-500',
-    count: 145,
-    subcategories: ['آلات', 'إكسسوارات', 'ستوديو'],
-  },
-  {
-    id: 'photography',
-    name: 'تصوير',
-    nameEn: 'Photography',
-    icon: Camera,
-    color: 'bg-gray-600',
-    count: 234,
-    subcategories: ['كاميرات', 'عدسات', 'إضاءة', 'ستاندات'],
-  },
-]
-
 export default function CategoriesPage() {
+  const t = useTranslations('categories')
+  const tc = useTranslations('common')
+
+  const categories = [
+    {
+      id: 'electronics',
+      name: t('electronics'),
+      nameEn: 'Electronics',
+      icon: Laptop,
+      color: 'bg-blue-500',
+      count: 1234,
+      subcategories: [t('subcategories.phones'), t('subcategories.laptops'), t('subcategories.headphones'), t('subcategories.smartwatches'), t('subcategories.accessories')],
+    },
+    {
+      id: 'fashion',
+      name: t('fashion'),
+      nameEn: 'Fashion',
+      icon: Shirt,
+      color: 'bg-pink-500',
+      count: 2567,
+      subcategories: [t('subcategories.menClothing'), t('subcategories.womenClothing'), t('subcategories.childrenClothing'), t('subcategories.shoes'), t('subcategories.bags')],
+    },
+    {
+      id: 'beauty',
+      name: t('beauty'),
+      nameEn: 'Beauty',
+      icon: Sparkles,
+      color: 'bg-purple-500',
+      count: 890,
+      subcategories: [t('subcategories.perfumes'), t('subcategories.makeup'), t('subcategories.skincare'), t('subcategories.haircare')],
+    },
+    {
+      id: 'home',
+      name: t('home'),
+      nameEn: 'Home',
+      icon: Home,
+      color: 'bg-green-500',
+      count: 1456,
+      subcategories: [t('subcategories.furniture'), t('subcategories.decor'), t('subcategories.kitchen'), t('subcategories.bathroom'), t('subcategories.lighting')],
+    },
+    {
+      id: 'sports',
+      name: t('sports'),
+      nameEn: 'Sports',
+      icon: Dumbbell,
+      color: 'bg-orange-500',
+      count: 567,
+      subcategories: [t('subcategories.sportswear'), t('subcategories.equipment'), t('subcategories.supplements'), t('subcategories.sportsGear')],
+    },
+    {
+      id: 'kids',
+      name: t('kids'),
+      nameEn: 'Kids',
+      icon: Baby,
+      color: 'bg-yellow-500',
+      count: 789,
+      subcategories: [t('subcategories.clothing'), t('subcategories.toys'), t('subcategories.essentials'), t('subcategories.education')],
+    },
+    {
+      id: 'books',
+      name: t('books'),
+      nameEn: 'Books',
+      icon: BookOpen,
+      color: 'bg-red-500',
+      count: 345,
+      subcategories: [t('subcategories.novels'), t('subcategories.selfDevelopment'), t('subcategories.educational'), t('subcategories.religious')],
+    },
+    {
+      id: 'food',
+      name: t('food'),
+      nameEn: 'Food',
+      icon: Utensils,
+      color: 'bg-amber-500',
+      count: 234,
+      subcategories: [t('subcategories.sweets'), t('subcategories.drinks'), t('subcategories.healthy'), t('subcategories.imported')],
+    },
+    {
+      id: 'automotive',
+      name: t('automotive'),
+      nameEn: 'Automotive',
+      icon: Car,
+      color: 'bg-slate-500',
+      count: 456,
+      subcategories: [t('subcategories.carAccessories'), t('subcategories.spareParts'), t('subcategories.oils'), t('subcategories.tires')],
+    },
+    {
+      id: 'gaming',
+      name: t('gaming'),
+      nameEn: 'Gaming',
+      icon: Gamepad2,
+      color: 'bg-indigo-500',
+      count: 678,
+      subcategories: [t('subcategories.playstation'), t('subcategories.xbox'), t('subcategories.pc'), t('subcategories.accessories')],
+    },
+    {
+      id: 'health',
+      name: t('health'),
+      nameEn: 'Health',
+      icon: Heart,
+      color: 'bg-rose-500',
+      count: 321,
+      subcategories: [t('subcategories.vitamins'), t('subcategories.medicalDevices'), t('subcategories.personalCare')],
+    },
+    {
+      id: 'watches',
+      name: t('watches'),
+      nameEn: 'Watches',
+      icon: Watch,
+      color: 'bg-teal-500',
+      count: 234,
+      subcategories: [t('subcategories.classic'), t('subcategories.smart'), t('subcategories.sport'), t('subcategories.luxury')],
+    },
+    {
+      id: 'gifts',
+      name: t('gifts'),
+      nameEn: 'Gifts',
+      icon: Gift,
+      color: 'bg-fuchsia-500',
+      count: 567,
+      subcategories: [t('subcategories.occasions'), t('subcategories.personal'), t('subcategories.corporate'), t('subcategories.childrenClothing')],
+    },
+    {
+      id: 'art',
+      name: t('art'),
+      nameEn: 'Art',
+      icon: Palette,
+      color: 'bg-cyan-500',
+      count: 189,
+      subcategories: [t('subcategories.paintings'), t('subcategories.tools'), t('subcategories.handmade'), t('subcategories.embroidery')],
+    },
+    {
+      id: 'music',
+      name: t('music'),
+      nameEn: 'Music',
+      icon: Music,
+      color: 'bg-violet-500',
+      count: 145,
+      subcategories: [t('subcategories.instruments'), t('subcategories.accessories'), t('subcategories.studio')],
+    },
+    {
+      id: 'photography',
+      name: t('photography'),
+      nameEn: 'Photography',
+      icon: Camera,
+      color: 'bg-gray-600',
+      count: 234,
+      subcategories: [t('subcategories.cameras'), t('subcategories.lenses'), t('subcategories.lighting'), t('subcategories.stands')],
+    },
+  ]
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -179,10 +183,10 @@ export default function CategoriesPage() {
           {/* Page Header */}
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              تصفح الفئات
+              {t('title')}
             </h1>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              اكتشف آلاف المنتجات في مختلف الفئات
+              {t('subtitle')}
             </p>
           </div>
 
@@ -207,7 +211,7 @@ export default function CategoriesPage() {
 
                     {/* Count */}
                     <Badge variant="secondary" className="mt-3">
-                      {category.count.toLocaleString('ar-EG')} منتج
+                      {category.count.toLocaleString('ar-EG')} {tc('product')}
                     </Badge>
 
                     {/* Subcategories */}
@@ -235,7 +239,7 @@ export default function CategoriesPage() {
           {/* Popular Searches */}
           <div className="mt-12">
             <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-white">
-              عمليات البحث الشائعة
+              {t('popularSearches')}
             </h2>
             <div className="flex flex-wrap gap-3">
               {[

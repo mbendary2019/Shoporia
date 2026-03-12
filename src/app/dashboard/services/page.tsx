@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge, Modal } from '@/components/ui'
 import { deleteService } from '@/services/service'
 import { formatCurrency } from '@/utils/format'
@@ -129,6 +130,8 @@ const priceTypeLabels = {
 }
 
 export default function ServicesPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [searchQuery, setSearchQuery] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedService, setSelectedService] = useState<typeof services[0] | null>(null)
@@ -151,21 +154,22 @@ export default function ServicesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            الخدمات
+            {t('services')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             إدارة خدمات متجرك وحجوزات العملاء
           </p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline">
             <Calendar className="h-4 w-4" />
-            إدارة الحجوزات
+            {t('bookings')}
           </Button>
           <Link href="/dashboard/services/new">
             <Button>
               <Plus className="h-4 w-4" />
-              إضافة خدمة
+              {tCommon('add')}
             </Button>
           </Link>
         </div>
@@ -182,7 +186,7 @@ export default function ServicesPage() {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.totalServices}
               </p>
-              <p className="text-sm text-gray-500">إجمالي الخدمات</p>
+              <p className="text-sm text-gray-500">{/* TODO: add translation key */}إجمالي الخدمات</p>
             </div>
           </div>
         </Card>
@@ -196,7 +200,7 @@ export default function ServicesPage() {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.totalBookings}
               </p>
-              <p className="text-sm text-gray-500">إجمالي الحجوزات</p>
+              <p className="text-sm text-gray-500">{/* TODO: add translation key */}إجمالي الحجوزات</p>
             </div>
           </div>
         </Card>
@@ -210,7 +214,7 @@ export default function ServicesPage() {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.avgRating}
               </p>
-              <p className="text-sm text-gray-500">متوسط التقييم</p>
+              <p className="text-sm text-gray-500">{/* TODO: add translation key */}متوسط التقييم</p>
             </div>
           </div>
         </Card>
@@ -224,7 +228,7 @@ export default function ServicesPage() {
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.activeServices}
               </p>
-              <p className="text-sm text-gray-500">خدمات نشطة</p>
+              <p className="text-sm text-gray-500">{/* TODO: add translation key */}خدمات نشطة</p>
             </div>
           </div>
         </Card>
@@ -240,7 +244,7 @@ export default function ServicesPage() {
                 <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <input
                   type="search"
-                  placeholder="ابحث في الخدمات..."
+                  placeholder={`${tCommon('search')}...`}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
@@ -249,9 +253,9 @@ export default function ServicesPage() {
 
               <div className="flex gap-3">
                 <select className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800">
-                  <option value="">كل الحالات</option>
-                  <option value="active">نشط</option>
-                  <option value="inactive">غير نشط</option>
+                  <option value="">{/* TODO: add translation key */}كل الحالات</option>
+                  <option value="active">{tCommon('available')}</option>
+                  <option value="inactive">{tCommon('unavailable')}</option>
                 </select>
 
                 <Button variant="outline" size="icon">
@@ -340,13 +344,14 @@ export default function ServicesPage() {
           <Card className="p-6">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-gray-900 dark:text-white">
+                {/* TODO: add translation key */}
                 الحجوزات القادمة
               </h2>
               <Link
                 href="/dashboard/bookings"
                 className="text-sm text-primary-500 hover:underline"
               >
-                عرض الكل
+                {tCommon('viewAll')}
               </Link>
             </div>
 
@@ -383,7 +388,7 @@ export default function ServicesPage() {
 
               {upcomingBookings.length === 0 && (
                 <p className="text-center text-sm text-gray-500 py-4">
-                  لا توجد حجوزات قادمة
+                  {tCommon('noResults')}
                 </p>
               )}
             </div>
@@ -392,6 +397,7 @@ export default function ServicesPage() {
           {/* Quick Stats */}
           <Card className="p-6">
             <h2 className="font-semibold text-gray-900 dark:text-white">
+              {/* TODO: add translation key */}
               إحصائيات اليوم
             </h2>
 
@@ -421,7 +427,7 @@ export default function ServicesPage() {
       <Modal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
-        title="حذف الخدمة"
+        title={`${tCommon('delete')}`}
       >
         <div className="space-y-4">
           <p className="text-gray-600 dark:text-gray-400">
@@ -432,7 +438,7 @@ export default function ServicesPage() {
 
           <div className="flex gap-3 justify-end">
             <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-              إلغاء
+              {tCommon('cancel')}
             </Button>
             <Button
               variant="default"
@@ -451,7 +457,7 @@ export default function ServicesPage() {
               }}
             >
               <Trash2 className="h-4 w-4" />
-              حذف
+              {tCommon('delete')}
             </Button>
           </div>
         </div>

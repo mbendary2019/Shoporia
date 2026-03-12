@@ -13,6 +13,7 @@ import {
   Box,
   Home,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const trackingSteps = [
   { id: 1, status: 'تم استلام الطلب', icon: Box, completed: true, date: '10 ديسمبر 2024 - 10:30 ص' },
@@ -23,6 +24,7 @@ const trackingSteps = [
 ]
 
 export default function TrackPage() {
+  const t = useTranslations('pages.track')
   const [orderNumber, setOrderNumber] = useState('')
   const [showTracking, setShowTracking] = useState(false)
 
@@ -44,10 +46,10 @@ export default function TrackPage() {
               <Truck className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              تتبع طلبك
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              أدخل رقم الطلب لمعرفة حالة شحنتك
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -58,7 +60,7 @@ export default function TrackPage() {
             <Card className="max-w-xl mx-auto p-6">
               <div className="flex gap-3">
                 <Input
-                  placeholder="أدخل رقم الطلب (مثال: SHP-123456)"
+                  placeholder={t('orderNumberPlaceholder')}
                   value={orderNumber}
                   onChange={(e) => setOrderNumber(e.target.value)}
                   className="flex-1"
@@ -90,7 +92,7 @@ export default function TrackPage() {
                     </p>
                   </div>
                   <Badge className="bg-blue-100 text-blue-700">
-                    في الطريق
+                    {t('onTheWay')}
                   </Badge>
                 </div>
 
@@ -158,7 +160,7 @@ export default function TrackPage() {
                     <Truck className="h-6 w-6 text-green-600" />
                     <div>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        موعد التوصيل المتوقع
+                        {t('expectedDelivery')}
                       </p>
                       <p className="font-bold text-gray-900 dark:text-white">
                         12 ديسمبر 2024 - بين 2:00 م و 6:00 م
@@ -175,10 +177,10 @@ export default function TrackPage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom text-center">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-              تحتاج مساعدة؟
+              {t('needHelp')}
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              تواصل مع خدمة العملاء للاستفسار عن طلبك
+              {t('needHelpDescription')}
             </p>
             <div className="flex justify-center gap-4">
               <Button variant="outline">

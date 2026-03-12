@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Avatar } from '@/components/ui'
 import { useAuthStore } from '@/store'
 import {
@@ -16,6 +17,8 @@ import {
 
 export default function AccountPage() {
   const { user } = useAuthStore()
+  const t = useTranslations('account')
+  const tc = useTranslations('common')
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     name: user?.displayName || '',
@@ -34,22 +37,22 @@ export default function AccountPage() {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            المعلومات الشخصية
+            {t('personalInfo')}
           </h1>
           {!isEditing ? (
             <Button variant="outline" onClick={() => setIsEditing(true)}>
               <Edit2 className="h-4 w-4" />
-              تعديل
+              {tc('edit')}
             </Button>
           ) : (
             <div className="flex gap-2">
               <Button onClick={handleSave}>
                 <Save className="h-4 w-4" />
-                حفظ
+                {tc('save')}
               </Button>
               <Button variant="outline" onClick={() => setIsEditing(false)}>
                 <X className="h-4 w-4" />
-                إلغاء
+                {tc('cancel')}
               </Button>
             </div>
           )}
@@ -76,7 +79,7 @@ export default function AccountPage() {
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    الاسم الكامل
+                    {t('fullName')}
                   </label>
                   <input
                     type="text"
@@ -90,7 +93,7 @@ export default function AccountPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    رقم الهاتف
+                    {t('phone')}
                   </label>
                   <input
                     type="tel"
@@ -105,7 +108,7 @@ export default function AccountPage() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      تاريخ الميلاد
+                      {t('birthDate')}
                     </label>
                     <input
                       type="date"
@@ -119,7 +122,7 @@ export default function AccountPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                      الجنس
+                      {t('gender')}
                     </label>
                     <select
                       value={formData.gender}
@@ -128,8 +131,8 @@ export default function AccountPage() {
                       }
                       className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                     >
-                      <option value="male">ذكر</option>
-                      <option value="female">أنثى</option>
+                      <option value="male">{t('male')}</option>
+                      <option value="female">{t('female')}</option>
                     </select>
                   </div>
                 </div>
@@ -141,9 +144,9 @@ export default function AccountPage() {
                     <User className="h-5 w-5 text-gray-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">الاسم</p>
+                    <p className="text-sm text-gray-500">{t('name')}</p>
                     <p className="font-medium text-gray-900 dark:text-white">
-                      {user?.displayName || 'غير محدد'}
+                      {user?.displayName || tc('notSpecified')}
                     </p>
                   </div>
                 </div>
@@ -153,9 +156,9 @@ export default function AccountPage() {
                     <Mail className="h-5 w-5 text-gray-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">البريد الإلكتروني</p>
+                    <p className="text-sm text-gray-500">{t('email')}</p>
                     <p className="font-medium text-gray-900 dark:text-white">
-                      {user?.email || 'غير محدد'}
+                      {user?.email || tc('notSpecified')}
                     </p>
                   </div>
                 </div>
@@ -165,7 +168,7 @@ export default function AccountPage() {
                     <Phone className="h-5 w-5 text-gray-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">رقم الهاتف</p>
+                    <p className="text-sm text-gray-500">{t('phone')}</p>
                     <p className="font-medium text-gray-900 dark:text-white">
                       {formData.phone}
                     </p>
@@ -177,7 +180,7 @@ export default function AccountPage() {
                     <Calendar className="h-5 w-5 text-gray-500" />
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">تاريخ الميلاد</p>
+                    <p className="text-sm text-gray-500">{t('birthDate')}</p>
                     <p className="font-medium text-gray-900 dark:text-white">
                       {new Date(formData.birthDate).toLocaleDateString('ar-EG')}
                     </p>
@@ -193,50 +196,50 @@ export default function AccountPage() {
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="p-6 text-center">
           <p className="text-3xl font-bold text-primary-600">12</p>
-          <p className="mt-1 text-sm text-gray-500">طلب مكتمل</p>
+          <p className="mt-1 text-sm text-gray-500">{t('completedOrders')}</p>
         </Card>
         <Card className="p-6 text-center">
           <p className="text-3xl font-bold text-primary-600">5</p>
-          <p className="mt-1 text-sm text-gray-500">في المفضلة</p>
+          <p className="mt-1 text-sm text-gray-500">{t('inWishlist')}</p>
         </Card>
         <Card className="p-6 text-center">
           <p className="text-3xl font-bold text-primary-600">3</p>
-          <p className="mt-1 text-sm text-gray-500">عناوين محفوظة</p>
+          <p className="mt-1 text-sm text-gray-500">{t('savedAddresses')}</p>
         </Card>
       </div>
 
       {/* Security */}
       <Card className="p-6">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-          الأمان
+          {t('security')}
         </h2>
 
         <div className="mt-4 space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
-                كلمة المرور
+                {t('changePassword')}
               </p>
               <p className="text-sm text-gray-500">
-                آخر تغيير منذ 30 يوم
+                {t('lastChanged')}
               </p>
             </div>
             <Button variant="outline" size="sm">
-              تغيير كلمة المرور
+              {t('changePassword')}
             </Button>
           </div>
 
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
-                التحقق بخطوتين
+                {t('twoFactorAuth')}
               </p>
               <p className="text-sm text-gray-500">
-                إضافة طبقة أمان إضافية
+                {t('twoFactorDescription')}
               </p>
             </div>
             <Button variant="outline" size="sm">
-              تفعيل
+              {t('activate')}
             </Button>
           </div>
         </div>

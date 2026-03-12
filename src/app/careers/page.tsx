@@ -14,6 +14,7 @@ import {
   GraduationCap,
   ArrowLeft,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const jobs = [
   {
@@ -74,6 +75,8 @@ const benefits = [
 ]
 
 export default function CareersPage() {
+  const t = useTranslations('pages.careers')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -86,11 +89,10 @@ export default function CareersPage() {
               <Briefcase className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              انضم لفريق Shoporia
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              نبحث عن أشخاص موهوبين وشغوفين للانضمام لفريقنا وبناء مستقبل التجارة
-              الإلكترونية معاً
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -99,7 +101,7 @@ export default function CareersPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              لماذا Shoporia؟
+              {t('whyShoporia')}
             </h2>
             <div className="grid md:grid-cols-4 gap-6">
               {benefits.map((benefit) => (
@@ -122,10 +124,10 @@ export default function CareersPage() {
           <div className="container-custom">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                الوظائف المتاحة
+                {t('availableJobs')}
               </h2>
               <Badge className="bg-amazon-orange text-white">
-                {jobs.length} وظيفة
+                {jobs.length} {t('job')}
               </Badge>
             </div>
 
@@ -154,7 +156,7 @@ export default function CareersPage() {
                       </div>
                     </div>
                     <Button className="bg-amazon-orange hover:bg-amazon-orangeHover whitespace-nowrap">
-                      قدم الآن
+                      {t('applyNow')}
                       <ArrowLeft className="h-4 w-4 mr-2" />
                     </Button>
                   </div>
@@ -169,13 +171,13 @@ export default function CareersPage() {
           <div className="container-custom text-center">
             <Card className="p-8 bg-gradient-to-l from-amazon-navy to-amazon-navyLight text-white">
               <h2 className="text-2xl font-bold mb-4">
-                لم تجد الوظيفة المناسبة؟
+                {t('noJobFound')}
               </h2>
               <p className="text-white/70 mb-6">
-                أرسل لنا سيرتك الذاتية وسنتواصل معك عند توفر فرصة مناسبة
+                {t('sendResume')}
               </p>
               <Button className="bg-amazon-orange hover:bg-amazon-orangeHover">
-                أرسل سيرتك الذاتية
+                {t('sendResumeButton')}
               </Button>
             </Card>
           </div>

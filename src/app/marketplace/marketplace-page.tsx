@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Badge, Button, ProductCard } from '@/components/ui'
 import Link from 'next/link'
@@ -24,23 +25,6 @@ import { cn } from '@/utils/cn'
 import { useProducts } from '@/hooks/queries/use-products'
 import type { Product } from '@/types'
 
-const sortOptions = [
-  { value: 'featured', label: 'الأكثر صلة' },
-  { value: 'newest', label: 'الأحدث' },
-  { value: 'bestselling', label: 'الأكثر مبيعاً' },
-  { value: 'price-asc', label: 'السعر: الأقل للأعلى' },
-  { value: 'price-desc', label: 'السعر: الأعلى للأقل' },
-  { value: 'rating', label: 'التقييم' },
-]
-
-const priceRanges = [
-  { min: 0, max: 100, label: 'أقل من 100 جنيه' },
-  { min: 100, max: 500, label: '100 - 500 جنيه' },
-  { min: 500, max: 1000, label: '500 - 1000 جنيه' },
-  { min: 1000, max: 5000, label: '1000 - 5000 جنيه' },
-  { min: 5000, max: Infinity, label: 'أكثر من 5000 جنيه' },
-]
-
 // Map Firestore Product to ProductCard shape
 function mapProductToCard(product: Product) {
   return {
@@ -63,6 +47,29 @@ function mapProductToCard(product: Product) {
 }
 
 export default function MarketplacePage() {
+  const t = useTranslations('marketplace')
+  const tc = useTranslations('common')
+  const tsearch = useTranslations('search')
+  const tnav = useTranslations('nav')
+  const thome = useTranslations('home')
+
+  const sortOptions = [
+    { value: 'featured', label: tsearch('sortRelevance') },
+    { value: 'newest', label: tsearch('sortNewest') },
+    { value: 'bestselling', label: tsearch('sortBestSelling') },
+    { value: 'price-asc', label: tsearch('sortPriceAsc') },
+    { value: 'price-desc', label: tsearch('sortPriceDesc') },
+    { value: 'rating', label: tsearch('sortRating') },
+  ]
+
+  const priceRanges = [
+    { min: 0, max: 100, label: t('priceRanges.under100') },
+    { min: 100, max: 500, label: t('priceRanges.100to500') },
+    { min: 500, max: 1000, label: t('priceRanges.500to1000') },
+    { min: 1000, max: 5000, label: t('priceRanges.1000to5000') },
+    { min: 5000, max: Infinity, label: t('priceRanges.over5000') },
+  ]
+
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [sortBy, setSortBy] = useState('featured')
   const [showFilters, setShowFilters] = useState(false)
@@ -163,10 +170,10 @@ export default function MarketplacePage() {
           <div className="container-custom py-3">
             <nav className="flex items-center gap-2 text-sm">
               <Link href="/" className="text-amazon-link hover:text-amazon-linkHover hover:underline">
-                الرئيسية
+                {tnav('home')}
               </Link>
               <ChevronLeft className="h-4 w-4 text-gray-400" />
-              <span className="text-gray-600 dark:text-gray-400">جميع المنتجات</span>
+              <span className="text-gray-600 dark:text-gray-400">{t('allProducts')}</span>
             </nav>
           </div>
         </div>
@@ -190,7 +197,7 @@ export default function MarketplacePage() {
                         PRIME
                       </span>
                       <span className="text-sm group-hover:text-amazon-orange">
-                        توصيل مجاني
+                        {thome('fastDelivery')}
                       </span>
                     </div>
                   </label>
@@ -199,7 +206,7 @@ export default function MarketplacePage() {
                 {/* Categories */}
                 <div className="p-4 border-b">
                   <h3 className="font-bold text-gray-900 dark:text-white mb-3">
-                    الأقسام
+                    {t('sections')}
                   </h3>
                   <ul className="space-y-2">
                     {STORE_CATEGORIES.slice(0, 8).map((category) => (
@@ -219,14 +226,14 @@ export default function MarketplacePage() {
                     ))}
                   </ul>
                   <button className="mt-3 text-sm text-amazon-link hover:text-amazon-linkHover hover:underline">
-                    عرض المزيد
+                    {tc('viewMore')}
                   </button>
                 </div>
 
                 {/* Price Range */}
                 <div className="p-4 border-b">
                   <h3 className="font-bold text-gray-900 dark:text-white mb-3">
-                    السعر
+                    {t('priceLabel')}
                   </h3>
                   <ul className="space-y-2">
                     {priceRanges.map((range, index) => (
@@ -251,17 +258,17 @@ export default function MarketplacePage() {
                   <div className="mt-4 flex items-center gap-2">
                     <input
                       type="number"
-                      placeholder="من"
+                      placeholder={tc('from')}
                       className="w-full h-9 rounded border border-gray-300 px-2 text-sm focus:border-amazon-orange focus:ring-1 focus:ring-amazon-orange dark:border-gray-600 dark:bg-gray-800"
                     />
                     <span className="text-gray-400">-</span>
                     <input
                       type="number"
-                      placeholder="إلى"
+                      placeholder={tc('to')}
                       className="w-full h-9 rounded border border-gray-300 px-2 text-sm focus:border-amazon-orange focus:ring-1 focus:ring-amazon-orange dark:border-gray-600 dark:bg-gray-800"
                     />
                     <Button size="sm" variant="outline" className="shrink-0">
-                      تطبيق
+                      {tc('apply')}
                     </Button>
                   </div>
                 </div>
@@ -269,7 +276,7 @@ export default function MarketplacePage() {
                 {/* Rating */}
                 <div className="p-4">
                   <h3 className="font-bold text-gray-900 dark:text-white mb-3">
-                    تقييم العملاء
+                    {tsearch('customerRating')}
                   </h3>
                   <ul className="space-y-2">
                     {[4, 3, 2, 1].map((rating) => (
@@ -295,7 +302,7 @@ export default function MarketplacePage() {
                               />
                             ))}
                             <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-amazon-orange">
-                              وأعلى
+                              {tc('andAbove')}
                             </span>
                           </div>
                         </label>
@@ -315,11 +322,11 @@ export default function MarketplacePage() {
                   <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       {isLoading ? (
-                        'جاري التحميل...'
+                        tc('loading')
                       ) : (
                         <>
-                          عرض <span className="font-bold text-amazon-orange">1-{products.length}</span> من{' '}
-                          <span className="font-bold">{allProducts.length}</span> نتيجة
+                          {tc('showing')} <span className="font-bold text-amazon-orange">1-{products.length}</span> {tc('of')}{' '}
+                          <span className="font-bold">{allProducts.length}</span> {tc('result')}
                         </>
                       )}
                     </p>
@@ -348,7 +355,7 @@ export default function MarketplacePage() {
                           onClick={clearFilters}
                           className="text-xs text-amazon-link hover:underline"
                         >
-                          مسح الكل
+                          {tc('clearAll')}
                         </button>
                       </div>
                     )}
@@ -364,7 +371,7 @@ export default function MarketplacePage() {
                       onClick={() => setShowFilters(true)}
                     >
                       <SlidersHorizontal className="h-4 w-4" />
-                      تصفية
+                      {tc('filter')}
                       {activeFiltersCount > 0 && (
                         <Badge className="bg-amazon-orange text-white text-xs h-5 w-5 p-0 flex items-center justify-center rounded-full">
                           {activeFiltersCount}
@@ -380,7 +387,7 @@ export default function MarketplacePage() {
                     >
                       {sortOptions.map((option) => (
                         <option key={option.value} value={option.value}>
-                          الترتيب: {option.label}
+                          {tc('sortBy')}: {option.label}
                         </option>
                       ))}
                     </select>
@@ -467,10 +474,10 @@ export default function MarketplacePage() {
                 <Card className="p-12 text-center">
                   <Search className="mx-auto h-12 w-12 text-gray-400" />
                   <p className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-                    لا توجد منتجات
+                    {t('noProducts')}
                   </p>
                   <p className="mt-2 text-gray-600 dark:text-gray-400">
-                    لا توجد منتجات متاحة حالياً، جرب تغيير الفلاتر
+                    {t('noProductsDescription')}
                   </p>
                 </Card>
               )}
@@ -480,7 +487,7 @@ export default function MarketplacePage() {
                 <div className="mt-8 flex items-center justify-center">
                   <nav className="flex items-center gap-1">
                     <Button variant="outline" size="sm" disabled>
-                      السابق
+                      {tc('previous')}
                     </Button>
                     <Button size="sm" className="min-w-[40px]">1</Button>
                     <Button variant="outline" size="sm" className="min-w-[40px]">2</Button>
@@ -488,7 +495,7 @@ export default function MarketplacePage() {
                     <span className="px-2 text-gray-400">...</span>
                     <Button variant="outline" size="sm" className="min-w-[40px]">10</Button>
                     <Button variant="outline" size="sm">
-                      التالي
+                      {tc('next')}
                     </Button>
                   </nav>
                 </div>
@@ -520,7 +527,7 @@ export default function MarketplacePage() {
         >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b bg-amazon-navy text-white">
-            <h2 className="font-bold text-lg">تصفية النتائج</h2>
+            <h2 className="font-bold text-lg">{t('filterResults')}</h2>
             <button onClick={() => setShowFilters(false)}>
               <X className="h-6 w-6" />
             </button>
@@ -540,13 +547,13 @@ export default function MarketplacePage() {
                 <span className="bg-amazon-navy text-white text-xs font-bold px-2 py-1 rounded">
                   PRIME
                 </span>
-                <span>توصيل مجاني</span>
+                <span>{thome('fastDelivery')}</span>
               </label>
             </div>
 
             {/* Categories */}
             <div>
-              <h3 className="font-bold mb-3">الأقسام</h3>
+              <h3 className="font-bold mb-3">{t('sections')}</h3>
               <ul className="space-y-2">
                 {STORE_CATEGORIES.slice(0, 8).map((category) => (
                   <li key={category.id}>
@@ -566,7 +573,7 @@ export default function MarketplacePage() {
 
             {/* Price */}
             <div>
-              <h3 className="font-bold mb-3">السعر</h3>
+              <h3 className="font-bold mb-3">{t('priceLabel')}</h3>
               <ul className="space-y-2">
                 {priceRanges.map((range, index) => (
                   <li key={index}>
@@ -587,7 +594,7 @@ export default function MarketplacePage() {
 
             {/* Rating */}
             <div>
-              <h3 className="font-bold mb-3">التقييم</h3>
+              <h3 className="font-bold mb-3">{tsearch('rating')}</h3>
               <ul className="space-y-2">
                 {[4, 3, 2, 1].map((rating) => (
                   <li key={rating}>
@@ -611,7 +618,7 @@ export default function MarketplacePage() {
                             )}
                           />
                         ))}
-                        <span className="text-sm">وأعلى</span>
+                        <span className="text-sm">{tc('andAbove')}</span>
                       </div>
                     </label>
                   </li>
@@ -627,13 +634,13 @@ export default function MarketplacePage() {
               className="flex-1"
               onClick={clearFilters}
             >
-              مسح الكل
+              {tc('clearAll')}
             </Button>
             <Button
               className="flex-1"
               onClick={() => setShowFilters(false)}
             >
-              عرض النتائج
+              {tc('showResults')}
             </Button>
           </div>
         </div>

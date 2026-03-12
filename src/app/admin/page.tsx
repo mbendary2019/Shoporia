@@ -17,139 +17,142 @@ import {
   ArrowUpRight,
 } from 'lucide-react'
 import Link from 'next/link'
-
-// Mock stats data
-const stats = [
-  {
-    name: 'إجمالي المتاجر',
-    value: '1,234',
-    change: '+12%',
-    changeType: 'positive' as const,
-    icon: Store,
-    href: '/admin/stores',
-  },
-  {
-    name: 'المنتجات النشطة',
-    value: '45,678',
-    change: '+8%',
-    changeType: 'positive' as const,
-    icon: Package,
-    href: '/admin/products',
-  },
-  {
-    name: 'الطلبات اليوم',
-    value: '892',
-    change: '+23%',
-    changeType: 'positive' as const,
-    icon: ShoppingCart,
-    href: '/admin/orders',
-  },
-  {
-    name: 'المستخدمين',
-    value: '56,789',
-    change: '+5%',
-    changeType: 'positive' as const,
-    icon: Users,
-    href: '/admin/users',
-  },
-  {
-    name: 'إيرادات اليوم',
-    value: formatCurrency(125000),
-    change: '+18%',
-    changeType: 'positive' as const,
-    icon: DollarSign,
-    href: '/admin/analytics',
-  },
-  {
-    name: 'البلاغات المعلقة',
-    value: '23',
-    change: '-5%',
-    changeType: 'negative' as const,
-    icon: AlertTriangle,
-    href: '/admin/reports',
-  },
-]
-
-// Mock pending approvals
-const pendingApprovals = [
-  {
-    id: '1',
-    type: 'store',
-    name: 'متجر الأناقة الجديد',
-    owner: 'أحمد محمد',
-    date: '2024-12-10',
-  },
-  {
-    id: '2',
-    type: 'store',
-    name: 'بوتيك الجمال',
-    owner: 'سارة أحمد',
-    date: '2024-12-10',
-  },
-  {
-    id: '3',
-    type: 'product',
-    name: 'ساعة ذكية فاخرة',
-    store: 'متجر التقنية',
-    date: '2024-12-09',
-  },
-]
-
-// Mock recent activities
-const recentActivities = [
-  {
-    id: '1',
-    action: 'تسجيل متجر جديد',
-    details: 'متجر الأناقة الجديد',
-    time: 'منذ 5 دقائق',
-    icon: Store,
-    color: 'text-blue-500',
-  },
-  {
-    id: '2',
-    action: 'طلب جديد',
-    details: 'طلب بقيمة 2,500 ج.م',
-    time: 'منذ 10 دقائق',
-    icon: ShoppingCart,
-    color: 'text-green-500',
-  },
-  {
-    id: '3',
-    action: 'بلاغ جديد',
-    details: 'بلاغ على منتج',
-    time: 'منذ 15 دقيقة',
-    icon: AlertTriangle,
-    color: 'text-red-500',
-  },
-  {
-    id: '4',
-    action: 'مستخدم جديد',
-    details: 'تسجيل مستخدم جديد',
-    time: 'منذ 20 دقيقة',
-    icon: Users,
-    color: 'text-purple-500',
-  },
-]
-
-// Mock top stores
-const topStores = [
-  { id: '1', name: 'متجر الأناقة', sales: 125000, orders: 234, rating: 4.8 },
-  { id: '2', name: 'بوتيك الجمال', sales: 98000, orders: 187, rating: 4.7 },
-  { id: '3', name: 'متجر التقنية', sales: 87500, orders: 156, rating: 4.6 },
-  { id: '4', name: 'أزياء الشرق', sales: 76000, orders: 143, rating: 4.5 },
-  { id: '5', name: 'دار العطور', sales: 65000, orders: 121, rating: 4.9 },
-]
+import { useTranslations } from 'next-intl'
 
 export default function AdminDashboard() {
+  const t = useTranslations('admin')
+
+  // Mock stats data
+  const stats = [
+    {
+      name: t('totalStores'),
+      value: '1,234',
+      change: '+12%',
+      changeType: 'positive' as const,
+      icon: Store,
+      href: '/admin/stores',
+    },
+    {
+      name: t('activeProducts'),
+      value: '45,678',
+      change: '+8%',
+      changeType: 'positive' as const,
+      icon: Package,
+      href: '/admin/products',
+    },
+    {
+      name: t('todayOrders'),
+      value: '892',
+      change: '+23%',
+      changeType: 'positive' as const,
+      icon: ShoppingCart,
+      href: '/admin/orders',
+    },
+    {
+      name: t('users'),
+      value: '56,789',
+      change: '+5%',
+      changeType: 'positive' as const,
+      icon: Users,
+      href: '/admin/users',
+    },
+    {
+      name: t('todayRevenue'),
+      value: formatCurrency(125000),
+      change: '+18%',
+      changeType: 'positive' as const,
+      icon: DollarSign,
+      href: '/admin/analytics',
+    },
+    {
+      name: t('pendingReports'),
+      value: '23',
+      change: '-5%',
+      changeType: 'negative' as const,
+      icon: AlertTriangle,
+      href: '/admin/reports',
+    },
+  ]
+
+  // Mock pending approvals
+  const pendingApprovals = [
+    {
+      id: '1',
+      type: 'store',
+      name: 'متجر الأناقة الجديد',
+      owner: 'أحمد محمد',
+      date: '2024-12-10',
+    },
+    {
+      id: '2',
+      type: 'store',
+      name: 'بوتيك الجمال',
+      owner: 'سارة أحمد',
+      date: '2024-12-10',
+    },
+    {
+      id: '3',
+      type: 'product',
+      name: 'ساعة ذكية فاخرة',
+      store: 'متجر التقنية',
+      date: '2024-12-09',
+    },
+  ]
+
+  // Mock recent activities
+  const recentActivities = [
+    {
+      id: '1',
+      action: t('newStoreRegistration'),
+      details: 'متجر الأناقة الجديد',
+      time: `${t('ago')} 5 ${t('minutes')}`,
+      icon: Store,
+      color: 'text-blue-500',
+    },
+    {
+      id: '2',
+      action: t('newReport'), // TODO: no exact key for "طلب جديد" (new order)
+      details: 'طلب بقيمة 2,500 ج.م',
+      time: `${t('ago')} 10 ${t('minutes')}`,
+      icon: ShoppingCart,
+      color: 'text-green-500',
+    },
+    {
+      id: '3',
+      action: t('newReport'),
+      details: t('reportOnProduct'),
+      time: `${t('ago')} 15 ${t('minute')}`,
+      icon: AlertTriangle,
+      color: 'text-red-500',
+    },
+    {
+      id: '4',
+      action: t('newUser'),
+      details: t('newUserRegistration'),
+      time: `${t('ago')} 20 ${t('minute')}`,
+      icon: Users,
+      color: 'text-purple-500',
+    },
+  ]
+
+  // Mock top stores
+  const topStores = [
+    { id: '1', name: 'متجر الأناقة', sales: 125000, orders: 234, rating: 4.8 },
+    { id: '2', name: 'بوتيك الجمال', sales: 98000, orders: 187, rating: 4.7 },
+    { id: '3', name: 'متجر التقنية', sales: 87500, orders: 156, rating: 4.6 },
+    { id: '4', name: 'أزياء الشرق', sales: 76000, orders: 143, rating: 4.5 },
+    { id: '5', name: 'دار العطور', sales: 65000, orders: 121, rating: 4.9 },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          لوحة تحكم الإدارة
+          {t('title')}
         </h1>
         <p className="mt-1 text-gray-600 dark:text-gray-400">
-          نظرة عامة على أداء المنصة
+          {t('platformOverview')}
         </p>
       </div>
 
@@ -191,7 +194,7 @@ export default function AdminDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              طلبات الموافقة المعلقة
+              {t('pendingApprovals')}
             </h2>
             <Badge variant="warning">{pendingApprovals.length}</Badge>
           </div>
@@ -240,7 +243,7 @@ export default function AdminDashboard() {
             href="/admin/stores?status=pending"
             className="mt-4 flex items-center justify-center gap-2 text-sm text-primary-500 hover:underline"
           >
-            عرض الكل
+            {t('viewAllLogs')}
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </Card>
@@ -248,7 +251,7 @@ export default function AdminDashboard() {
         {/* Recent Activities */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            آخر الأنشطة
+            {t('recentActivities')}
           </h2>
 
           <div className="mt-4 space-y-4">
@@ -280,7 +283,7 @@ export default function AdminDashboard() {
             href="/admin/logs"
             className="mt-4 flex items-center justify-center gap-2 text-sm text-primary-500 hover:underline"
           >
-            عرض كل السجلات
+            {t('viewAllLogs')}
             <ArrowUpRight className="h-4 w-4" />
           </Link>
         </Card>
@@ -290,13 +293,13 @@ export default function AdminDashboard() {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            أفضل المتاجر
+            {t('topStores')}
           </h2>
           <Link
             href="/admin/stores"
             className="text-sm text-primary-500 hover:underline"
           >
-            عرض الكل
+            {t('viewAllLogs')}
           </Link>
         </div>
 
@@ -305,16 +308,16 @@ export default function AdminDashboard() {
             <thead>
               <tr className="border-b border-gray-200 dark:border-gray-700">
                 <th className="pb-3 text-start text-sm font-medium text-gray-500">
-                  المتجر
+                  {t('storeColumn')}
                 </th>
                 <th className="pb-3 text-start text-sm font-medium text-gray-500">
-                  المبيعات
+                  {t('salesColumn')}
                 </th>
                 <th className="pb-3 text-start text-sm font-medium text-gray-500">
-                  الطلبات
+                  {t('ordersColumn')}
                 </th>
                 <th className="pb-3 text-start text-sm font-medium text-gray-500">
-                  التقييم
+                  {t('ratingColumn')}
                 </th>
               </tr>
             </thead>

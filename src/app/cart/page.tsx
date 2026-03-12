@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button, Input } from '@/components/ui'
 import { useCartStore } from '@/store'
@@ -16,6 +17,9 @@ import {
 } from 'lucide-react'
 
 export default function CartPage() {
+  const t = useTranslations('cart')
+  const tc = useTranslations('common')
+
   const {
     items,
     removeItem,
@@ -39,15 +43,15 @@ export default function CartPage() {
               <ShoppingCart className="h-12 w-12 text-gray-400" />
             </div>
             <h2 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white">
-              سلتك فارغة
+              {t('empty')}
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              لم تقم بإضافة أي منتجات للسلة بعد
+              {t('emptyDescription')}
             </p>
             <Link href="/marketplace">
               <Button className="mt-6">
                 <ShoppingBag className="h-4 w-4" />
-                تصفح المنتجات
+                {tc('browseProducts')}
               </Button>
             </Link>
           </div>
@@ -64,7 +68,7 @@ export default function CartPage() {
       <main className="flex-1 bg-gray-50 py-8 dark:bg-gray-900">
         <div className="container-custom">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            سلة التسوق ({getItemCount()} منتج)
+            {t('titleWithCount', { count: getItemCount() })}
           </h1>
 
           <div className="mt-8 grid gap-8 lg:grid-cols-3">
@@ -157,7 +161,7 @@ export default function CartPage() {
                 <Link href="/marketplace">
                   <Button variant="outline">
                     <ArrowLeft className="h-4 w-4" />
-                    متابعة التسوق
+                    {t('continueShopping')}
                   </Button>
                 </Link>
                 <Button
@@ -166,7 +170,7 @@ export default function CartPage() {
                   onClick={clearCart}
                 >
                   <Trash2 className="h-4 w-4" />
-                  إفراغ السلة
+                  {t('clearCart')}
                 </Button>
               </div>
             </div>
@@ -175,24 +179,24 @@ export default function CartPage() {
             <div>
               <Card className="sticky top-24 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  ملخص الطلب
+                  {t('orderSummary')}
                 </h2>
 
                 {/* Coupon */}
                 <div className="mt-4">
                   <div className="flex gap-2">
                     <Input
-                      placeholder="كود الخصم"
+                      placeholder={t('couponCode')}
                       leftIcon={<Tag className="h-4 w-4" />}
                     />
-                    <Button variant="outline">تطبيق</Button>
+                    <Button variant="outline">{tc('apply')}</Button>
                   </div>
                 </div>
 
                 <div className="mt-6 space-y-3 border-t border-gray-200 pt-6 dark:border-gray-700">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">
-                      المجموع الفرعي
+                      {t('subtotal')}
                     </span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {formatCurrency(subtotal)}
@@ -201,24 +205,23 @@ export default function CartPage() {
 
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600 dark:text-gray-400">
-                      التوصيل
+                      {t('delivery')}
                     </span>
                     <span className="font-medium text-gray-900 dark:text-white">
-                      {deliveryFee === 0 ? 'مجاني' : formatCurrency(deliveryFee)}
+                      {deliveryFee === 0 ? tc('free') : formatCurrency(deliveryFee)}
                     </span>
                   </div>
 
                   {subtotal < 500 && (
                     <p className="text-xs text-gray-500">
-                      أضف منتجات بقيمة {formatCurrency(500 - subtotal)} للحصول
-                      على توصيل مجاني
+                      {t('freeDeliveryMessage', { amount: formatCurrency(500 - subtotal) })}
                     </p>
                   )}
                 </div>
 
                 <div className="mt-6 flex justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    الإجمالي
+                    {t('total')}
                   </span>
                   <span className="text-xl font-bold text-primary-500">
                     {formatCurrency(total)}
@@ -227,24 +230,24 @@ export default function CartPage() {
 
                 <Link href="/checkout">
                   <Button className="mt-6 w-full" size="lg">
-                    إتمام الشراء
+                    {t('checkout')}
                   </Button>
                 </Link>
 
                 {/* Payment Methods */}
                 <div className="mt-6 border-t border-gray-200 pt-6 dark:border-gray-700">
                   <p className="text-center text-xs text-gray-500">
-                    نقبل الدفع عبر
+                    {t('acceptedPayments')}
                   </p>
                   <div className="mt-3 flex items-center justify-center gap-4">
                     <div className="rounded bg-gray-100 px-3 py-1 text-xs dark:bg-gray-700">
-                      نقدي
+                      {t('cash')}
                     </div>
                     <div className="rounded bg-gray-100 px-3 py-1 text-xs dark:bg-gray-700">
-                      فودافون كاش
+                      {t('vodafoneCash')}
                     </div>
                     <div className="rounded bg-gray-100 px-3 py-1 text-xs dark:bg-gray-700">
-                      انستاباي
+                      {t('instapay')}
                     </div>
                   </div>
                 </div>

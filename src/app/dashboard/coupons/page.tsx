@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge, Modal } from '@/components/ui'
 import { formatDate, formatCurrency } from '@/utils/format'
 import {
@@ -102,6 +103,8 @@ const statusConfig = {
 }
 
 export default function DashboardCouponsPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -132,15 +135,16 @@ export default function DashboardCouponsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            الكوبونات
+            {t('coupons')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             إنشاء وإدارة كوبونات الخصم
           </p>
         </div>
         <Button onClick={() => setIsModalOpen(true)}>
           <Plus className="h-4 w-4" />
-          إنشاء كوبون
+          {tCommon('add')}
         </Button>
       </div>
 
@@ -201,7 +205,7 @@ export default function DashboardCouponsPage() {
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث بكود الكوبون..."
+              placeholder={`${tCommon('search')}...`}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
@@ -318,11 +322,11 @@ export default function DashboardCouponsPage() {
                 <div className="flex gap-2 pt-2 border-t border-gray-200 dark:border-gray-700">
                   <Button variant="ghost" size="sm" className="flex-1">
                     <Edit className="h-4 w-4" />
-                    تعديل
+                    {tCommon('edit')}
                   </Button>
                   <Button variant="ghost" size="sm" className="flex-1 text-red-600">
                     <Trash2 className="h-4 w-4" />
-                    حذف
+                    {tCommon('delete')}
                   </Button>
                 </div>
               </div>
@@ -336,14 +340,15 @@ export default function DashboardCouponsPage() {
         <Card className="p-12 text-center">
           <Tag className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-4 text-lg font-medium text-gray-900 dark:text-white">
-            لا توجد كوبونات
+            {tCommon('noResults')}
           </h3>
           <p className="mt-2 text-gray-500">
+            {/* TODO: add translation key */}
             لم يتم العثور على كوبونات تطابق معايير البحث
           </p>
           <Button className="mt-4" onClick={() => setIsModalOpen(true)}>
             <Plus className="h-4 w-4" />
-            إنشاء كوبون جديد
+            {tCommon('add')}
           </Button>
         </Card>
       )}
@@ -352,7 +357,7 @@ export default function DashboardCouponsPage() {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="إنشاء كوبون جديد"
+        title={/* TODO: add translation key */ "إنشاء كوبون جديد"}
       >
         <form className="space-y-4">
           {/* Coupon Code */}
@@ -470,14 +475,14 @@ export default function DashboardCouponsPage() {
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button type="submit" className="flex-1">
-              إنشاء الكوبون
+              {tCommon('save')}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsModalOpen(false)}
             >
-              إلغاء
+              {tCommon('cancel')}
             </Button>
           </div>
         </form>

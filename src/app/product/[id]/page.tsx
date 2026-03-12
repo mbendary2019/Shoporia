@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button, Badge, Input } from '@/components/ui'
 import { useCartStore } from '@/store'
@@ -34,6 +35,11 @@ import {
 
 export default function ProductPage() {
   const params = useParams()
+  const t = useTranslations('product')
+  const tc = useTranslations('common')
+  const tnav = useTranslations('nav')
+  const thome = useTranslations('home')
+
   const { addItem } = useCartStore()
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -44,7 +50,7 @@ export default function ProductPage() {
   const productId = params.id as string
 
   const { data: product = null, isLoading, error: productError } = useProduct(productId)
-  const error = productError ? 'حدث خطأ أثناء تحميل المنتج' : (!isLoading && !product ? 'المنتج غير موجود' : null)
+  const error = productError ? tc('error') : (!isLoading && !product ? tc('noResults') : null)
 
   const { data: store = null } = useQuery<Store | null>({
     queryKey: ['store', product?.storeId],
@@ -73,7 +79,7 @@ export default function ProductPage() {
         <main className="flex flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900">
           <div className="text-center">
             <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary-500" />
-            <p className="mt-4 text-gray-600 dark:text-gray-400">جاري تحميل المنتج...</p>
+            <p className="mt-4 text-gray-600 dark:text-gray-400">{tc('loading')}</p>
           </div>
         </main>
         <Footer />
@@ -89,13 +95,14 @@ export default function ProductPage() {
           <div className="text-center">
             <Package className="mx-auto h-16 w-16 text-gray-300" />
             <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
-              {error || 'المنتج غير موجود'}
+              {error || tc('noResults')}
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
+              {/* TODO: add translation key for product-not-found description */}
               عذراً، لم نتمكن من العثور على المنتج المطلوب
             </p>
             <Link href="/marketplace">
-              <Button className="mt-6">تصفح المنتجات</Button>
+              <Button className="mt-6">{tc('browseProducts')}</Button>
             </Link>
           </div>
         </main>
@@ -135,9 +142,9 @@ export default function ProductPage() {
         <div className="container-custom">
           {/* Breadcrumb */}
           <nav className="mb-6 flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-            <Link href="/" className="hover:text-primary-500">الرئيسية</Link>
+            <Link href="/" className="hover:text-primary-500">{tnav('home')}</Link>
             <ChevronLeft className="h-4 w-4" />
-            <Link href="/marketplace" className="hover:text-primary-500">المنتجات</Link>
+            <Link href="/marketplace" className="hover:text-primary-500">{tc('products')}</Link>
             <ChevronLeft className="h-4 w-4" />
             <Link href={`/category/${product.category}`} className="hover:text-primary-500">
               {product.category}
@@ -249,13 +256,13 @@ export default function ProductPage() {
                   <span className="font-medium text-gray-900 dark:text-white">
                     {product.rating}
                   </span>
-                  <span className="text-gray-500">({product.reviewCount} تقييم)</span>
+                  <span className="text-gray-500">({product.reviewCount} {t('reviews')})</span>
                 </div>
 
                 <span className="text-gray-300">|</span>
 
                 <span className="text-gray-600 dark:text-gray-400">
-                  {product.soldCount} مبيعات
+                  {product.soldCount} {t('sales')}
                 </span>
               </div>
 
@@ -301,7 +308,7 @@ export default function ProductPage() {
               {/* Quantity */}
               <div>
                 <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  الكمية
+                  {t('quantity')}
                 </label>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center rounded-lg border border-gray-300 dark:border-gray-600">
@@ -323,10 +330,10 @@ export default function ProductPage() {
                   <span className="text-sm text-gray-500">
                     {product.quantity > 0 ? (
                       <span className="text-green-600">
-                        <Check className="inline h-4 w-4" /> متوفر ({product.quantity} قطعة)
+                        <Check className="inline h-4 w-4" /> {t('inStock')} ({product.quantity})
                       </span>
                     ) : (
-                      <span className="text-red-500">غير متوفر</span>
+                      <span className="text-red-500">{t('outOfStock')}</span>
                     )}
                   </span>
                 </div>
@@ -341,7 +348,7 @@ export default function ProductPage() {
                   disabled={product.quantity === 0}
                 >
                   <ShoppingCart className="h-5 w-5" />
-                  أضف للسلة
+                  {t('addToCart')}
                 </Button>
 
                 <Button
@@ -363,19 +370,20 @@ export default function ProductPage() {
                 <div className="text-center">
                   <Truck className="mx-auto h-6 w-6 text-primary-500" />
                   <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                    توصيل سريع
+                    {t('freeDelivery')}
                   </p>
                 </div>
                 <div className="text-center">
                   <Shield className="mx-auto h-6 w-6 text-primary-500" />
                   <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
+                    {/* TODO: add translation key for quality guarantee */}
                     ضمان الجودة
                   </p>
                 </div>
                 <div className="text-center">
                   <RotateCcw className="mx-auto h-6 w-6 text-primary-500" />
                   <p className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                    استرجاع سهل
+                    {thome('freeReturns')}
                   </p>
                 </div>
               </div>
@@ -408,7 +416,7 @@ export default function ProductPage() {
                     : 'text-gray-600 hover:text-gray-900 dark:text-gray-400'
                 }`}
               >
-                الوصف
+                {t('description')}
               </button>
               <button
                 onClick={() => setActiveTab('reviews')}
@@ -418,7 +426,7 @@ export default function ProductPage() {
                     : 'text-gray-600 hover:text-gray-900 dark:text-gray-400'
                 }`}
               >
-                التقييمات ({product.reviewCount})
+                {t('reviews')} ({product.reviewCount})
               </button>
             </div>
 
@@ -455,7 +463,7 @@ export default function ProductPage() {
                           ))}
                         </div>
                         <p className="mt-1 text-sm text-gray-500">
-                          {product.reviewCount} تقييم
+                          {product.reviewCount} {t('reviews')}
                         </p>
                       </div>
 
@@ -487,7 +495,7 @@ export default function ProductPage() {
                   {reviews.length === 0 ? (
                     <Card className="p-6 text-center">
                       <MessageCircle className="mx-auto h-12 w-12 text-gray-300" />
-                      <p className="mt-4 text-gray-500">لا توجد تقييمات بعد</p>
+                      <p className="mt-4 text-gray-500">{tc('noResults')}</p>
                     </Card>
                   ) : (
                     reviews.map((review) => (
@@ -553,7 +561,7 @@ export default function ProductPage() {
 
                   {reviews.length > 0 && (
                     <Button variant="outline" className="w-full">
-                      عرض المزيد من التقييمات
+                      {tc('viewMore')}
                     </Button>
                   )}
                 </div>
@@ -585,17 +593,21 @@ export default function ProductPage() {
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         {store.rating}
                       </span>
-                      <span>{store.productCount} منتج</span>
+                      <span>{store.productCount} {tc('product')}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="flex gap-3">
                   <Link href={`/store/${store.slug}`}>
-                    <Button variant="outline">زيارة المتجر</Button>
+                    <Button variant="outline">
+                      {/* TODO: add translation key for "visit store" */}
+                      زيارة المتجر
+                    </Button>
                   </Link>
                   <Button variant="outline">
                     <MessageCircle className="h-4 w-4" />
+                    {/* TODO: add translation key for "contact" */}
                     تواصل
                   </Button>
                 </div>
@@ -607,7 +619,7 @@ export default function ProductPage() {
           {relatedProducts.length > 0 && (
             <div className="mt-12">
               <h2 className="mb-6 text-xl font-bold text-gray-900 dark:text-white">
-                منتجات ذات صلة
+                {t('relatedProducts')}
               </h2>
 
               <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">

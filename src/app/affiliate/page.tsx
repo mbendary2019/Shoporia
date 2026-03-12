@@ -11,6 +11,7 @@ import {
   CheckCircle,
   ArrowLeft,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const benefits = [
   {
@@ -52,6 +53,8 @@ const commissionRates = [
 ]
 
 export default function AffiliatePage() {
+  const t = useTranslations('pages.affiliate')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -62,15 +65,15 @@ export default function AffiliatePage() {
           <div className="container-custom">
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div className="text-white">
-                <Badge className="bg-white/20 text-white mb-4">برنامج الأفلييت</Badge>
+                <Badge className="bg-white/20 text-white mb-4">{t('affiliateProgram')}</Badge>
                 <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                  اربح المال مع Shoporia
+                  {t('title')}
                 </h1>
                 <p className="text-white/70 text-lg mb-6">
-                  انضم لآلاف المسوقين الناجحين واكسب عمولات على كل عملية بيع تتم من خلالك
+                  {t('subtitle')}
                 </p>
                 <Button className="bg-white text-green-700 hover:bg-gray-100 text-lg px-8 py-3">
-                  ابدأ الآن مجاناً
+                  {t('startNowFree')}
                   <ArrowLeft className="h-5 w-5 mr-2" />
                 </Button>
               </div>
@@ -87,7 +90,7 @@ export default function AffiliatePage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              لماذا تنضم لبرنامجنا؟
+              {t('whyJoin')}
             </h2>
             <div className="grid md:grid-cols-4 gap-6">
               {benefits.map((benefit) => (
@@ -109,7 +112,7 @@ export default function AffiliatePage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              كيف يعمل البرنامج؟
+              {t('howItWorks')}
             </h2>
             <div className="grid md:grid-cols-4 gap-6">
               {howItWorks.map((step) => (
@@ -133,7 +136,7 @@ export default function AffiliatePage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              نسب العمولات
+              {t('commissionRates')}
             </h2>
             <div className="grid md:grid-cols-3 gap-4 max-w-2xl mx-auto">
               {commissionRates.map((rate) => (
@@ -149,10 +152,10 @@ export default function AffiliatePage() {
         {/* CTA */}
         <section className="py-12 bg-green-600 text-white">
           <div className="container-custom text-center">
-            <h2 className="text-2xl font-bold mb-4">مستعد للبدء؟</h2>
-            <p className="text-white/80 mb-6">انضم الآن مجاناً وابدأ في كسب العمولات</p>
+            <h2 className="text-2xl font-bold mb-4">{t('readyToStart')}</h2>
+            <p className="text-white/80 mb-6">{t('readyToStartDescription')}</p>
             <Button className="bg-white text-green-700 hover:bg-gray-100">
-              سجّل الآن
+              {t('registerNow')}
             </Button>
           </div>
         </section>

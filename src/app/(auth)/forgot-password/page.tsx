@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { Button, Input } from '@/components/ui'
 import { resetPasswordSchema, type ResetPasswordInput } from '@/lib/validations'
 import { resetPassword } from '@/services/auth'
@@ -13,6 +14,8 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const t = useTranslations('auth')
+  const tErrors = useTranslations('errors')
 
   const {
     register,
@@ -29,7 +32,7 @@ export default function ForgotPasswordPage() {
       await resetPassword(data.email)
       setIsSuccess(true)
     } catch {
-      setError('حدث خطأ أثناء إرسال رابط إعادة تعيين كلمة المرور')
+      setError(tErrors('resetPasswordError'))
     } finally {
       setIsLoading(false)
     }
@@ -42,14 +45,13 @@ export default function ForgotPasswordPage() {
           <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
         </div>
         <h2 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white">
-          تم إرسال الرابط
+          {t('resetLinkSent')}
         </h2>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني. يرجى التحقق
-          من صندوق الوارد.
+          {t('resetLinkSentDescription')}
         </p>
         <Link href="/login">
-          <Button className="mt-6">العودة لتسجيل الدخول</Button>
+          <Button className="mt-6">{t('backToLogin')}</Button>
         </Link>
       </div>
     )
@@ -62,15 +64,15 @@ export default function ForgotPasswordPage() {
         className="flex items-center gap-1 text-sm text-gray-600 hover:text-primary-500 dark:text-gray-400"
       >
         <ArrowRight className="h-4 w-4" />
-        العودة لتسجيل الدخول
+        {t('backToLogin')}
       </Link>
 
       <div className="mt-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          نسيت كلمة المرور؟
+          {t('forgotPasswordTitle')}
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          أدخل بريدك الإلكتروني وسنرسل لك رابط لإعادة تعيين كلمة المرور
+          {t('forgotPasswordDescription')}
         </p>
       </div>
 
@@ -82,7 +84,7 @@ export default function ForgotPasswordPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <Input
-          label="البريد الإلكتروني"
+          label={t('email')}
           type="email"
           placeholder="example@email.com"
           leftIcon={<Mail className="h-5 w-5" />}
@@ -91,7 +93,7 @@ export default function ForgotPasswordPage() {
         />
 
         <Button type="submit" className="w-full" isLoading={isLoading}>
-          إرسال رابط إعادة التعيين
+          {t('sendResetLink')}
         </Button>
       </form>
     </>

@@ -3,8 +3,11 @@
 import { Header, Footer } from '@/components/layout'
 import { Card } from '@/components/ui'
 import { FileText, Scale } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function TermsPage() {
+  const t = useTranslations('pages.terms')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -17,10 +20,10 @@ export default function TermsPage() {
               <Scale className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              شروط الاستخدام
+              {t('title')}
             </h1>
             <p className="text-white/70">
-              آخر تحديث: 10 ديسمبر 2024
+              {t('lastUpdated')}
             </p>
           </div>
         </section>

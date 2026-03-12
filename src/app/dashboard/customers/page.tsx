@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge, Avatar, Modal } from '@/components/ui'
 import { formatDate, formatCurrency } from '@/utils/format'
 import {
@@ -103,6 +104,8 @@ const statusConfig = {
 }
 
 export default function DashboardCustomersPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [selectedCustomer, setSelectedCustomer] = useState<(typeof customers)[0] | null>(null)
@@ -132,14 +135,16 @@ export default function DashboardCustomersPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            العملاء
+            {t('customers')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             إدارة ومتابعة عملاء متجرك
           </p>
         </div>
         <Button variant="outline">
           <Download className="h-4 w-4" />
+          {/* TODO: add translation key */}
           تصدير البيانات
         </Button>
       </div>
@@ -149,7 +154,7 @@ export default function DashboardCustomersPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">إجمالي العملاء</p>
+              <p className="text-sm text-gray-500">{t('totalCustomers')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {stats.total}
               </p>
@@ -201,7 +206,7 @@ export default function DashboardCustomersPage() {
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث بالاسم، البريد، أو الهاتف..."
+              placeholder={`${tCommon('search')}...`}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
@@ -212,13 +217,13 @@ export default function DashboardCustomersPage() {
               onChange={(e) => setFilterStatus(e.target.value)}
               className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800"
             >
-              <option value="">كل الحالات</option>
-              <option value="active">نشط</option>
-              <option value="inactive">غير نشط</option>
+              <option value="">{/* TODO: add translation key */}كل الحالات</option>
+              <option value="active">{tCommon('available')}</option>
+              <option value="inactive">{tCommon('unavailable')}</option>
             </select>
             <Button variant="outline" size="sm">
               <Filter className="h-4 w-4" />
-              فلاتر متقدمة
+              {tCommon('filter')}
             </Button>
           </div>
         </div>
@@ -348,7 +353,7 @@ export default function DashboardCustomersPage() {
       <Modal
         isOpen={!!selectedCustomer}
         onClose={() => setSelectedCustomer(null)}
-        title="تفاصيل العميل"
+        title={/* TODO: add translation key */ "تفاصيل العميل"}
         size="lg"
       >
         {selectedCustomer && (
@@ -443,7 +448,7 @@ export default function DashboardCustomersPage() {
             {/* Recent Orders */}
             <div>
               <h4 className="mb-3 font-medium text-gray-900 dark:text-white">
-                آخر الطلبات
+                {t('recentOrders')}
               </h4>
               <div className="space-y-2">
                 {[1, 2, 3].map((order) => (
@@ -479,10 +484,12 @@ export default function DashboardCustomersPage() {
             <div className="flex gap-3">
               <Button className="flex-1">
                 <MessageSquare className="h-4 w-4" />
+                {/* TODO: add translation key */}
                 إرسال رسالة
               </Button>
               <Button variant="outline" className="flex-1">
                 <Mail className="h-4 w-4" />
+                {/* TODO: add translation key */}
                 إرسال بريد
               </Button>
             </div>

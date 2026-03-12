@@ -10,6 +10,7 @@ import {
   Percent,
   Shield,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const plans = [
   {
@@ -50,6 +51,8 @@ const partners = [
 ]
 
 export default function InstallmentsPage() {
+  const t = useTranslations('pages.installments')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -62,10 +65,10 @@ export default function InstallmentsPage() {
               <Calculator className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              خطط التقسيط
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto text-lg">
-              اشترِ الآن وادفع لاحقاً بأقساط مريحة تناسب ميزانيتك
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -84,16 +87,16 @@ export default function InstallmentsPage() {
                   <div className="text-4xl font-bold text-purple-600 mb-2">
                     {plan.months}
                   </div>
-                  <div className="text-gray-600 dark:text-gray-400 mb-4">شهر</div>
+                  <div className="text-gray-600 dark:text-gray-400 mb-4">{t('month')}</div>
                   <div className="flex items-center justify-center gap-1 mb-4">
                     {plan.interest === 0 ? (
-                      <Badge className="bg-green-100 text-green-700">بدون فوائد</Badge>
+                      <Badge className="bg-green-100 text-green-700">{t('noInterest')}</Badge>
                     ) : (
-                      <Badge className="bg-gray-100 text-gray-700">{plan.interest}% فائدة</Badge>
+                      <Badge className="bg-gray-100 text-gray-700">{plan.interest}% {t('interest')}</Badge>
                     )}
                   </div>
                   <div className="text-sm text-gray-500">
-                    الحد الأدنى: {plan.minAmount} د.ك
+                    {t('minimumAmount')}: {plan.minAmount} د.ك
                   </div>
                 </Card>
               ))}
@@ -105,7 +108,7 @@ export default function InstallmentsPage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              كيف يعمل التقسيط؟
+              {t('howItWorks')}
             </h2>
             <div className="grid md:grid-cols-4 gap-6 max-w-4xl mx-auto">
               {[
@@ -134,7 +137,7 @@ export default function InstallmentsPage() {
         <section className="py-12">
           <div className="container-custom text-center">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
-              شركاء التقسيط
+              {t('partners')}
             </h2>
             <div className="flex flex-wrap justify-center gap-4">
               {partners.map((partner) => (
@@ -156,28 +159,28 @@ export default function InstallmentsPage() {
               <Card className="p-6 text-center">
                 <Percent className="h-10 w-10 text-purple-600 mx-auto mb-3" />
                 <h3 className="font-bold text-gray-900 dark:text-white mb-1">
-                  بدون دفعة مقدمة
+                  {t('noDownPayment')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  في معظم الخطط
+                  {t('inMostPlans')}
                 </p>
               </Card>
               <Card className="p-6 text-center">
                 <Shield className="h-10 w-10 text-purple-600 mx-auto mb-3" />
                 <h3 className="font-bold text-gray-900 dark:text-white mb-1">
-                  موافقة فورية
+                  {t('instantApproval')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  بدون أوراق معقدة
+                  {t('noComplexPapers')}
                 </p>
               </Card>
               <Card className="p-6 text-center">
                 <CheckCircle className="h-10 w-10 text-purple-600 mx-auto mb-3" />
                 <h3 className="font-bold text-gray-900 dark:text-white mb-1">
-                  رسوم شفافة
+                  {t('transparentFees')}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  لا رسوم خفية
+                  {t('noHiddenFees')}
                 </p>
               </Card>
             </div>

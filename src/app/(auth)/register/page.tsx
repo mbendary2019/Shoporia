@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslations } from 'next-intl'
 import { Button, Input } from '@/components/ui'
 import { registerSchema, type RegisterInput } from '@/lib/validations'
 import { signUpWithEmail, signInWithGoogle, handleRedirectResult } from '@/services/auth'
@@ -18,6 +19,8 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const t = useTranslations('auth')
+  const tErrors = useTranslations('errors')
 
   // Handle Google redirect result (when popup fails and redirect is used)
   useEffect(() => {
@@ -55,11 +58,11 @@ export default function RegisterPage() {
     } catch (err: unknown) {
       const error = err as { code?: string }
       if (error.code === 'auth/email-already-in-use') {
-        setError('البريد الإلكتروني مستخدم بالفعل')
+        setError(tErrors('emailInUse'))
       } else if (error.code === 'auth/weak-password') {
-        setError('كلمة المرور ضعيفة جداً')
+        setError(tErrors('weakPassword'))
       } else {
-        setError('حدث خطأ أثناء إنشاء الحساب')
+        setError(tErrors('createAccountError'))
       }
     } finally {
       setIsLoading(false)
@@ -76,15 +79,15 @@ export default function RegisterPage() {
     } catch (err: unknown) {
       const error = err as { code?: string; message?: string }
       if (error.code === 'auth/popup-closed-by-user') {
-        setError('تم إغلاق نافذة التسجيل')
+        setError(tErrors('registerPopupClosed'))
       } else if (error.code === 'auth/popup-blocked') {
-        setError('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة')
+        setError(tErrors('popupBlocked'))
       } else if (error.code === 'auth/operation-not-allowed') {
-        setError('التسجيل عبر Google غير مفعّل. يرجى تفعيله في Firebase Console')
+        setError(tErrors('operationNotAllowed'))
       } else if (error.code === 'auth/unauthorized-domain') {
-        setError('هذا الموقع غير مصرح له. يرجى إضافته في Firebase Console')
+        setError(tErrors('unauthorizedDomain'))
       } else {
-        setError('حدث خطأ أثناء التسجيل بحساب Google')
+        setError(tErrors('registerGoogleError'))
       }
     } finally {
       setIsLoading(false)
@@ -95,15 +98,15 @@ export default function RegisterPage() {
     <>
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          إنشاء حساب جديد
+          {t('createAccount')}
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          لديك حساب بالفعل؟{' '}
+          {t('hasAccount')}{' '}
           <Link
             href="/login"
             className="font-medium text-primary-500 hover:text-primary-600"
           >
-            تسجيل الدخول
+            {t('login')}
           </Link>
         </p>
       </div>
@@ -116,7 +119,7 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <Input
-          label="الاسم الكامل"
+          label={t('fullName')}
           type="text"
           placeholder="أحمد محمد"
           leftIcon={<User className="h-5 w-5" />}
@@ -125,7 +128,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="البريد الإلكتروني"
+          label={t('email')}
           type="email"
           placeholder="example@email.com"
           leftIcon={<Mail className="h-5 w-5" />}
@@ -134,7 +137,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="رقم الهاتف (اختياري)"
+          label={t('phoneOptional')}
           type="tel"
           placeholder="01xxxxxxxxx"
           leftIcon={<Phone className="h-5 w-5" />}
@@ -143,7 +146,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="كلمة المرور"
+          label={t('password')}
           type={showPassword ? 'text' : 'password'}
           placeholder="••••••••"
           leftIcon={<Lock className="h-5 w-5" />}
@@ -165,7 +168,7 @@ export default function RegisterPage() {
         />
 
         <Input
-          label="تأكيد كلمة المرور"
+          label={t('confirmPassword')}
           type={showConfirmPassword ? 'text' : 'password'}
           placeholder="••••••••"
           leftIcon={<Lock className="h-5 w-5" />}
@@ -197,19 +200,19 @@ export default function RegisterPage() {
             htmlFor="acceptTerms"
             className="text-sm text-gray-600 dark:text-gray-400"
           >
-            أوافق على{' '}
+            {t('acceptTerms')}{' '}
             <Link
               href="/terms"
               className="text-primary-500 hover:text-primary-600"
             >
-              الشروط والأحكام
+              {t('termsAndConditions')}
             </Link>{' '}
             و{' '}
             <Link
               href="/privacy"
               className="text-primary-500 hover:text-primary-600"
             >
-              سياسة الخصوصية
+              {t('privacyPolicy')}
             </Link>
           </label>
         </div>
@@ -218,7 +221,7 @@ export default function RegisterPage() {
         )}
 
         <Button type="submit" className="w-full" isLoading={isLoading}>
-          إنشاء حساب
+          {t('register')}
         </Button>
       </form>
 
@@ -260,7 +263,7 @@ export default function RegisterPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            التسجيل بحساب Google
+            {t('registerWithGoogle')}
           </Button>
         </div>
       </div>

@@ -1,11 +1,14 @@
+import { getTranslations } from 'next-intl/server'
 import { generatePageMetadata } from '@/lib/metadata'
 import MarketplacePage from './marketplace-page'
 
-export const metadata = generatePageMetadata({
-  title: 'السوق',
-  description:
-    'تصفح آلاف المنتجات من أفضل المتاجر في الكويت. إلكترونيات، أزياء، منزل، وأكثر على Shoporia.',
-})
+export async function generateMetadata() {
+  const t = await getTranslations('metadata')
+  return generatePageMetadata({
+    title: t('marketplaceTitle'),
+    description: t('marketplaceDescription'),
+  })
+}
 
 export default function Page() {
   return <MarketplacePage />

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
 import { useCartStore } from '@/store'
@@ -62,6 +63,7 @@ const wishlistItems = [
 ]
 
 export default function AccountWishlistPage() {
+  const t = useTranslations('wishlist')
   const [items, setItems] = useState(wishlistItems)
   const { addItem } = useCartStore()
 
@@ -110,17 +112,17 @@ export default function AccountWishlistPage() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-              المفضلة
+              {t('title')}
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              {items.length} منتج في المفضلة
+              {t('productsInWishlist', { count: items.length })}
             </p>
           </div>
 
           {items.length > 0 && (
             <Button onClick={handleAddAllToCart}>
               <ShoppingCart className="h-4 w-4" />
-              إضافة الكل للسلة
+              {t('addAllToCart')}
             </Button>
           )}
         </div>
@@ -166,7 +168,7 @@ export default function AccountWishlistPage() {
                       <span className="text-sm">{item.rating}</span>
                     </div>
                     {!item.inStock && (
-                      <Badge variant="danger">غير متوفر</Badge>
+                      <Badge variant="danger">{t('outOfStock')}</Badge>
                     )}
                   </div>
 
@@ -191,7 +193,7 @@ export default function AccountWishlistPage() {
                   className="flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium text-primary-500 hover:bg-primary-50 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-primary-900/20"
                 >
                   <ShoppingCart className="h-4 w-4" />
-                  أضف للسلة
+                  {t('addToCart')}
                 </button>
                 <div className="w-px bg-gray-200 dark:bg-gray-700" />
                 <button
@@ -199,7 +201,7 @@ export default function AccountWishlistPage() {
                   className="flex flex-1 items-center justify-center gap-2 py-3 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                 >
                   <Trash2 className="h-4 w-4" />
-                  إزالة
+                  {t('remove')}
                 </button>
               </div>
             </Card>
@@ -209,10 +211,10 @@ export default function AccountWishlistPage() {
         <Card className="p-12 text-center">
           <Heart className="mx-auto h-12 w-12 text-gray-400" />
           <p className="mt-4 text-gray-600 dark:text-gray-400">
-            قائمة المفضلة فارغة
+            {t('wishlistEmpty')}
           </p>
           <Link href="/marketplace" className="mt-4 inline-block">
-            <Button>تصفح المنتجات</Button>
+            <Button>{t('browseProducts')}</Button>
           </Link>
         </Card>
       )}

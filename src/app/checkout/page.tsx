@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button, Input, Textarea, Select } from '@/components/ui'
 import { useCartStore, useAuthStore } from '@/store'
@@ -50,41 +51,46 @@ const checkoutSchema = z.object({
 
 type CheckoutInput = z.infer<typeof checkoutSchema>
 
-const steps = [
-  { id: 1, name: 'العنوان', icon: MapPin },
-  { id: 2, name: 'الدفع', icon: CreditCard },
-  { id: 3, name: 'التأكيد', icon: Check },
-]
-
-const paymentMethods = [
-  {
-    id: 'cash',
-    name: 'الدفع عند الاستلام',
-    description: 'ادفع نقداً عند استلام طلبك',
-    icon: Banknote,
-  },
-  {
-    id: 'knet',
-    name: 'كي نت (KNET)',
-    description: 'ادفع عبر بطاقة كي نت',
-    icon: Smartphone,
-  },
-  {
-    id: 'bank_transfer',
-    name: 'تحويل بنكي',
-    description: 'تحويل بنكي مباشر لحسابنا',
-    icon: Building2,
-  },
-]
-
 export default function CheckoutPage() {
   const router = useRouter()
+  const t = useTranslations('checkout')
+  const tc = useTranslations('common')
+  const tauth = useTranslations('auth')
+  const tcart = useTranslations('cart')
+
   const { user, isAuthenticated } = useAuthStore()
   const { items, getSubtotal, getItemCount, clearCart, storeId: cartStoreId } = useCartStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [orderError, setOrderError] = useState<string | null>(null)
   const [deliveryMethod, setDeliveryMethod] = useState<'standard' | 'express'>('standard')
+
+  const steps = [
+    { id: 1, name: t('step.address'), icon: MapPin },
+    { id: 2, name: t('step.payment'), icon: CreditCard },
+    { id: 3, name: t('step.confirmation'), icon: Check },
+  ]
+
+  const paymentMethods = [
+    {
+      id: 'cash',
+      name: t('cashOnDelivery'),
+      description: t('cashOnDeliveryDesc'),
+      icon: Banknote,
+    },
+    {
+      id: 'knet',
+      name: t('knet'),
+      description: t('knetDesc'),
+      icon: Smartphone,
+    },
+    {
+      id: 'bank_transfer',
+      name: t('bankTransfer'),
+      description: t('bankTransferDesc'),
+      icon: Building2,
+    },
+  ]
 
   const {
     register,
@@ -138,7 +144,7 @@ export default function CheckoutPage() {
 
       const deliveryAddress: Address = {
         id: crypto.randomUUID(),
-        label: 'عنوان التوصيل',
+        label: t('addressLabel'),
         fullName: data.fullName,
         phone: data.phone,
         street: data.street,
@@ -181,13 +187,13 @@ export default function CheckoutPage() {
               <ShoppingCart className="h-12 w-12 text-gray-400" />
             </div>
             <h2 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white">
-              السلة فارغة
+              {t('cartEmpty')}
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              أضف منتجات للسلة لإتمام الطلب
+              {t('cartEmptyDescription')}
             </p>
             <Link href="/marketplace">
-              <Button className="mt-6">تصفح المنتجات</Button>
+              <Button className="mt-6">{tc('browseProducts')}</Button>
             </Link>
           </div>
         </main>
@@ -204,19 +210,19 @@ export default function CheckoutPage() {
           <Card className="mx-4 max-w-md p-8 text-center">
             <User className="mx-auto h-16 w-16 text-primary-500" />
             <h2 className="mt-4 text-2xl font-bold text-gray-900 dark:text-white">
-              سجل دخولك لإتمام الطلب
+              {tauth('loginRequired')}
             </h2>
             <p className="mt-2 text-gray-600 dark:text-gray-400">
-              يجب تسجيل الدخول أولاً لإكمال عملية الشراء
+              {tauth('loginRequiredDescription')}
             </p>
             <div className="mt-6 flex gap-3">
               <Link href="/login?redirect=/checkout" className="flex-1">
                 <Button variant="outline" className="w-full">
-                  تسجيل الدخول
+                  {tauth('login')}
                 </Button>
               </Link>
               <Link href="/register?redirect=/checkout" className="flex-1">
-                <Button className="w-full">إنشاء حساب</Button>
+                <Button className="w-full">{tauth('createAccount')}</Button>
               </Link>
             </div>
           </Card>
@@ -238,11 +244,11 @@ export default function CheckoutPage() {
             className="mb-6 inline-flex items-center gap-2 text-gray-600 hover:text-primary-500 dark:text-gray-400"
           >
             <ArrowLeft className="h-4 w-4" />
-            العودة للسلة
+            {t('backToCart')}
           </Link>
 
           <h1 className="mb-8 text-2xl font-bold text-gray-900 dark:text-white">
-            إتمام الطلب
+            {t('title')}
           </h1>
 
           {/* Progress Steps */}
@@ -298,21 +304,21 @@ export default function CheckoutPage() {
                 {currentStep === 1 && (
                   <Card className="p-6">
                     <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-                      عنوان التوصيل
+                      {t('deliveryAddress')}
                     </h2>
 
                     <div className="space-y-6">
                       <div className="grid gap-4 sm:grid-cols-2">
                         <Input
-                          label="الاسم بالكامل"
-                          placeholder="الاسم الأول والأخير"
+                          label={t('fullName')}
+                          placeholder={t('fullNamePlaceholder')}
                           leftIcon={<User className="h-5 w-5" />}
                           error={errors.fullName?.message}
                           {...register('fullName')}
                         />
 
                         <Input
-                          label="رقم الهاتف"
+                          label={tauth('phone')}
                           type="tel"
                           placeholder="5xxxxxxx"
                           leftIcon={<Phone className="h-5 w-5" />}
@@ -323,8 +329,8 @@ export default function CheckoutPage() {
 
                       <div className="grid gap-4 sm:grid-cols-2">
                         <Select
-                          label="المحافظة"
-                          placeholder="اختر المحافظة"
+                          label={t('governorate')}
+                          placeholder={t('governoratePlaceholder')}
                           options={GOVERNORATES.map((gov) => ({
                             value: gov.id,
                             label: gov.name,
@@ -335,7 +341,7 @@ export default function CheckoutPage() {
                         />
 
                         <Input
-                          label="المدينة / المنطقة"
+                          label={t('cityArea')}
                           placeholder="مثال: السالمية"
                           error={errors.city?.message}
                           {...register('city')}
@@ -343,8 +349,8 @@ export default function CheckoutPage() {
                       </div>
 
                       <Input
-                        label="العنوان التفصيلي"
-                        placeholder="اسم الشارع، رقم المبنى..."
+                        label={t('detailedAddress')}
+                        placeholder={t('detailedAddressPlaceholder')}
                         leftIcon={<MapPin className="h-5 w-5" />}
                         error={errors.street?.message}
                         {...register('street')}
@@ -352,29 +358,29 @@ export default function CheckoutPage() {
 
                       <div className="grid gap-4 sm:grid-cols-3">
                         <Input
-                          label="المبنى (اختياري)"
-                          placeholder="رقم/اسم المبنى"
+                          label={t('building')}
+                          placeholder={t('buildingPlaceholder')}
                           leftIcon={<Building className="h-5 w-5" />}
                           {...register('building')}
                         />
 
                         <Input
-                          label="الطابق (اختياري)"
-                          placeholder="رقم الطابق"
+                          label={t('floor')}
+                          placeholder={t('floorPlaceholder')}
                           {...register('floor')}
                         />
 
                         <Input
-                          label="الشقة (اختياري)"
-                          placeholder="رقم الشقة"
+                          label={t('apartment')}
+                          placeholder={t('apartmentPlaceholder')}
                           leftIcon={<Home className="h-5 w-5" />}
                           {...register('apartment')}
                         />
                       </div>
 
                       <Textarea
-                        label="ملاحظات التوصيل (اختياري)"
-                        placeholder="أي تعليمات إضافية للمندوب..."
+                        label={t('deliveryNotes')}
+                        placeholder={t('deliveryNotesPlaceholder')}
                         rows={3}
                         {...register('notes')}
                       />
@@ -382,7 +388,7 @@ export default function CheckoutPage() {
                       {/* Delivery Method */}
                       <div>
                         <label className="mb-3 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                          طريقة التوصيل
+                          {t('deliveryMethod')}
                         </label>
                         <div className="grid gap-4 sm:grid-cols-2">
                           <button
@@ -406,14 +412,14 @@ export default function CheckoutPage() {
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
                                 <p className="font-medium text-gray-900 dark:text-white">
-                                  توصيل عادي
+                                  {t('standardDelivery')}
                                 </p>
                                 <p className="font-medium text-gray-900 dark:text-white">
-                                  {subtotal > 500 ? 'مجاني' : formatCurrency(50)}
+                                  {subtotal > 500 ? tc('free') : formatCurrency(50)}
                                 </p>
                               </div>
                               <p className="mt-1 text-sm text-gray-500">
-                                3-5 أيام عمل
+                                {t('standardDeliveryTime')}
                               </p>
                             </div>
                           </button>
@@ -439,14 +445,14 @@ export default function CheckoutPage() {
                             <div className="flex-1">
                               <div className="flex items-center justify-between">
                                 <p className="font-medium text-gray-900 dark:text-white">
-                                  توصيل سريع
+                                  {t('expressDelivery')}
                                 </p>
                                 <p className="font-medium text-gray-900 dark:text-white">
                                   {formatCurrency(75)}
                                 </p>
                               </div>
                               <p className="mt-1 text-sm text-gray-500">
-                                1-2 يوم عمل
+                                {t('expressDeliveryTime')}
                               </p>
                             </div>
                           </button>
@@ -460,7 +466,7 @@ export default function CheckoutPage() {
                 {currentStep === 2 && (
                   <Card className="p-6">
                     <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-                      طريقة الدفع
+                      {t('paymentMethod')}
                     </h2>
 
                     <div className="space-y-4">
@@ -505,10 +511,10 @@ export default function CheckoutPage() {
                     {watchedValues.paymentMethod === 'knet' && (
                       <div className="mt-6 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
                         <h4 className="font-medium text-blue-700 dark:text-blue-400">
-                          تعليمات كي نت (KNET)
+                          {t('knetInstructions')}
                         </h4>
                         <p className="mt-2 text-sm text-blue-600 dark:text-blue-400">
-                          بعد إتمام الطلب، سيتم توجيهك لبوابة الدفع الإلكتروني لإتمام الدفع عبر بطاقة كي نت
+                          {t('knetInstructionsDesc')}
                         </p>
                       </div>
                     )}
@@ -516,12 +522,10 @@ export default function CheckoutPage() {
                     {watchedValues.paymentMethod === 'bank_transfer' && (
                       <div className="mt-6 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
                         <h4 className="font-medium text-green-700 dark:text-green-400">
-                          تعليمات التحويل البنكي
+                          {t('bankTransferInstructions')}
                         </h4>
                         <p className="mt-2 text-sm text-green-600 dark:text-green-400">
-                          بعد إتمام الطلب، قم بالتحويل إلى حسابنا البنكي: <strong>بنك الكويت الوطني</strong>
-                          <br />
-                          ثم أرسل صورة إيصال التحويل عبر واتساب على الرقم: <strong>50001234</strong>
+                          {t('bankTransferInstructionsDesc')}
                         </p>
                       </div>
                     )}
@@ -532,21 +536,21 @@ export default function CheckoutPage() {
                 {currentStep === 3 && (
                   <Card className="p-6">
                     <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
-                      مراجعة الطلب
+                      {t('reviewOrder')}
                     </h2>
 
                     {/* Address Summary */}
                     <div className="mb-6 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
                       <div className="flex items-center justify-between">
                         <h3 className="font-medium text-gray-900 dark:text-white">
-                          عنوان التوصيل
+                          {t('deliveryAddress')}
                         </h3>
                         <button
                           type="button"
                           onClick={() => setCurrentStep(1)}
                           className="text-sm text-primary-500 hover:underline"
                         >
-                          تعديل
+                          {tc('edit')}
                         </button>
                       </div>
                       <div className="mt-3 text-sm text-gray-600 dark:text-gray-400">
@@ -556,9 +560,9 @@ export default function CheckoutPage() {
                         <p>{watchedValues.phone}</p>
                         <p className="mt-1">
                           {watchedValues.street}
-                          {watchedValues.building && `, مبنى ${watchedValues.building}`}
-                          {watchedValues.floor && `, طابق ${watchedValues.floor}`}
-                          {watchedValues.apartment && `, شقة ${watchedValues.apartment}`}
+                          {watchedValues.building && `, ${t('buildingLabel')} ${watchedValues.building}`}
+                          {watchedValues.floor && `, ${t('floorLabel')} ${watchedValues.floor}`}
+                          {watchedValues.apartment && `, ${t('apartmentLabel')} ${watchedValues.apartment}`}
                         </p>
                         <p>
                           {watchedValues.city}, {GOVERNORATES.find(g => g.id === watchedValues.governorate)?.nameAr}
@@ -570,14 +574,14 @@ export default function CheckoutPage() {
                     <div className="mb-6 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
                       <div className="flex items-center justify-between">
                         <h3 className="font-medium text-gray-900 dark:text-white">
-                          طريقة الدفع
+                          {t('paymentMethod')}
                         </h3>
                         <button
                           type="button"
                           onClick={() => setCurrentStep(2)}
                           className="text-sm text-primary-500 hover:underline"
                         >
-                          تعديل
+                          {tc('edit')}
                         </button>
                       </div>
                       <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
@@ -588,7 +592,7 @@ export default function CheckoutPage() {
                     {/* Items */}
                     <div className="rounded-lg border border-gray-200 dark:border-gray-700">
                       <h3 className="border-b border-gray-200 p-4 font-medium text-gray-900 dark:border-gray-700 dark:text-white">
-                        المنتجات ({getItemCount()})
+                        {tc('products')} ({getItemCount()})
                       </h3>
                       <div className="divide-y divide-gray-200 dark:divide-gray-700">
                         {items.map((item) => {
@@ -611,6 +615,7 @@ export default function CheckoutPage() {
                                   </p>
                                 )}
                                 <p className="text-sm text-gray-500">
+                                  {/* TODO: add translation key for "الكمية:" */}
                                   الكمية: {item.quantity}
                                 </p>
                               </div>
@@ -632,13 +637,14 @@ export default function CheckoutPage() {
                           required
                         />
                         <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {/* TODO: add translation key for full terms acceptance text */}
                           أوافق على{' '}
                           <Link href="/terms" className="text-primary-500 hover:underline">
-                            شروط الاستخدام
+                            {t('termsOfUse')}
                           </Link>{' '}
                           و{' '}
                           <Link href="/privacy" className="text-primary-500 hover:underline">
-                            سياسة الخصوصية
+                            {tauth('privacyPolicy')}
                           </Link>
                         </span>
                       </label>
@@ -655,17 +661,17 @@ export default function CheckoutPage() {
                     disabled={currentStep === 1}
                   >
                     <ChevronRight className="h-4 w-4" />
-                    السابق
+                    {tc('previous')}
                   </Button>
 
                   {currentStep < steps.length ? (
                     <Button type="button" onClick={nextStep}>
-                      التالي
+                      {tc('next')}
                       <ChevronLeft className="h-4 w-4" />
                     </Button>
                   ) : (
                     <Button type="submit" isLoading={isLoading}>
-                      تأكيد الطلب
+                      {t('placeOrder')}
                     </Button>
                   )}
                 </div>
@@ -682,7 +688,7 @@ export default function CheckoutPage() {
             <div>
               <Card className="sticky top-24 p-6">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  ملخص الطلب
+                  {t('orderSummary')}
                 </h2>
 
                 <div className="mt-6 space-y-4">
@@ -711,24 +717,24 @@ export default function CheckoutPage() {
 
                   {items.length > 3 && (
                     <p className="text-sm text-gray-500 text-center">
-                      +{items.length - 3} منتجات أخرى
+                      {tc('moreItems', { count: items.length - 3 })}
                     </p>
                   )}
                 </div>
 
                 <div className="mt-6 space-y-3 border-t border-gray-200 pt-6 dark:border-gray-700">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">المجموع الفرعي</span>
+                    <span className="text-gray-600 dark:text-gray-400">{tcart('subtotal')}</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {formatCurrency(subtotal)}
                     </span>
                   </div>
 
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">التوصيل</span>
+                    <span className="text-gray-600 dark:text-gray-400">{tcart('delivery')}</span>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {deliveryFee === 0 ? (
-                        <span className="text-green-600">مجاني</span>
+                        <span className="text-green-600">{tc('free')}</span>
                       ) : (
                         formatCurrency(deliveryFee)
                       )}
@@ -738,7 +744,7 @@ export default function CheckoutPage() {
 
                 <div className="mt-6 flex justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
                   <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                    الإجمالي
+                    {tcart('total')}
                   </span>
                   <span className="text-xl font-bold text-primary-500">
                     {formatCurrency(total)}
@@ -749,11 +755,11 @@ export default function CheckoutPage() {
                 <div className="mt-6 flex items-center justify-center gap-4 border-t border-gray-200 pt-6 dark:border-gray-700">
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <Shield className="h-4 w-4" />
-                    دفع آمن
+                    {t('securePayment')}
                   </div>
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <Truck className="h-4 w-4" />
-                    توصيل سريع
+                    {t('fastDelivery')}
                   </div>
                 </div>
               </Card>

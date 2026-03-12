@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Button, Input } from '@/components/ui'
 import { Phone, ArrowLeft, Shield } from 'lucide-react'
 
@@ -13,11 +14,12 @@ export default function PhoneLoginPage() {
   const [otp, setOtp] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const t = useTranslations('auth')
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!phone.trim()) {
-      setError('يرجى إدخال رقم الهاتف')
+      setError(t('verifyPhone'))
       return
     }
 
@@ -26,9 +28,9 @@ export default function PhoneLoginPage() {
       setError(null)
       // Phone auth requires reCAPTCHA setup
       // For now, show a message that this feature is coming soon
-      setError('تسجيل الدخول برقم الهاتف قريباً. يرجى استخدام البريد الإلكتروني أو Google.')
+      setError(t('loginWithPhone'))
     } catch {
-      setError('حدث خطأ. يرجى المحاولة مرة أخرى.')
+      setError(t('verifyPhone'))
     } finally {
       setIsLoading(false)
     }
@@ -37,7 +39,7 @@ export default function PhoneLoginPage() {
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!otp.trim()) {
-      setError('يرجى إدخال رمز التحقق')
+      setError(t('enterOtp'))
       return
     }
 
@@ -46,7 +48,7 @@ export default function PhoneLoginPage() {
       setError(null)
       // Verify OTP logic here
     } catch {
-      setError('رمز التحقق غير صحيح')
+      setError(t('enterOtp'))
     } finally {
       setIsLoading(false)
     }
@@ -60,16 +62,16 @@ export default function PhoneLoginPage() {
           className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-4"
         >
           <ArrowLeft className="h-4 w-4" />
-          العودة لتسجيل الدخول
+          {t('backToLogin')}
         </Link>
 
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          {step === 'phone' ? 'الدخول برقم الهاتف' : 'أدخل رمز التحقق'}
+          {step === 'phone' ? t('loginWithPhone') : t('enterOtp')}
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           {step === 'phone'
-            ? 'سنرسل لك رمز تحقق عبر رسالة نصية'
-            : `تم إرسال رمز التحقق إلى ${phone}`}
+            ? t('verifyPhone')
+            : `${t('resendOtp')} ${phone}`}
         </p>
       </div>
 
@@ -82,7 +84,7 @@ export default function PhoneLoginPage() {
       {step === 'phone' ? (
         <form onSubmit={handleSendOtp} className="mt-6 space-y-4">
           <Input
-            label="رقم الهاتف"
+            label={t('phone')}
             type="tel"
             placeholder="01xxxxxxxxx"
             value={phone}
@@ -92,13 +94,13 @@ export default function PhoneLoginPage() {
           />
 
           <Button type="submit" className="w-full" isLoading={isLoading}>
-            إرسال رمز التحقق
+            {t('resendOtp')}
           </Button>
         </form>
       ) : (
         <form onSubmit={handleVerifyOtp} className="mt-6 space-y-4">
           <Input
-            label="رمز التحقق"
+            label={t('enterOtp')}
             type="text"
             placeholder="xxxxxx"
             value={otp}
@@ -109,7 +111,7 @@ export default function PhoneLoginPage() {
           />
 
           <Button type="submit" className="w-full" isLoading={isLoading}>
-            تأكيد
+            {t('verifyPhone')}
           </Button>
 
           <button
@@ -117,16 +119,16 @@ export default function PhoneLoginPage() {
             onClick={() => setStep('phone')}
             className="w-full text-sm text-primary-500 hover:text-primary-600"
           >
-            تغيير رقم الهاتف
+            {t('phone')}
           </button>
         </form>
       )}
 
       <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
         <p>
-          ليس لديك حساب؟{' '}
+          {t('noAccount')}{' '}
           <Link href="/register" className="text-primary-500 hover:text-primary-600">
-            إنشاء حساب جديد
+            {t('createAccount')}
           </Link>
         </p>
       </div>

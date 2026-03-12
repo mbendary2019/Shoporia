@@ -3,8 +3,11 @@
 import { Header, Footer } from '@/components/layout'
 import { Card, Button } from '@/components/ui'
 import { Eye, Shield, Settings, Target, XCircle, CheckCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function AdsPrivacyPage() {
+  const t = useTranslations('pages.adsPrivacy')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -17,10 +20,10 @@ export default function AdsPrivacyPage() {
               <Target className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              الإعلانات القائمة على الاهتمامات
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              تعرف على كيفية استخدامنا لبياناتك لعرض إعلانات مخصصة وكيفية التحكم في تفضيلاتك
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -72,7 +75,7 @@ export default function AdsPrivacyPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <CheckCircle className="h-6 w-6 text-green-600" />
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white">
-                    المزايا
+                    {t('benefits')}
                   </h3>
                 </div>
                 <ul className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
@@ -88,7 +91,7 @@ export default function AdsPrivacyPage() {
                 <div className="flex items-center gap-3 mb-4">
                   <XCircle className="h-6 w-6 text-red-600" />
                   <h3 className="font-bold text-lg text-gray-900 dark:text-white">
-                    المخاوف
+                    {t('concerns')}
                   </h3>
                 </div>
                 <ul className="space-y-3 text-gray-600 dark:text-gray-400 text-sm">
@@ -106,7 +109,7 @@ export default function AdsPrivacyPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              خياراتك
+              {t('yourChoices')}
             </h2>
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <Card className="p-6 text-center">
@@ -159,7 +162,7 @@ export default function AdsPrivacyPage() {
                 <Shield className="h-6 w-6 text-amazon-orange shrink-0 mt-1" />
                 <div>
                   <h3 className="font-bold text-gray-900 dark:text-white mb-2">
-                    ملاحظة مهمة
+                    {t('importantNote')}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 text-sm">
                     إلغاء الإعلانات المخصصة لا يعني أنك لن ترى إعلانات. ستظل ترى نفس عدد الإعلانات،

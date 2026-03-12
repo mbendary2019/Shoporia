@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge } from '@/components/ui'
 import {
   Sparkles,
@@ -64,6 +65,8 @@ const initialMessages = [
 ]
 
 export default function AIAssistantPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
   const [messages, setMessages] = useState(initialMessages)
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -134,14 +137,14 @@ export default function AIAssistantPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              مساعد الذكاء الاصطناعي
+              {t('aiRecommendations')} {/* TODO: add specific "AI Assistant" translation key */}
             </h1>
-            <p className="text-sm text-gray-500">مدعوم بـ GPT-4</p>
+            <p className="text-sm text-gray-500">{/* TODO: add translation key */}مدعوم بـ GPT-4</p>
           </div>
         </div>
         <Badge variant="success" className="gap-1">
           <div className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
-          متصل
+          {tCommon('online')} {/* TODO: add translation key if missing */}
         </Badge>
       </div>
 
@@ -189,26 +192,26 @@ export default function AIAssistantPage() {
                       <button
                         onClick={() => copyMessage(message.content)}
                         className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600 dark:hover:bg-gray-600"
-                        title="نسخ"
+                        title={tCommon('copy')} // TODO: add translation key if missing
                       >
                         <Copy className="h-4 w-4" />
                       </button>
                       <button
                         className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-green-600 dark:hover:bg-gray-600"
-                        title="مفيد"
+                        title={tCommon('helpful')} // TODO: add translation key if missing
                       >
                         <ThumbsUp className="h-4 w-4" />
                       </button>
                       <button
                         className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-red-600 dark:hover:bg-gray-600"
-                        title="غير مفيد"
+                        title={tCommon('notHelpful')} // TODO: add translation key if missing
                       >
                         <ThumbsDown className="h-4 w-4" />
                       </button>
                       <button
                         onClick={regenerateResponse}
                         className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-primary-600 dark:hover:bg-gray-600"
-                        title="إعادة التوليد"
+                        title={tCommon('regenerate')} // TODO: add translation key if missing
                       >
                         <RefreshCw className="h-4 w-4" />
                       </button>
@@ -256,7 +259,7 @@ export default function AIAssistantPage() {
                     handleSend()
                   }
                 }}
-                placeholder="اكتب رسالتك هنا..."
+                placeholder={tCommon('typeMessage')} // TODO: add translation key if missing
                 rows={1}
                 className="max-h-32 w-full resize-none rounded-xl border border-gray-300 bg-white px-4 py-3 pe-12 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
               />
@@ -272,7 +275,8 @@ export default function AIAssistantPage() {
           </div>
 
           <p className="mt-2 text-center text-xs text-gray-500">
-            المساعد الذكي قد يخطئ أحياناً. تحقق من المعلومات المهمة.
+            {/* TODO: add translation key */}
+            {tCommon('aiDisclaimer')}
           </p>
         </div>
       </Card>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatCurrency, formatDate } from '@/utils/format'
 import { usePaginatedQuery } from '@/hooks/use-paginated-query'
@@ -22,53 +23,56 @@ import {
 
 const PAGE_SIZE = 10
 
-const statusConfig = {
-  pending: {
-    label: 'قيد الانتظار',
-    variant: 'warning' as const,
-    icon: Clock,
-    color: 'text-yellow-600',
-  },
-  confirmed: {
-    label: 'تم التأكيد',
-    variant: 'info' as const,
-    icon: CheckCircle,
-    color: 'text-blue-600',
-  },
-  processing: {
-    label: 'جاري التجهيز',
-    variant: 'info' as const,
-    icon: Package,
-    color: 'text-blue-600',
-  },
-  shipped: {
-    label: 'تم الشحن',
-    variant: 'default' as const,
-    icon: Truck,
-    color: 'text-purple-600',
-  },
-  delivered: {
-    label: 'تم التوصيل',
-    variant: 'success' as const,
-    icon: CheckCircle,
-    color: 'text-green-600',
-  },
-  cancelled: {
-    label: 'ملغي',
-    variant: 'danger' as const,
-    icon: XCircle,
-    color: 'text-red-600',
-  },
-}
-
-const paymentMethodLabels: Record<string, string> = {
-  cash: 'نقدي',
-  knet: 'كي نت',
-  bank_transfer: 'تحويل بنكي',
-  card: 'بطاقة',
-}
-
 export default function OrdersPage() {
+  const t = useTranslations('dashboard')
+  const tOrder = useTranslations('order')
+  const tCommon = useTranslations('common')
+
+  const statusConfig = {
+    pending: {
+      label: tOrder('statuses.pending'),
+      variant: 'warning' as const,
+      icon: Clock,
+      color: 'text-yellow-600',
+    },
+    confirmed: {
+      label: tOrder('statuses.confirmed'),
+      variant: 'info' as const,
+      icon: CheckCircle,
+      color: 'text-blue-600',
+    },
+    processing: {
+      label: tOrder('statuses.processing'),
+      variant: 'info' as const,
+      icon: Package,
+      color: 'text-blue-600',
+    },
+    shipped: {
+      label: tOrder('statuses.shipped'),
+      variant: 'default' as const,
+      icon: Truck,
+      color: 'text-purple-600',
+    },
+    delivered: {
+      label: tOrder('statuses.delivered'),
+      variant: 'success' as const,
+      icon: CheckCircle,
+      color: 'text-green-600',
+    },
+    cancelled: {
+      label: tOrder('statuses.cancelled'),
+      variant: 'danger' as const,
+      icon: XCircle,
+      color: 'text-red-600',
+    },
+  }
+
+  const paymentMethodLabels: Record<string, string> = {
+    cash: /* TODO: add translation key */ 'نقدي',
+    knet: /* TODO: add translation key */ 'كي نت',
+    bank_transfer: /* TODO: add translation key */ 'تحويل بنكي',
+    card: /* TODO: add translation key */ 'بطاقة',
+  }
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<string>('')
 
@@ -111,9 +115,10 @@ export default function OrdersPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            الطلبات
+            {t('orders')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key */}
             إدارة وتتبع طلبات العملاء
           </p>
         </div>
@@ -150,14 +155,14 @@ export default function OrdersPage() {
             <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="search"
-              placeholder="ابحث برقم الطلب أو اسم العميل..."
+              placeholder={`${tCommon('search')}...`}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
 
           <div className="flex gap-3">
             <select className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800">
-              <option value="">كل طرق الدفع</option>
+              <option value="">{/* TODO: add translation key */}كل طرق الدفع</option>
               <option value="cash">نقدي</option>
               <option value="knet">كي نت</option>
               <option value="card">بطاقة</option>
@@ -177,7 +182,7 @@ export default function OrdersPage() {
         <Card className="flex items-center justify-center p-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
           <span className="ms-3 text-gray-600 dark:text-gray-400">
-            جاري تحميل الطلبات...
+            {tCommon('loading')}
           </span>
         </Card>
       )}
@@ -185,7 +190,7 @@ export default function OrdersPage() {
       {/* Error State */}
       {error && (
         <Card className="p-6 text-center text-red-600">
-          <p>حدث خطأ أثناء تحميل الطلبات: {error.message}</p>
+          <p>{tCommon('error')}: {error.message}</p>
         </Card>
       )}
 
@@ -196,7 +201,7 @@ export default function OrdersPage() {
             <Card className="flex flex-col items-center justify-center p-12 text-center">
               <Package className="h-12 w-12 text-gray-300" />
               <p className="mt-4 text-gray-600 dark:text-gray-400">
-                لا توجد طلبات
+                {tCommon('noResults')}
               </p>
             </Card>
           )}
@@ -263,6 +268,7 @@ export default function OrdersPage() {
                       {/* Delivery Info */}
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white">
+                          {/* TODO: add translation key */}
                           معلومات التوصيل
                         </h4>
                         <div className="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
@@ -278,7 +284,7 @@ export default function OrdersPage() {
                       {/* Order Items */}
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white">
-                          المنتجات
+                          {t('products')}
                         </h4>
                         <div className="mt-2 space-y-2">
                           {order.items.map((item, index) => (
@@ -301,16 +307,17 @@ export default function OrdersPage() {
                       {/* Payment Info */}
                       <div>
                         <h4 className="font-medium text-gray-900 dark:text-white">
+                          {/* TODO: add translation key */}
                           الدفع
                         </h4>
                         <div className="mt-2 space-y-1 text-sm">
                           <p className="text-gray-600 dark:text-gray-400">
-                            الطريقة:{' '}
+                            {/* TODO: add translation key */}الطريقة:{' '}
                             {paymentMethodLabels[order.paymentMethod] ||
                               order.paymentMethod}
                           </p>
                           <p className="text-gray-600 dark:text-gray-400">
-                            الحالة:{' '}
+                            {tOrder('status')}:{' '}
                             <Badge
                               variant={
                                 order.paymentStatus === 'paid'
@@ -322,10 +329,10 @@ export default function OrdersPage() {
                               className="ms-1"
                             >
                               {order.paymentStatus === 'paid'
-                                ? 'مدفوع'
+                                ? /* TODO: add translation key */ 'مدفوع'
                                 : order.paymentStatus === 'refunded'
-                                  ? 'مسترد'
-                                  : 'قيد الانتظار'}
+                                  ? /* TODO: add translation key */ 'مسترد'
+                                  : tOrder('statuses.pending')}
                             </Badge>
                           </p>
                         </div>
@@ -336,13 +343,13 @@ export default function OrdersPage() {
                     <div className="mt-4 flex gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
                       <Button size="sm">
                         <Eye className="h-4 w-4" />
-                        عرض التفاصيل
+                        {tOrder('details')}
                       </Button>
                       {order.status === 'pending' && (
                         <>
                           <Button size="sm" variant="outline">
                             <CheckCircle className="h-4 w-4" />
-                            تأكيد
+                            {tCommon('confirm')}
                           </Button>
                           <Button
                             size="sm"
@@ -350,13 +357,14 @@ export default function OrdersPage() {
                             className="text-red-600"
                           >
                             <XCircle className="h-4 w-4" />
-                            إلغاء
+                            {tCommon('cancel')}
                           </Button>
                         </>
                       )}
                       {order.status === 'confirmed' && (
                         <Button size="sm" variant="outline">
                           <Truck className="h-4 w-4" />
+                          {/* TODO: add translation key */}
                           شحن
                         </Button>
                       )}
@@ -378,10 +386,10 @@ export default function OrdersPage() {
                 {isLoadingMore ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    جاري التحميل...
+                    {tCommon('loading')}
                   </>
                 ) : (
-                  'تحميل المزيد'
+                  tCommon('viewMore')
                 )}
               </Button>
             </div>
@@ -389,6 +397,7 @@ export default function OrdersPage() {
 
           {!hasMore && orders.length > 0 && (
             <p className="text-center text-sm text-gray-500">
+              {/* TODO: add translation key */}
               تم عرض جميع الطلبات
             </p>
           )}

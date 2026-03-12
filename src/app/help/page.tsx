@@ -17,6 +17,7 @@ import {
   Mail,
   ChevronLeft,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const categories = [
   {
@@ -81,6 +82,8 @@ const popularQuestions = [
 ]
 
 export default function HelpPage() {
+  const t = useTranslations('pages.help')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -93,16 +96,16 @@ export default function HelpPage() {
               <HelpCircle className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              مركز المساعدة
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto mb-8">
-              كيف يمكننا مساعدتك اليوم؟
+              {t('subtitle')}
             </p>
 
             {/* Search */}
             <div className="max-w-xl mx-auto relative">
               <Input
-                placeholder="ابحث عن سؤالك..."
+                placeholder={t('searchPlaceholder')}
                 className="ps-12 py-4 text-lg"
               />
               <Search className="absolute start-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -114,7 +117,7 @@ export default function HelpPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              تصفح حسب الموضوع
+              {t('browseByTopic')}
             </h2>
             <div className="grid md:grid-cols-3 gap-4">
               {categories.map((category) => (
@@ -145,7 +148,7 @@ export default function HelpPage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              الأسئلة الشائعة
+              {t('faq')}
             </h2>
             <div className="max-w-3xl mx-auto space-y-4">
               {popularQuestions.map((faq) => (
@@ -171,7 +174,7 @@ export default function HelpPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              تواصل معنا
+              {t('contactUs')}
             </h2>
             <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto">
               <Card className="p-6 text-center">
@@ -206,7 +209,7 @@ export default function HelpPage() {
                   البريد الإلكتروني
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 text-sm mb-3">
-                  الرد خلال 24 ساعة
+                  {t('responseIn24h')}
                 </p>
                 <Button variant="outline" className="w-full">
                   أرسل رسالة

@@ -3,6 +3,7 @@
 import { Header, Footer } from '@/components/layout'
 import { ProductCard, Badge } from '@/components/ui'
 import { TrendingUp, Award, Star } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const bestsellers = [
   {
@@ -104,6 +105,8 @@ const bestsellers = [
 ]
 
 export default function BestsellersPage() {
+  const t = useTranslations('pages.bestsellers')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -118,10 +121,10 @@ export default function BestsellersPage() {
               </div>
               <div>
                 <h1 className="text-3xl md:text-4xl font-bold text-white">
-                  الأكثر مبيعاً
+                  {t('title')}
                 </h1>
                 <p className="text-white/70">
-                  المنتجات الأكثر طلباً من عملائنا
+                  {t('subtitle')}
                 </p>
               </div>
             </div>
@@ -134,7 +137,7 @@ export default function BestsellersPage() {
             <div className="flex items-center gap-3 mb-8">
               <Award className="h-8 w-8 text-amazon-star" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                أفضل 3 منتجات
+                {t('top3')}
               </h2>
             </div>
 
@@ -165,7 +168,7 @@ export default function BestsellersPage() {
             <div className="flex items-center gap-3 mb-8">
               <Star className="h-8 w-8 text-amazon-orange" />
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                جميع المنتجات الأكثر مبيعاً
+                {t('allBestsellers')}
               </h2>
             </div>
 

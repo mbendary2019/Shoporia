@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function GlobalError({
   error,
@@ -9,6 +10,8 @@ export default function GlobalError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('common')
+
   useEffect(() => {
     import('@/lib/error-tracking').then(({ reportError }) => {
       reportError(error, { source: 'global-error-boundary', digest: error.digest })
@@ -36,16 +39,16 @@ export default function GlobalError({
               </svg>
             </div>
             <h2 className="mt-6 text-2xl font-bold text-gray-900">
-              حدث خطأ غير متوقع
+              {t('unexpectedError') || 'حدث خطأ غير متوقع'}
             </h2>
             <p className="mt-2 text-gray-600">
-              نعتذر عن هذا الخطأ. يرجى المحاولة مرة أخرى.
+              {t('tryAgainMessage') || 'نعتذر عن هذا الخطأ. يرجى المحاولة مرة أخرى.'}
             </p>
             <button
               onClick={reset}
               className="mt-6 rounded-lg bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
             >
-              حاول مرة أخرى
+              {t('tryAgain') || 'حاول مرة أخرى'}
             </button>
           </div>
         </div>

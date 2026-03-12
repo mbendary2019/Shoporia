@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Card, Avatar } from '@/components/ui'
 import { useAuthStore } from '@/store'
@@ -17,16 +18,6 @@ import {
   LogOut,
 } from 'lucide-react'
 
-const navigation = [
-  { name: 'حسابي', href: '/account', icon: User },
-  { name: 'طلباتي', href: '/account/orders', icon: ShoppingBag },
-  { name: 'المفضلة', href: '/account/wishlist', icon: Heart },
-  { name: 'العناوين', href: '/account/addresses', icon: MapPin },
-  { name: 'الإشعارات', href: '/account/notifications', icon: Bell },
-  { name: 'طرق الدفع', href: '/account/payment-methods', icon: CreditCard },
-  { name: 'الإعدادات', href: '/account/settings', icon: Settings },
-]
-
 export default function AccountLayout({
   children,
 }: {
@@ -34,6 +25,19 @@ export default function AccountLayout({
 }) {
   const pathname = usePathname()
   const { user, logout } = useAuthStore()
+  const t = useTranslations('account')
+  const tAuth = useTranslations('auth')
+  const tNav = useTranslations('nav')
+
+  const navigation = [
+    { name: t('myAccount'), href: '/account', icon: User },
+    { name: tNav('orders'), href: '/account/orders', icon: ShoppingBag },
+    { name: tNav('wishlist'), href: '/account/wishlist', icon: Heart },
+    { name: t('addresses'), href: '/account/addresses', icon: MapPin },
+    { name: t('notifications'), href: '/account/notifications', icon: Bell },
+    { name: t('paymentMethods'), href: '/account/payment-methods', icon: CreditCard },
+    { name: t('settings'), href: '/account/settings', icon: Settings },
+  ]
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -53,7 +57,7 @@ export default function AccountLayout({
                 />
                 <div>
                   <p className="font-medium text-gray-900 dark:text-white">
-                    {user?.displayName || 'المستخدم'}
+                    {user?.displayName || t('user')}
                   </p>
                   <p className="text-sm text-gray-500">
                     {user?.email}
@@ -89,7 +93,7 @@ export default function AccountLayout({
                       className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
                     >
                       <LogOut className="h-5 w-5" />
-                      تسجيل الخروج
+                      {tAuth('logout')}
                     </button>
                   </li>
                 </ul>

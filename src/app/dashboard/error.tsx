@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { AlertTriangle, RefreshCw, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
@@ -11,6 +12,10 @@ export default function DashboardError({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
+  const tErrors = useTranslations('errors')
+
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       console.error('Dashboard error:', error)
@@ -24,10 +29,11 @@ export default function DashboardError({
           <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
         </div>
         <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
-          حدث خطأ في لوحة التحكم
+          {/* TODO: add translation key */}
+          {tErrors('unexpected')}
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          {error.message || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.'}
+          {error.message || tErrors('unexpected')}
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <button
@@ -35,14 +41,14 @@ export default function DashboardError({
             className="inline-flex items-center gap-2 rounded-lg bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600 transition-colors"
           >
             <RefreshCw className="h-4 w-4" />
-            إعادة المحاولة
+            {tCommon('retry')}
           </button>
           <Link
             href="/dashboard"
             className="inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
           >
             <ArrowRight className="h-4 w-4" />
-            لوحة التحكم
+            {t('title')}
           </Link>
         </div>
       </div>

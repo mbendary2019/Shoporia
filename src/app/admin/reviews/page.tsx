@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
 import { formatDate } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   Star,
@@ -110,6 +111,8 @@ export default function AdminReviewsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [filterRating, setFilterRating] = useState('')
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const filteredReviews = reviews.filter((review) => {
     const matchesSearch =
@@ -129,9 +132,10 @@ export default function AdminReviewsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إدارة التقييمات
+            {t('reviewsSection')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: no exact key for مراجعة وإدارة تقييمات العملاء */}
             مراجعة وإدارة تقييمات العملاء
           </p>
         </div>
@@ -142,7 +146,7 @@ export default function AdminReviewsPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">إجمالي التقييمات</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}إجمالي التقييمات</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{reviews.length}</p>
             </div>
             <MessageSquare className="h-8 w-8 text-primary-500" />
@@ -151,7 +155,7 @@ export default function AdminReviewsPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">متوسط التقييم</p>
+              <p className="text-sm text-gray-500">{/* TODO: no exact key */}متوسط التقييم</p>
               <p className="text-2xl font-bold text-yellow-600">{averageRating}</p>
             </div>
             <Star className="h-8 w-8 fill-yellow-400 text-yellow-400" />
@@ -171,7 +175,7 @@ export default function AdminReviewsPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">البلاغات</p>
+              <p className="text-sm text-gray-500">{t('reports')}</p>
               <p className="text-2xl font-bold text-red-600">
                 {reviews.filter((r) => r.isReported).length}
               </p>
@@ -205,7 +209,7 @@ export default function AdminReviewsPage() {
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث في التقييمات..."
+              placeholder={tc('search')}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
@@ -316,6 +320,7 @@ export default function AdminReviewsPage() {
                       {review.reply && (
                         <div className="mt-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
                           <p className="text-sm font-medium text-gray-900 dark:text-white">
+                            {/* TODO: no exact key for رد المتجر */}
                             رد المتجر:
                           </p>
                           <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">

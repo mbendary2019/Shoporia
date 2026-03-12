@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Header, Footer } from '@/components/layout'
 import { Card, Badge } from '@/components/ui'
 import { Calendar, Clock, ArrowLeft, User } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const posts = [
   {
@@ -52,6 +53,8 @@ const posts = [
 const categories = ['الكل', 'تقنية', 'نصائح', 'عروض', 'للبائعين', 'أخبار']
 
 export default function BlogPage() {
+  const t = useTranslations('pages.blog')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -61,10 +64,10 @@ export default function BlogPage() {
         <section className="bg-amazon-navy py-12">
           <div className="container-custom text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              مدونة Shoporia
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto">
-              نصائح، أخبار، ومقالات مفيدة حول التسوق والتجارة الإلكترونية
+              {t('subtitle')}
             </p>
           </div>
         </section>
@@ -133,7 +136,7 @@ export default function BlogPage() {
                       href={`/blog/${post.id}`}
                       className="inline-flex items-center gap-2 text-amazon-orange hover:underline mt-4"
                     >
-                      اقرأ المزيد
+                      {t('readMore')}
                       <ArrowLeft className="h-4 w-4" />
                     </Link>
                   </div>

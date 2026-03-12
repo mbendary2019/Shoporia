@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 export default function Error({
   error,
@@ -9,6 +10,8 @@ export default function Error({
   error: Error & { digest?: string }
   reset: () => void
 }) {
+  const t = useTranslations('common')
+
   useEffect(() => {
     // Report error to tracking system
     import('@/lib/error-tracking').then(({ reportError }) => {
@@ -35,23 +38,23 @@ export default function Error({
           </svg>
         </div>
         <h2 className="mt-6 text-2xl font-bold text-gray-900 dark:text-white">
-          حدث خطأ غير متوقع
+          {t('unexpectedError') || 'حدث خطأ غير متوقع'}
         </h2>
         <p className="mt-2 text-gray-600 dark:text-gray-400">
-          نعتذر عن هذا الخطأ. يرجى المحاولة مرة أخرى.
+          {t('tryAgainMessage') || 'نعتذر عن هذا الخطأ. يرجى المحاولة مرة أخرى.'}
         </p>
         <div className="mt-6 flex justify-center gap-3">
           <button
             onClick={reset}
             className="rounded-lg bg-primary-500 px-6 py-2.5 text-sm font-medium text-white hover:bg-primary-600 transition-colors"
           >
-            حاول مرة أخرى
+            {t('tryAgain') || 'حاول مرة أخرى'}
           </button>
           <a
             href="/"
             className="rounded-lg border border-gray-300 px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors"
           >
-            الصفحة الرئيسية
+            {t('homePage') || 'الصفحة الرئيسية'}
           </a>
         </div>
       </div>

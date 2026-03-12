@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
 import { formatCurrency, formatDate } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   ShoppingCart,
@@ -94,6 +95,8 @@ export default function AdminOrdersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [filterPayment, setFilterPayment] = useState('')
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const filteredOrders = orders.filter((order) => {
     const matchesSearch =
@@ -115,9 +118,10 @@ export default function AdminOrdersPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إدارة الطلبات
+            {t('orders')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: no exact key for متابعة وإدارة جميع طلبات المنصة */}
             متابعة وإدارة جميع طلبات المنصة
           </p>
         </div>
@@ -128,7 +132,7 @@ export default function AdminOrdersPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">إجمالي الطلبات</p>
+              <p className="text-sm text-gray-500">{t('todayOrders')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">1,234</p>
             </div>
             <ShoppingCart className="h-8 w-8 text-primary-500" />
@@ -164,7 +168,7 @@ export default function AdminOrdersPage() {
         <Card className="p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">الإيرادات</p>
+              <p className="text-sm text-gray-500">{t('todayRevenue')}</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-white">
                 {formatCurrency(totalRevenue)}
               </p>
@@ -183,7 +187,7 @@ export default function AdminOrdersPage() {
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث برقم الطلب أو العميل..."
+              placeholder={tc('search')}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
@@ -234,10 +238,10 @@ export default function AdminOrdersPage() {
                   العميل
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
-                  المتجر
+                  {t('storeColumn')}
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
-                  المنتجات
+                  {t('products')}
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
                   المبلغ

@@ -6,6 +6,7 @@ import { Card, Button, Badge, Input } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
 import { usePaginatedQuery } from '@/hooks/use-paginated-query'
 import { getProductsPaginated } from '@/services/product'
+import { useTranslations } from 'next-intl'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import {
   Plus,
@@ -23,14 +24,17 @@ import {
 
 const PAGE_SIZE = 12
 
-const statusConfig = {
-  active: { label: 'نشط', variant: 'success' as const },
-  draft: { label: 'مسودة', variant: 'secondary' as const },
-  out_of_stock: { label: 'نفذ', variant: 'danger' as const },
-  archived: { label: 'مؤرشف', variant: 'secondary' as const },
-}
-
 export default function ProductsPage() {
+  const t = useTranslations('dashboard')
+  const tCommon = useTranslations('common')
+
+  const statusConfig = {
+    active: { label: tCommon('available'), variant: 'success' as const },
+    draft: { label: /* TODO: add translation key for 'مسودة' */ 'مسودة', variant: 'secondary' as const },
+    out_of_stock: { label: /* TODO: add translation key for 'نفذ' */ 'نفذ', variant: 'danger' as const },
+    archived: { label: /* TODO: add translation key for 'مؤرشف' */ 'مؤرشف', variant: 'secondary' as const },
+  }
+
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -84,20 +88,23 @@ export default function ProductsPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            المنتجات
+            {t('products')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: add translation key for 'إدارة منتجات متجرك' */}
             إدارة منتجات متجرك
           </p>
         </div>
         <div className="flex gap-3">
           <Button variant="outline">
             <Sparkles className="h-4 w-4" />
+            {/* TODO: add translation key for 'توليد AI' */}
             توليد AI
           </Button>
           <Link href="/dashboard/products/new">
             <Button>
               <Plus className="h-4 w-4" />
+              {/* TODO: add translation key for 'إضافة منتج' */}
               إضافة منتج
             </Button>
           </Link>
@@ -111,7 +118,7 @@ export default function ProductsPage() {
             <Search className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="search"
-              placeholder="ابحث في المنتجات..."
+              placeholder={`${tCommon('search')}...`}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
@@ -120,15 +127,15 @@ export default function ProductsPage() {
 
           <div className="flex gap-3">
             <select className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800">
-              <option value="">كل الحالات</option>
-              <option value="active">نشط</option>
+              <option value="">{/* TODO: add translation key */}كل الحالات</option>
+              <option value="active">{tCommon('available')}</option>
               <option value="draft">مسودة</option>
               <option value="out_of_stock">نفذ</option>
               <option value="archived">مؤرشف</option>
             </select>
 
             <select className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800">
-              <option value="">كل الفئات</option>
+              <option value="">{/* TODO: add translation key */}كل الفئات</option>
               <option value="fashion">ملابس</option>
               <option value="electronics">إلكترونيات</option>
               <option value="beauty">تجميل</option>
@@ -144,14 +151,16 @@ export default function ProductsPage() {
         {selectedProducts.length > 0 && (
           <div className="mt-4 flex items-center gap-4 rounded-lg bg-gray-50 p-3 dark:bg-gray-700">
             <span className="text-sm text-gray-600 dark:text-gray-400">
+              {/* TODO: add translation key */}
               تم تحديد {selectedProducts.length} منتج
             </span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm">
+                {/* TODO: add translation key */}
                 تعديل الحالة
               </Button>
               <Button variant="outline" size="sm" className="text-red-600">
-                حذف
+                {tCommon('delete')}
               </Button>
             </div>
           </div>
@@ -163,7 +172,7 @@ export default function ProductsPage() {
         <Card className="flex items-center justify-center p-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
           <span className="ms-3 text-gray-600 dark:text-gray-400">
-            جاري تحميل المنتجات...
+            {tCommon('loading')}
           </span>
         </Card>
       )}
@@ -171,7 +180,7 @@ export default function ProductsPage() {
       {/* Error State */}
       {error && (
         <Card className="p-6 text-center text-red-600">
-          <p>حدث خطأ أثناء تحميل المنتجات: {error.message}</p>
+          <p>{tCommon('error')}: {error.message}</p>
         </Card>
       )}
 
@@ -194,21 +203,27 @@ export default function ProductsPage() {
                     />
                   </th>
                   <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'المنتج' */}
                     المنتج
                   </th>
                   <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'الحالة' */}
                     الحالة
                   </th>
                   <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'المخزون' */}
                     المخزون
                   </th>
                   <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'السعر' */}
                     السعر
                   </th>
                   <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'الفئة' */}
                     الفئة
                   </th>
                   <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    {/* TODO: add translation key for 'الإجراءات' */}
                     الإجراءات
                   </th>
                 </tr>
@@ -305,7 +320,7 @@ export default function ProductsPage() {
             <div className="flex flex-col items-center justify-center p-12 text-center">
               <Package className="h-12 w-12 text-gray-300" />
               <p className="mt-4 text-gray-600 dark:text-gray-400">
-                لا توجد منتجات
+                {tCommon('noResults')}
               </p>
             </div>
           )}
@@ -313,7 +328,7 @@ export default function ProductsPage() {
           {/* Pagination */}
           <div className="flex items-center justify-between border-t border-gray-200 p-4 dark:border-gray-700">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              عرض {filteredProducts.length} منتج
+              {tCommon('showing')} {filteredProducts.length} {tCommon('product')}
             </p>
             <div className="flex gap-2">
               {hasMore && (
@@ -326,15 +341,16 @@ export default function ProductsPage() {
                   {isLoadingMore ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      جاري التحميل...
+                      {tCommon('loading')}
                     </>
                   ) : (
-                    'تحميل المزيد'
+                    tCommon('viewMore')
                   )}
                 </Button>
               )}
               {!hasMore && filteredProducts.length > 0 && (
                 <span className="text-sm text-gray-500">
+                  {/* TODO: add translation key for 'تم عرض جميع المنتجات' */}
                   تم عرض جميع المنتجات
                 </span>
               )}

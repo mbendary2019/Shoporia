@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Card, Button, Badge, Avatar } from '@/components/ui'
 import { formatDate } from '@/utils/format'
+import { useTranslations } from 'next-intl'
 import {
   Search,
   Eye,
@@ -101,6 +102,8 @@ export default function AdminUsersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterRole, setFilterRole] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const filteredUsers = users.filter((user) => {
     const matchesSearch =
@@ -118,9 +121,10 @@ export default function AdminUsersPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            إدارة المستخدمين
+            {t('users')}
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
+            {/* TODO: no exact key for إدارة جميع مستخدمي المنصة */}
             إدارة جميع مستخدمي المنصة
           </p>
         </div>
@@ -140,7 +144,7 @@ export default function AdminUsersPage() {
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="ابحث بالاسم أو البريد أو الهاتف..."
+              placeholder={tc('search')}
               className="h-10 w-full rounded-lg border border-gray-300 bg-white pe-4 ps-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
@@ -177,7 +181,7 @@ export default function AdminUsersPage() {
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
-                  المستخدم
+                  {t('users')}
                 </th>
                 <th className="px-4 py-3 text-start text-sm font-medium text-gray-500">
                   التواصل
@@ -218,7 +222,7 @@ export default function AdminUsersPage() {
                             )}
                           </div>
                           <p className="text-sm text-gray-500">
-                            منذ {formatDate(new Date(user.createdAt), 'MMM yyyy')}
+                            {t('ago')} {formatDate(new Date(user.createdAt), 'MMM yyyy')}
                           </p>
                         </div>
                       </div>

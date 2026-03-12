@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Card, Button, Badge } from '@/components/ui'
 import {
   MapPin,
@@ -42,6 +43,8 @@ const initialAddresses = [
 ]
 
 export default function AccountAddressesPage() {
+  const t = useTranslations('address')
+  const tc = useTranslations('common')
   const [addresses, setAddresses] = useState(initialAddresses)
   const [isAdding, setIsAdding] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
@@ -132,41 +135,41 @@ export default function AccountAddressesPage() {
   const AddressForm = () => (
     <Card className="p-6">
       <h3 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">
-        {editingId ? 'تعديل العنوان' : 'إضافة عنوان جديد'}
+        {editingId ? t('editAddress') : t('addNewAddress')}
       </h3>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            تسمية العنوان
+            {t('addressLabel')}
           </label>
           <input
             type="text"
             value={formData.label}
             onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-            placeholder="مثال: المنزل، العمل"
+            placeholder={t('exampleHomeWork')}
             className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            نوع العنوان
+            {t('addressType')}
           </label>
           <select
             value={formData.type}
             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
             className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           >
-            <option value="home">منزل</option>
-            <option value="work">عمل</option>
-            <option value="other">آخر</option>
+            <option value="home">{t('home')}</option>
+            <option value="work">{t('work')}</option>
+            <option value="other">{t('other')}</option>
           </select>
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            الاسم الكامل
+            {t('fullName')}
           </label>
           <input
             type="text"
@@ -178,7 +181,7 @@ export default function AccountAddressesPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            رقم الهاتف
+            {t('phone')}
           </label>
           <input
             type="tel"
@@ -190,20 +193,20 @@ export default function AccountAddressesPage() {
 
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            العنوان بالتفصيل
+            {t('detailedAddress')}
           </label>
           <input
             type="text"
             value={formData.street}
             onChange={(e) => setFormData({ ...formData, street: e.target.value })}
-            placeholder="الشارع، رقم المبنى، الشقة"
+            placeholder={t('detailedAddressPlaceholder')}
             className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            المدينة
+            {t('city')}
           </label>
           <input
             type="text"
@@ -215,14 +218,14 @@ export default function AccountAddressesPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            المحافظة
+            {t('governorate')}
           </label>
           <select
             value={formData.governorate}
             onChange={(e) => setFormData({ ...formData, governorate: e.target.value })}
             className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           >
-            <option value="">اختر المحافظة</option>
+            <option value="">{t('selectGovernorate')}</option>
             <option value="العاصمة">العاصمة</option>
             <option value="حولي">حولي</option>
             <option value="الفروانية">الفروانية</option>
@@ -234,7 +237,7 @@ export default function AccountAddressesPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            الرمز البريدي
+            {t('postalCode')}
           </label>
           <input
             type="text"
@@ -248,11 +251,11 @@ export default function AccountAddressesPage() {
       <div className="mt-6 flex gap-3">
         <Button onClick={handleSave}>
           <Check className="h-4 w-4" />
-          حفظ
+          {tc('save')}
         </Button>
         <Button variant="outline" onClick={handleCancel}>
           <X className="h-4 w-4" />
-          إلغاء
+          {tc('cancel')}
         </Button>
       </div>
     </Card>
@@ -263,13 +266,13 @@ export default function AccountAddressesPage() {
       <Card className="p-6">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-            العناوين
+            {t('title')}
           </h1>
 
           {!isAdding && !editingId && (
             <Button onClick={() => setIsAdding(true)}>
               <Plus className="h-4 w-4" />
-              إضافة عنوان
+              {t('addAddress')}
             </Button>
           )}
         </div>
@@ -298,7 +301,7 @@ export default function AccountAddressesPage() {
                         {address.label}
                       </p>
                       {address.isDefault && (
-                        <Badge variant="success">الافتراضي</Badge>
+                        <Badge variant="success">{t('default')}</Badge>
                       )}
                     </div>
                   </div>
@@ -334,7 +337,7 @@ export default function AccountAddressesPage() {
                   onClick={() => handleSetDefault(address.id)}
                   className="mt-4 text-sm text-primary-500 hover:underline"
                 >
-                  تعيين كافتراضي
+                  {t('setAsDefault')}
                 </button>
               )}
             </Card>
@@ -344,11 +347,11 @@ export default function AccountAddressesPage() {
         <Card className="p-12 text-center">
           <MapPin className="mx-auto h-12 w-12 text-gray-400" />
           <p className="mt-4 text-gray-600 dark:text-gray-400">
-            لا توجد عناوين محفوظة
+            {t('noSavedAddresses')}
           </p>
           <Button className="mt-4" onClick={() => setIsAdding(true)}>
             <Plus className="h-4 w-4" />
-            إضافة عنوان
+            {t('addAddress')}
           </Button>
         </Card>
       )}

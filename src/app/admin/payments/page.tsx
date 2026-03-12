@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card, Button, Badge } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   CreditCard,
   Wallet,
@@ -91,6 +92,8 @@ const methodConfig = {
 
 export default function PaymentsPage() {
   const [filter, setFilter] = useState('all')
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const stats = [
     { label: 'إجمالي المدفوعات', value: '245,000', unit: 'ج.م', color: 'text-green-600' },
@@ -104,12 +107,13 @@ export default function PaymentsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            المدفوعات
+            {t('payments')}
           </h1>
-          <p className="text-gray-500">إدارة المدفوعات والتحويلات</p>
+          <p className="text-gray-500">{/* TODO: no exact key for إدارة المدفوعات والتحويلات */}إدارة المدفوعات والتحويلات</p>
         </div>
         <Button>
           <Download className="h-4 w-4" />
+          {/* TODO: no exact key for تصدير التقرير */}
           تصدير التقرير
         </Button>
       </div>
@@ -132,7 +136,7 @@ export default function PaymentsPage() {
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-gray-500" />
-            <span className="text-sm text-gray-500">تصفية:</span>
+            <span className="text-sm text-gray-500">{tc('filter')}:</span>
           </div>
           {[
             { value: 'all', label: 'الكل' },
@@ -160,7 +164,7 @@ export default function PaymentsPage() {
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">رقم العملية</th>
-                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">المتجر</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">{t('storeColumn')}</th>
                 <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">المبلغ</th>
                 <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">العمولة</th>
                 <th className="px-4 py-3 text-right text-sm font-medium text-gray-500">الصافي</th>

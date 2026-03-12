@@ -12,6 +12,7 @@ import {
   Eye,
   MousePointer,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 const adTypes = [
   {
@@ -48,6 +49,8 @@ const stats = [
 ]
 
 export default function AdvertisePage() {
+  const t = useTranslations('pages.advertise')
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -61,13 +64,13 @@ export default function AdvertisePage() {
                 <Megaphone className="h-10 w-10" />
               </div>
               <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                أعلن على Shoporia
+                {t('title')}
               </h1>
               <p className="text-white/70 max-w-2xl mx-auto text-lg mb-8">
-                وصّل منتجاتك لملايين العملاء المستهدفين وزد مبيعاتك
+                {t('subtitle')}
               </p>
               <Button className="bg-white text-blue-700 hover:bg-gray-100 text-lg px-8 py-3">
-                ابدأ الإعلان الآن
+                {t('startAdvertising')}
               </Button>
             </div>
           </div>
@@ -95,7 +98,7 @@ export default function AdvertisePage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              أنواع الإعلانات
+              {t('adTypes')}
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {adTypes.map((type) => (
@@ -118,7 +121,7 @@ export default function AdvertisePage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              لماذا تعلن معنا؟
+              {t('whyAdvertise')}
             </h2>
             <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
               <Card className="p-6 text-center">
@@ -155,16 +158,16 @@ export default function AdvertisePage() {
         {/* CTA */}
         <section className="py-12 bg-blue-600 text-white">
           <div className="container-custom text-center">
-            <h2 className="text-2xl font-bold mb-4">ابدأ حملتك الإعلانية اليوم</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('startCampaign')}</h2>
             <p className="text-white/80 mb-6">
-              تواصل مع فريقنا لتصميم حملة مناسبة لميزانيتك وأهدافك
+              {t('startCampaignDescription')}
             </p>
             <div className="flex justify-center gap-4">
               <Button className="bg-white text-blue-700 hover:bg-gray-100">
-                تواصل معنا
+                {t('contactUs')}
               </Button>
               <Button variant="outline" className="border-white text-white hover:bg-white/10">
-                حمّل دليل المعلن
+                {t('downloadGuide')}
               </Button>
             </div>
           </div>

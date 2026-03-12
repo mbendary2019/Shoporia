@@ -1,11 +1,16 @@
+'use client'
+
 import Link from 'next/link'
 import { Store } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function AuthLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const t = useTranslations('auth')
+
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Form */}
@@ -31,10 +36,9 @@ export default function AuthLayout({
         <div className="absolute inset-0 bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600">
           <div className="absolute inset-0 bg-[url('/images/pattern.svg')] opacity-10" />
           <div className="flex h-full flex-col items-center justify-center p-12 text-white">
-            <h2 className="text-4xl font-bold">مرحباً بك في Shoporia</h2>
+            <h2 className="text-4xl font-bold">{t('welcome')}</h2>
             <p className="mt-4 max-w-md text-center text-lg text-white/90">
-              منصة التجارة الإلكترونية الذكية التي تمكّنك من بناء متجرك وإدارة
-              أعمالك بسهولة
+              {t('welcomeLogin')}
             </p>
             <div className="mt-12 grid grid-cols-2 gap-8 text-center">
               <div>

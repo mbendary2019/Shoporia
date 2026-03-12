@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { Header, Footer } from '@/components/layout'
 import { Button, Card, ProductCard, DealCard, Badge } from '@/components/ui'
 import {
@@ -32,37 +33,6 @@ import { STORE_CATEGORIES } from '@/utils/constants'
 import { cn } from '@/utils/cn'
 import { useCartStore } from '@/store'
 
-// Hero Slides
-const heroSlides = [
-  {
-    id: 1,
-    title: 'تخفيضات نهاية العام',
-    subtitle: 'خصومات تصل إلى 70% على جميع الأقسام',
-    bg: 'from-amazon-navy via-amazon-navyLight to-amazon-navy',
-    cta: 'تسوق الآن',
-    href: '/deals',
-    image: '/images/banners/hero-1.jpg',
-  },
-  {
-    id: 2,
-    title: 'إلكترونيات بأفضل الأسعار',
-    subtitle: 'أحدث الهواتف والأجهزة بضمان سنة',
-    bg: 'from-blue-900 via-blue-800 to-blue-900',
-    cta: 'اكتشف العروض',
-    href: '/category/electronics',
-    image: '/images/banners/hero-2.jpg',
-  },
-  {
-    id: 3,
-    title: 'موضة 2025',
-    subtitle: 'أحدث صيحات الموضة والأزياء',
-    bg: 'from-purple-900 via-purple-800 to-purple-900',
-    cta: 'تصفح الموضة',
-    href: '/category/fashion',
-    image: '/images/banners/hero-3.jpg',
-  },
-]
-
 // Category Icons
 const categoryIcons: Record<string, React.ElementType> = {
   electronics: Smartphone,
@@ -72,18 +42,6 @@ const categoryIcons: Record<string, React.ElementType> = {
   beauty: Palette,
   computers: Laptop,
 }
-
-// Category Images for Shop by Category section
-const categoryImages = [
-  { id: 'electronics', nameAr: 'إلكترونيات', image: '/images/categories/electronics.jpg' },
-  { id: 'fashion', nameAr: 'أزياء وملابس', image: '/images/categories/fashion.jpg' },
-  { id: 'home', nameAr: 'المنزل والحديقة', image: '/images/categories/home.jpg' },
-  { id: 'beauty', nameAr: 'الجمال والعناية', image: '/images/categories/beauty.jpg' },
-  { id: 'sports', nameAr: 'رياضة', image: '/images/categories/sports.jpg' },
-  { id: 'kids', nameAr: 'أطفال', image: '/images/categories/kids.jpg' },
-  { id: 'food', nameAr: 'طعام ومشروبات', image: '/images/products/cookware.jpg' },
-  { id: 'health', nameAr: 'صحة وأدوية', image: '/images/products/cream.jpg' },
-]
 
 // Mock Products Data
 const featuredProducts = [
@@ -171,17 +129,64 @@ const dealProducts = [
   },
 ]
 
-const stats = [
-  { value: '10,000+', label: 'متجر نشط', icon: Store },
-  { value: '500,000+', label: 'منتج', icon: ShoppingBag },
-  { value: '1,000,000+', label: 'عميل سعيد', icon: Star },
-  { value: '27', label: 'محافظة', icon: Truck },
-]
-
 export default function HomePage() {
+  const t = useTranslations('home')
+  const tc = useTranslations('common')
+  const tcat = useTranslations('categories')
+
   const [currentSlide, setCurrentSlide] = useState(0)
   const [countdown, setCountdown] = useState({ hours: 5, minutes: 23, seconds: 45 })
   const { addItem } = useCartStore()
+
+  // Hero Slides (using translations)
+  const heroSlides = [
+    {
+      id: 1,
+      title: t('heroSlide1Title'),
+      subtitle: t('heroSlide1Subtitle'),
+      bg: 'from-amazon-navy via-amazon-navyLight to-amazon-navy',
+      cta: t('shopNow'),
+      href: '/deals',
+      image: '/images/banners/hero-1.jpg',
+    },
+    {
+      id: 2,
+      title: t('heroSlide2Title'),
+      subtitle: t('heroSlide2Subtitle'),
+      bg: 'from-blue-900 via-blue-800 to-blue-900',
+      cta: t('discoverDeals'),
+      href: '/category/electronics',
+      image: '/images/banners/hero-2.jpg',
+    },
+    {
+      id: 3,
+      title: t('heroSlide3Title'),
+      subtitle: t('heroSlide3Subtitle'),
+      bg: 'from-purple-900 via-purple-800 to-purple-900',
+      cta: t('browseFashion'),
+      href: '/category/fashion',
+      image: '/images/banners/hero-3.jpg',
+    },
+  ]
+
+  // Category Images for Shop by Category section
+  const categoryImages = [
+    { id: 'electronics', nameAr: tcat('electronics'), image: '/images/categories/electronics.jpg' },
+    { id: 'fashion', nameAr: tcat('fashion'), image: '/images/categories/fashion.jpg' },
+    { id: 'home', nameAr: tcat('home'), image: '/images/categories/home.jpg' },
+    { id: 'beauty', nameAr: tcat('beauty'), image: '/images/categories/beauty.jpg' },
+    { id: 'sports', nameAr: tcat('sports'), image: '/images/categories/sports.jpg' },
+    { id: 'kids', nameAr: tcat('kids'), image: '/images/categories/kids.jpg' },
+    { id: 'food', nameAr: tcat('food'), image: '/images/products/cookware.jpg' },
+    { id: 'health', nameAr: tcat('health'), image: '/images/products/cream.jpg' },
+  ]
+
+  const stats = [
+    { value: '10,000+', label: t('activeStores'), icon: Store },
+    { value: '500,000+', label: t('totalProducts'), icon: ShoppingBag },
+    { value: '1,000,000+', label: t('happyCustomers'), icon: Star },
+    { value: '27', label: t('governorates'), icon: Truck },
+  ]
 
   // Handler to add product to cart
   const handleAddToCart = (product: typeof featuredProducts[0]) => {
@@ -357,13 +362,13 @@ export default function HomePage() {
                   </div>
                   <div>
                     <h2 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                      عروض خاطفة
+                      {t('flashDeals')}
                       <Badge variant="danger" className="bg-amazon-deal animate-bounce text-[10px] sm:text-xs">
-                        محدودة
+                        {t('limited')}
                       </Badge>
                     </h2>
                     <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
-                      احصل عليها قبل انتهاء الوقت!
+                      {t('getBeforeExpiry')}
                     </p>
                   </div>
                 </div>
@@ -372,17 +377,17 @@ export default function HomePage() {
                 <div className="flex items-center gap-1 sm:gap-2">
                   <div className="bg-amazon-navy text-white px-1.5 sm:px-3 py-1 sm:py-2 rounded-lg text-center min-w-[36px] sm:min-w-[50px]">
                     <span className="text-sm sm:text-xl font-bold">{countdown.hours.toString().padStart(2, '0')}</span>
-                    <span className="block text-[8px] sm:text-[10px] text-white/70">ساعة</span>
+                    <span className="block text-[8px] sm:text-[10px] text-white/70">{t('hour')}</span>
                   </div>
                   <span className="text-lg sm:text-2xl font-bold text-amazon-deal">:</span>
                   <div className="bg-amazon-navy text-white px-1.5 sm:px-3 py-1 sm:py-2 rounded-lg text-center min-w-[36px] sm:min-w-[50px]">
                     <span className="text-sm sm:text-xl font-bold">{countdown.minutes.toString().padStart(2, '0')}</span>
-                    <span className="block text-[8px] sm:text-[10px] text-white/70">دقيقة</span>
+                    <span className="block text-[8px] sm:text-[10px] text-white/70">{t('minute')}</span>
                   </div>
                   <span className="text-lg sm:text-2xl font-bold text-amazon-deal">:</span>
                   <div className="bg-amazon-navy text-white px-1.5 sm:px-3 py-1 sm:py-2 rounded-lg text-center min-w-[36px] sm:min-w-[50px]">
                     <span className="text-sm sm:text-xl font-bold">{countdown.seconds.toString().padStart(2, '0')}</span>
-                    <span className="block text-[8px] sm:text-[10px] text-white/70">ثانية</span>
+                    <span className="block text-[8px] sm:text-[10px] text-white/70">{t('second')}</span>
                   </div>
                 </div>
               </div>
@@ -401,8 +406,8 @@ export default function HomePage() {
                 <div className="h-16 w-16 rounded-full bg-amazon-deal/10 flex items-center justify-center mb-4">
                   <Percent className="h-8 w-8 text-amazon-deal" />
                 </div>
-                <span className="text-lg font-bold text-amazon-deal">عرض كل العروض</span>
-                <span className="text-sm text-gray-500 mt-1">أكثر من 1000 عرض</span>
+                <span className="text-lg font-bold text-amazon-deal">{t('viewAllDeals')}</span>
+                <span className="text-sm text-gray-500 mt-1">{t('moreThan1000Deals')}</span>
               </Link>
             </div>
           </div>
@@ -413,13 +418,13 @@ export default function HomePage() {
           <div className="container-custom">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                منتجات مميزة
+                {t('featured')}
               </h2>
               <Link
                 href="/marketplace"
                 className="flex items-center gap-1 text-amazon-link hover:text-amazon-linkHover hover:underline font-medium"
               >
-                عرض الكل
+                {tc('viewAll')}
                 <ChevronLeft className="h-4 w-4" />
               </Link>
             </div>
@@ -440,7 +445,7 @@ export default function HomePage() {
         <section className="py-12 bg-white dark:bg-gray-800">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-              تسوق حسب القسم
+              {t('shopByCategory')}
             </h2>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -460,7 +465,7 @@ export default function HomePage() {
                   <div className="absolute bottom-0 start-0 end-0 p-4 z-20">
                     <h3 className="text-lg font-bold text-white">{cat.nameAr}</h3>
                     <span className="text-sm text-amazon-yellow group-hover:underline">
-                      تسوق الآن
+                      {t('shopNow')}
                     </span>
                   </div>
                 </Link>
@@ -476,29 +481,29 @@ export default function HomePage() {
               <div className="flex items-center gap-2 sm:gap-4 text-white">
                 <Truck className="h-6 w-6 sm:h-10 sm:w-10 text-amazon-orange shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs sm:text-base">توصيل سريع</h3>
-                  <p className="text-[10px] sm:text-sm text-white/70">لجميع المحافظات</p>
+                  <h3 className="font-bold text-xs sm:text-base">{t('fastDelivery')}</h3>
+                  <p className="text-[10px] sm:text-sm text-white/70">{t('toAllGovernorates')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-4 text-white">
                 <Shield className="h-6 w-6 sm:h-10 sm:w-10 text-amazon-orange shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs sm:text-base">دفع آمن</h3>
-                  <p className="text-[10px] sm:text-sm text-white/70">100% مؤمن</p>
+                  <h3 className="font-bold text-xs sm:text-base">{t('securePayment')}</h3>
+                  <p className="text-[10px] sm:text-sm text-white/70">{t('securePayment100')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-4 text-white">
                 <Gift className="h-6 w-6 sm:h-10 sm:w-10 text-amazon-orange shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs sm:text-base">إرجاع مجاني</h3>
-                  <p className="text-[10px] sm:text-sm text-white/70">خلال 14 يوم</p>
+                  <h3 className="font-bold text-xs sm:text-base">{t('freeReturns')}</h3>
+                  <p className="text-[10px] sm:text-sm text-white/70">{t('within14Days')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-4 text-white">
                 <HeadphonesIcon className="h-6 w-6 sm:h-10 sm:w-10 text-amazon-orange shrink-0" />
                 <div>
-                  <h3 className="font-bold text-xs sm:text-base">دعم 24/7</h3>
-                  <p className="text-[10px] sm:text-sm text-white/70">متاح دائماً</p>
+                  <h3 className="font-bold text-xs sm:text-base">{t('support247')}</h3>
+                  <p className="text-[10px] sm:text-sm text-white/70">{t('alwaysAvailable')}</p>
                 </div>
               </div>
             </div>
@@ -512,37 +517,37 @@ export default function HomePage() {
               <div className="grid md:grid-cols-2 gap-8">
                 <div className="p-8 md:p-12 text-white">
                   <Badge className="bg-amazon-orange text-white mb-4">
-                    للبائعين
+                    {t('forSellers')}
                   </Badge>
                   <h2 className="text-3xl font-bold mb-4">
-                    ابدأ البيع على Shoporia اليوم
+                    {t('startSellingOnShoporia')}
                   </h2>
                   <p className="text-white/80 mb-6">
-                    انضم لآلاف البائعين الناجحين وابدأ في بيع منتجاتك لملايين العملاء
+                    {t('sellerCtaDescription')}
                   </p>
                   <ul className="space-y-3 mb-8">
                     <li className="flex items-center gap-2">
                       <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
                         <Star className="h-3 w-3 text-white" />
                       </div>
-                      <span>بدون رسوم اشتراك شهرية</span>
+                      <span>{t('noMonthlyFees')}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
                         <Star className="h-3 w-3 text-white" />
                       </div>
-                      <span>أدوات ذكاء اصطناعي مجانية</span>
+                      <span>{t('freeAITools')}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="h-5 w-5 rounded-full bg-green-500 flex items-center justify-center">
                         <Star className="h-3 w-3 text-white" />
                       </div>
-                      <span>دعم فني متخصص</span>
+                      <span>{t('specializedSupport')}</span>
                     </li>
                   </ul>
                   <Link href="/seller/register">
                     <Button size="lg" className="bg-amazon-yellow hover:bg-amazon-yellowHover text-amazon-navy font-bold">
-                      سجل كبائع مجاناً
+                      {t('registerAsSellerFree')}
                       <ArrowLeft className="h-5 w-5 me-2" />
                     </Button>
                   </Link>
@@ -578,14 +583,14 @@ export default function HomePage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-center text-2xl font-bold text-gray-900 dark:text-white mb-8">
-              ماذا يقول عملاؤنا؟
+              {t('whatCustomersSay')}
             </h2>
 
             <div className="grid md:grid-cols-3 gap-6">
               {[
-                { name: 'أحمد محمد', role: 'صاحب متجر أزياء', rating: 5 },
-                { name: 'سارة أحمد', role: 'مشترية دائمة', rating: 5 },
-                { name: 'محمد علي', role: 'صاحب متجر إلكترونيات', rating: 5 },
+                { name: 'أحمد محمد', role: t('fashionStoreOwner'), rating: 5 },
+                { name: 'سارة أحمد', role: t('regularBuyer'), rating: 5 },
+                { name: 'محمد علي', role: t('electronicsStoreOwner'), rating: 5 },
               ].map((testimonial, i) => (
                 <Card key={i} className="p-6">
                   <div className="flex gap-1 mb-4">
@@ -602,8 +607,7 @@ export default function HomePage() {
                     ))}
                   </div>
                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-                    &quot;منصة رائعة وسهلة الاستخدام. أنشأت متجري في أقل من 5
-                    دقائق وبدأت البيع فوراً. الدعم الفني ممتاز ومتجاوب.&quot;
+                    &quot;{t('testimonial')}&quot;
                   </p>
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 rounded-full bg-amazon-orange/20 flex items-center justify-center text-amazon-orange font-bold">

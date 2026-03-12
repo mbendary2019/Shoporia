@@ -9,6 +9,7 @@ import { auth, db } from '@/lib/firebase/config'
 import { useAuthStore } from '@/store'
 import { Card, Button, Input } from '@/components/ui'
 import { Shield, Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { User } from '@/types'
 
 export default function AdminLoginPage() {
@@ -19,6 +20,8 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -53,16 +56,16 @@ export default function AdminLoginPage() {
       } else {
         // Not an admin - sign out and show error
         await signOut(auth)
-        setError('ليس لديك صلاحيات الوصول للوحة الإدارة')
+        setError('ليس لديك صلاحيات الوصول للوحة الإدارة') // TODO: no exact key
       }
     } catch (err: unknown) {
       const firebaseError = err as { code?: string }
       if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/invalid-credential') {
-        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
+        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة') // TODO: no exact key
       } else if (firebaseError.code === 'auth/too-many-requests') {
-        setError('تم تجاوز عدد المحاولات المسموح. حاول لاحقاً')
+        setError('تم تجاوز عدد المحاولات المسموح. حاول لاحقاً') // TODO: no exact key
       } else {
-        setError('حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى')
+        setError(tc('error'))
       }
     }
 
@@ -83,12 +86,13 @@ export default function AdminLoginPage() {
               Admin
             </span>
           </h1>
-          <p className="mt-2 text-gray-400">لوحة تحكم الإدارة</p>
+          <p className="mt-2 text-gray-400">{t('title')}</p>
         </div>
 
         {/* Login Card */}
         <Card className="p-8">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white text-center mb-6">
+            {/* TODO: no exact key for تسجيل الدخول */}
             تسجيل الدخول
           </h2>
 
@@ -142,7 +146,7 @@ export default function AdminLoginPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  جاري التحقق...
+                  {tc('loading')}
                 </span>
               ) : (
                 'دخول'
@@ -155,7 +159,7 @@ export default function AdminLoginPage() {
               href="/"
               className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
             >
-              العودة للموقع الرئيسي
+              {tc('back')}
             </Link>
           </div>
         </Card>

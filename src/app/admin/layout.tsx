@@ -8,6 +8,7 @@ import { auth } from '@/lib/firebase/config'
 import { useAuthStore } from '@/store'
 import { Avatar, Button } from '@/components/ui'
 import { cn } from '@/utils/cn'
+import { useTranslations } from 'next-intl'
 import {
   Shield,
   LayoutDashboard,
@@ -32,24 +33,6 @@ import {
   FolderTree,
 } from 'lucide-react'
 
-const navigation = [
-  { name: 'لوحة التحكم', href: '/admin', icon: LayoutDashboard },
-  { name: 'الأقسام', href: '/admin/categories', icon: FolderTree },
-  { name: 'المتاجر', href: '/admin/stores', icon: Store },
-  { name: 'المنتجات', href: '/admin/products', icon: Package },
-  { name: 'الطلبات', href: '/admin/orders', icon: ShoppingCart },
-  { name: 'المستخدمين', href: '/admin/users', icon: Users },
-  { name: 'فريق العمل', href: '/admin/team', icon: UserCog },
-  { name: 'الكوبونات', href: '/admin/coupons', icon: Tag },
-  { name: 'التقييمات', href: '/admin/reviews', icon: MessageSquare },
-  { name: 'البلاغات', href: '/admin/reports', icon: Flag },
-  { name: 'المدفوعات', href: '/admin/payments', icon: CreditCard },
-  { name: 'التقارير', href: '/admin/analytics', icon: BarChart3 },
-  { name: 'الإعلانات', href: '/admin/banners', icon: Megaphone },
-  { name: 'السجلات', href: '/admin/logs', icon: FileText },
-  { name: 'الإعدادات', href: '/admin/settings', icon: Settings },
-]
-
 export default function AdminLayout({
   children,
 }: {
@@ -59,6 +42,26 @@ export default function AdminLayout({
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user, isAuthenticated, isLoading, logout } = useAuthStore()
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
+
+  const navigation = [
+    { name: t('title'), href: '/admin', icon: LayoutDashboard },
+    { name: t('categoriesSection'), href: '/admin/categories', icon: FolderTree },
+    { name: t('stores'), href: '/admin/stores', icon: Store },
+    { name: t('products'), href: '/admin/products', icon: Package },
+    { name: t('orders'), href: '/admin/orders', icon: ShoppingCart },
+    { name: t('users'), href: '/admin/users', icon: Users },
+    { name: t('team'), href: '/admin/team', icon: UserCog },
+    { name: t('coupons'), href: '/admin/coupons', icon: Tag },
+    { name: t('reviewsSection'), href: '/admin/reviews', icon: MessageSquare },
+    { name: t('reports'), href: '/admin/reports', icon: Flag },
+    { name: t('payments'), href: '/admin/payments', icon: CreditCard },
+    { name: t('analytics'), href: '/admin/analytics', icon: BarChart3 },
+    { name: t('banners'), href: '/admin/banners', icon: Megaphone },
+    { name: t('logs'), href: '/admin/logs', icon: FileText },
+    { name: t('settings'), href: '/admin/settings', icon: Settings },
+  ]
 
   // Check admin authentication
   useEffect(() => {
@@ -88,7 +91,7 @@ export default function AdminLayout({
       <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
           <Loader2 className="mx-auto h-8 w-8 animate-spin text-red-500" />
-          <p className="mt-2 text-gray-500">جاري التحقق...</p>
+          <p className="mt-2 text-gray-500">{tc('loading')}</p>
         </div>
       </div>
     )
@@ -178,6 +181,7 @@ export default function AdminLayout({
               className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-400 hover:bg-red-500/20"
             >
               <LogOut className="h-5 w-5" />
+              {/* TODO: no exact key for تسجيل الخروج */}
               تسجيل الخروج
             </button>
           </div>
@@ -199,7 +203,7 @@ export default function AdminLayout({
           {/* Title */}
           <div className="hidden lg:block">
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-              لوحة تحكم الإدارة
+              {t('title')}
             </h1>
           </div>
 

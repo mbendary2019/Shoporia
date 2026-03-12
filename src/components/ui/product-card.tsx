@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import { Heart, Star, ShoppingCart, Eye, Check } from 'lucide-react'
 import { cn } from '@/utils/cn'
 import { formatCurrency } from '@/utils/format'
@@ -42,6 +43,8 @@ export function ProductCard({
   onAddToCart,
   onAddToWishlist,
 }: ProductCardProps) {
+  const t = useTranslations('product')
+  const tCommon = useTranslations('common')
   const [isHovered, setIsHovered] = useState(false)
   const [isWishlisted, setIsWishlisted] = useState(false)
   const [isAddedToCart, setIsAddedToCart] = useState(false)
@@ -127,7 +130,7 @@ export function ProductCard({
           {product.isPrime && (
             <div className="mt-2 flex items-center gap-1">
               <span className="text-xs font-bold text-amazon-link">prime</span>
-              <span className="text-xs text-gray-600">توصيل مجاني</span>
+              <span className="text-xs text-gray-600">{t('freeDelivery')}</span>
             </div>
           )}
         </div>
@@ -161,7 +164,7 @@ export function ProductCard({
         {/* Discount Badge */}
         {discount > 0 && (
           <Badge className="absolute start-2 top-2 bg-amazon-deal text-white">
-            {discount}% خصم
+            {t('discountPercent', { percent: discount })}
           </Badge>
         )}
 
@@ -174,7 +177,7 @@ export function ProductCard({
         >
           <button
             onClick={handleAddToWishlist}
-            aria-label={isWishlisted ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
+            aria-label={isWishlisted ? t('removeFromWishlist') : t('addToWishlist')}
             className={cn(
               'flex h-9 w-9 items-center justify-center rounded-full shadow-md transition-all',
               isWishlisted
@@ -185,7 +188,7 @@ export function ProductCard({
             <Heart className={cn('h-5 w-5', isWishlisted && 'fill-current')} />
           </button>
           {showQuickView && (
-            <button aria-label="عرض سريع" className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100">
+            <button aria-label={t('quickView')} className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100">
               <Eye className="h-5 w-5 text-gray-600" />
             </button>
           )}
@@ -194,7 +197,7 @@ export function ProductCard({
         {/* Stock Badge */}
         {product.stockCount !== undefined && product.stockCount < 10 && product.stockCount > 0 && (
           <div className="absolute bottom-2 start-2 rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
-            باقي {product.stockCount} فقط!
+            {t('stockLow', { count: product.stockCount })}
           </div>
         )}
       </Link>
@@ -218,7 +221,7 @@ export function ProductCard({
         </Link>
 
         {/* Rating */}
-        <div className="mt-2 flex items-center gap-1" role="img" aria-label={`تقييم ${product.rating} من 5 نجوم`}>
+        <div className="mt-2 flex items-center gap-1" role="img" aria-label={t('ratingOf', { rating: product.rating })}>
           <div className="flex" aria-hidden="true">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
@@ -248,12 +251,12 @@ export function ProductCard({
                 -{discount}%
               </span>
               <span className="text-[10px] sm:text-xs text-gray-500 truncate">
-                كان: <span className="line-through">{formatCurrency(product.compareAtPrice!)}</span>
+                {t('was')} <span className="line-through">{formatCurrency(product.compareAtPrice!)}</span>
               </span>
             </div>
           )}
           <div className="mt-1 flex items-baseline gap-0.5 sm:gap-1 flex-wrap">
-            <span className="text-[10px] sm:text-xs text-gray-600">د.ك</span>
+            <span className="text-[10px] sm:text-xs text-gray-600">{tCommon('currency')}</span>
             <span className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
               {Math.floor(product.price)}
             </span>
@@ -269,15 +272,15 @@ export function ProductCard({
             <span className="rounded bg-amazon-navy px-1.5 py-0.5 text-[10px] font-bold text-white">
               PRIME
             </span>
-            <span className="text-xs text-gray-600">توصيل مجاني غداً</span>
+            <span className="text-xs text-gray-600">{t('freeDeliveryTomorrow')}</span>
           </div>
         )}
 
         {/* Stock Status */}
         {product.inStock === false ? (
-          <p className="mt-2 text-sm font-medium text-red-600">غير متوفر حالياً</p>
+          <p className="mt-2 text-sm font-medium text-red-600">{t('outOfStockNow')}</p>
         ) : (
-          <p className="mt-2 text-sm text-green-600">متوفر</p>
+          <p className="mt-2 text-sm text-green-600">{t('inStock')}</p>
         )}
 
         {/* Add to Cart Button */}
@@ -295,12 +298,12 @@ export function ProductCard({
             {isAddedToCart ? (
               <>
                 <Check className="h-4 w-4" />
-                تمت الإضافة
+                {t('addedToCart')}
               </>
             ) : (
               <>
                 <ShoppingCart className="h-4 w-4" />
-                أضف للسلة
+                {t('addToCart')}
               </>
             )}
           </Button>
@@ -312,6 +315,7 @@ export function ProductCard({
 
 // Deal Card for special offers
 export function DealCard({ product }: { product: Product }) {
+  const t = useTranslations('product')
   const discount = product.compareAtPrice
     ? Math.round(((product.compareAtPrice - product.price) / product.compareAtPrice) * 100)
     : 0
@@ -324,7 +328,7 @@ export function DealCard({ product }: { product: Product }) {
       {/* Deal Badge */}
       <div className="mb-3 flex items-center justify-between">
         <Badge variant="danger" className="bg-amazon-deal">
-          صفقة اليوم
+          {t('dealOfDay')}
         </Badge>
         <span className="text-sm font-bold text-amazon-deal">-{discount}%</span>
       </div>
@@ -353,7 +357,7 @@ export function DealCard({ product }: { product: Product }) {
             style={{ width: '65%' }}
           />
           <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
-            تم طلب 65%
+            {t('claimed', { percent: 65 })}
           </span>
         </div>
       </div>

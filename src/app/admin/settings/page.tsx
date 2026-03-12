@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Card, Button, Badge } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   Settings,
   Globe,
@@ -17,26 +18,29 @@ import {
   RefreshCw,
 } from 'lucide-react'
 
-const tabs = [
-  { id: 'general', name: 'عام', icon: Settings },
-  { id: 'payments', name: 'الدفع', icon: CreditCard },
-  { id: 'shipping', name: 'الشحن', icon: Truck },
-  { id: 'notifications', name: 'الإشعارات', icon: Bell },
-  { id: 'security', name: 'الأمان', icon: Shield },
-  { id: 'appearance', name: 'المظهر', icon: Palette },
-]
-
 export default function AdminSettingsPage() {
   const [activeTab, setActiveTab] = useState('general')
+  const t = useTranslations('admin')
+  const tc = useTranslations('common')
+
+  const tabs = [
+    { id: 'general', name: 'عام', icon: Settings },
+    { id: 'payments', name: t('payments'), icon: CreditCard },
+    { id: 'shipping', name: 'الشحن', icon: Truck },
+    { id: 'notifications', name: 'الإشعارات', icon: Bell },
+    { id: 'security', name: 'الأمان', icon: Shield },
+    { id: 'appearance', name: 'المظهر', icon: Palette },
+  ]
 
   return (
     <div className="space-y-6">
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-          إعدادات النظام
+          {t('settings')}
         </h1>
         <p className="mt-1 text-gray-600 dark:text-gray-400">
+          {/* TODO: no exact key for إعدادات المنصة العامة */}
           إعدادات المنصة العامة
         </p>
       </div>
@@ -163,7 +167,7 @@ export default function AdminSettingsPage() {
                   <div className="flex items-center gap-4">
                     <Badge variant="success">مفعل</Badge>
                     <Button size="sm" variant="outline">
-                      إعدادات
+                      {t('settings')}
                     </Button>
                   </div>
                 </div>
@@ -185,7 +189,7 @@ export default function AdminSettingsPage() {
                   <div className="flex items-center gap-4">
                     <Badge variant="success">مفعل</Badge>
                     <Button size="sm" variant="outline">
-                      إعدادات
+                      {t('settings')}
                     </Button>
                   </div>
                 </div>
@@ -207,7 +211,7 @@ export default function AdminSettingsPage() {
                   <div className="flex items-center gap-4">
                     <Badge variant="success">مفعل</Badge>
                     <Button size="sm" variant="outline">
-                      إعدادات
+                      {t('settings')}
                     </Button>
                   </div>
                 </div>
@@ -229,7 +233,7 @@ export default function AdminSettingsPage() {
                   <div className="flex items-center gap-4">
                     <Badge variant="success">مفعل</Badge>
                     <Button size="sm" variant="outline">
-                      إعدادات
+                      {t('settings')}
                     </Button>
                   </div>
                 </div>
@@ -467,10 +471,11 @@ export default function AdminSettingsPage() {
           <div className="mt-8 flex gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
             <Button>
               <Save className="h-4 w-4" />
-              حفظ التغييرات
+              {tc('save')}
             </Button>
             <Button variant="outline">
               <RefreshCw className="h-4 w-4" />
+              {/* TODO: no exact key for إعادة تعيين */}
               إعادة تعيين
             </Button>
           </div>

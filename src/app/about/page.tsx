@@ -2,6 +2,7 @@
 
 import { Header, Footer } from '@/components/layout'
 import { Card } from '@/components/ui'
+import { useTranslations } from 'next-intl'
 import {
   Store,
   Users,
@@ -13,37 +14,39 @@ import {
   Target,
 } from 'lucide-react'
 
-const stats = [
-  { label: 'عميل سعيد', value: '1M+', icon: Users },
-  { label: 'بائع معتمد', value: '10K+', icon: Store },
-  { label: 'منتج متاح', value: '5M+', icon: Globe },
-  { label: 'طلب يومي', value: '50K+', icon: Truck },
-]
-
-const values = [
-  {
-    icon: Heart,
-    title: 'العميل أولاً',
-    description: 'نضع رضا العميل في قلب كل قرار نتخذه. تجربتك معنا هي أولويتنا.',
-  },
-  {
-    icon: Shield,
-    title: 'الثقة والأمان',
-    description: 'نحمي بياناتك ونضمن لك تجربة تسوق آمنة 100%.',
-  },
-  {
-    icon: Award,
-    title: 'الجودة العالية',
-    description: 'نختار البائعين بعناية ونضمن جودة المنتجات المعروضة.',
-  },
-  {
-    icon: Target,
-    title: 'الابتكار المستمر',
-    description: 'نسعى دائماً لتقديم أفضل تجربة تسوق رقمية في المنطقة.',
-  },
-]
-
 export default function AboutPage() {
+  const t = useTranslations('about')
+
+  const stats = [
+    { label: t('happyCustomers'), value: '1M+', icon: Users },
+    { label: t('certifiedSellers'), value: '10K+', icon: Store },
+    { label: t('availableProducts'), value: '5M+', icon: Globe },
+    { label: t('dailyOrders'), value: '50K+', icon: Truck },
+  ]
+
+  const values = [
+    {
+      icon: Heart,
+      title: t('customerFirst'),
+      description: t('customerFirstDesc'),
+    },
+    {
+      icon: Shield,
+      title: t('trustAndSecurity'),
+      description: t('trustAndSecurityDesc'),
+    },
+    {
+      icon: Award,
+      title: t('highQuality'),
+      description: t('highQualityDesc'),
+    },
+    {
+      icon: Target,
+      title: t('continuousInnovation'),
+      description: t('continuousInnovationDesc'),
+    },
+  ]
+
   return (
     <div className="flex min-h-screen flex-col bg-gray-100 dark:bg-gray-900">
       <Header />
@@ -56,11 +59,10 @@ export default function AboutPage() {
               <Store className="h-10 w-10 text-white" />
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              من نحن
+              {t('title')}
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto text-lg">
-              Shoporia هي منصة التجارة الإلكترونية الرائدة في الكويت والشرق الأوسط،
-              نربط بين ملايين العملاء وآلاف البائعين المعتمدين.
+              {t('description')}
             </p>
           </div>
         </section>
@@ -89,19 +91,16 @@ export default function AboutPage() {
           <div className="container-custom">
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-                قصتنا
+                {t('ourStory')}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                بدأت Shoporia في عام 2024 برؤية واضحة: جعل التسوق الإلكتروني
-                متاحاً وسهلاً وموثوقاً للجميع في الكويت والعالم العربي.
+                {t('ourStoryP1')}
               </p>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
-                اليوم، نفخر بخدمة ملايين العملاء وتمكين آلاف رواد الأعمال والبائعين
-                من الوصول لعملائهم بسهولة وفعالية.
+                {t('ourStoryP2')}
               </p>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                نؤمن بأن التجارة الإلكترونية يجب أن تكون تجربة ممتعة وآمنة،
-                ونعمل كل يوم لتحقيق هذا الهدف.
+                {t('ourStoryP3')}
               </p>
             </div>
           </div>
@@ -111,7 +110,7 @@ export default function AboutPage() {
         <section className="py-12">
           <div className="container-custom">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center mb-8">
-              قيمنا
+              {t('ourValues')}
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {values.map((value) => (
@@ -134,10 +133,9 @@ export default function AboutPage() {
         {/* Mission */}
         <section className="py-12 bg-amazon-orange text-white">
           <div className="container-custom text-center">
-            <h2 className="text-2xl font-bold mb-4">مهمتنا</h2>
+            <h2 className="text-2xl font-bold mb-4">{t('ourMission')}</h2>
             <p className="text-white/90 max-w-2xl mx-auto text-lg">
-              تمكين الجميع من البيع والشراء بسهولة وأمان، وبناء اقتصاد رقمي
-              شامل يدعم رواد الأعمال ويخدم المستهلكين.
+              {t('ourMissionDesc')}
             </p>
           </div>
         </section>
