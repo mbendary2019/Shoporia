@@ -18,7 +18,12 @@
       "Bash(git remote add:*)",
       "Bash(git push:*)",
       "Bash(git config:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(ls:*)",
+      "Bash(PORT=3002 npm run dev:*)",
+      "Bash(npx cap init:*)",
+      "Bash(grep '\"\"type\"\":\"\"assistant\"\"' /Users/abdo/.claude/projects/-Users-abdo-Desktop-----shoporia-copy/a6d8d43b-a89c-4073-8e35-b40fbe82715b.jsonl)",
+      "Bash(python3 -c \"import sys,json; [print\\(json.loads\\(l\\).get\\(''message'',{}\\).get\\(''content'',''''\\)[:500] if isinstance\\(json.loads\\(l\\).get\\(''message'',{}\\).get\\(''content'',''''\\), str\\) else str\\(json.loads\\(l\\).get\\(''message'',{}\\).get\\(''content'',''''\\)\\)[:500]\\) for l in sys.stdin]\")"
     ]
   }
 }

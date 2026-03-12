@@ -181,8 +181,8 @@ export default function CookiesPage() {
           <div className="container-custom text-center">
             <p className="text-gray-600 dark:text-gray-400">
               للاستفسارات حول الكوكيز، تواصل معنا على:
-              <a href="mailto:privacy@shoporia.com" className="text-amazon-orange hover:underline mr-1">
-                privacy@shoporia.com
+              <a href="mailto:privacy@shoporia.app" className="text-amazon-orange hover:underline mr-1">
+                privacy@shoporia.app
               </a>
             </p>
           </div>

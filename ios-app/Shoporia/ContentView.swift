@@ -6,7 +6,7 @@ struct ContentView: View {
     // iOS Simulator can access Mac's localhost directly
     let appURL = "http://localhost:3000"
     #else
-    let appURL = "https://shoporia.vercel.app"
+    let appURL = "https://www.shoporia.app"
     #endif
 
     var body: some View {

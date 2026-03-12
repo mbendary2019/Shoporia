@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 export const siteConfig = {
   name: 'Shoporia',
   description: 'منصة التسوق الإلكتروني الأولى في الكويت',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'https://shoporia.com',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'https://www.shoporia.app',
   ogImage: '/og-image.png',
   locale: 'ar_KW',
 }

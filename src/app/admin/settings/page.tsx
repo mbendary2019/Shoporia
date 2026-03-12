@@ -131,7 +131,7 @@ export default function AdminSettingsPage() {
                   </label>
                   <input
                     type="email"
-                    defaultValue="support@shoporia.com"
+                    defaultValue="support@shoporia.app"
                     className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>

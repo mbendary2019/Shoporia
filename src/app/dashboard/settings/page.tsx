@@ -129,7 +129,7 @@ export default function SettingsPage() {
                   </label>
                   <div className="mt-1 flex">
                     <span className="inline-flex items-center rounded-s-lg border border-e-0 border-gray-300 bg-gray-50 px-3 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-700">
-                      shoporia.com/
+                      shoporia.app/
                     </span>
                     <input
                       type="text"

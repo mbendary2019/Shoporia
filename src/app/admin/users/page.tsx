@@ -73,7 +73,7 @@ const users = [
   {
     id: '5',
     name: 'Admin User',
-    email: 'admin@shoporia.com',
+    email: 'admin@shoporia.app',
     phone: '50000000',
     role: 'admin',
     status: 'active',

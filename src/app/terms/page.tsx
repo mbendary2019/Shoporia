@@ -116,7 +116,7 @@ export default function TermsPage() {
                 <p className="text-gray-600 dark:text-gray-400">
                   لأي استفسارات حول هذه الشروط، يرجى التواصل معنا على:
                   <br />
-                  البريد الإلكتروني: legal@shoporia.com
+                  البريد الإلكتروني: legal@shoporia.app
                   <br />
                   الهاتف: 19999
                 </p>

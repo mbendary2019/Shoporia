@@ -146,7 +146,7 @@ export default function InvestorsPage() {
               </p>
               <Button className="bg-amazon-orange hover:bg-amazon-orangeHover">
                 <Mail className="h-4 w-4 ml-2" />
-                investors@shoporia.com
+                investors@shoporia.app
               </Button>
             </Card>
           </div>

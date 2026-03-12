@@ -126,7 +126,7 @@ export default function PrivacyPage() {
                 <p className="text-gray-600 dark:text-gray-400">
                   لأي استفسارات حول خصوصيتك، تواصل معنا:
                   <br />
-                  البريد الإلكتروني: privacy@shoporia.com
+                  البريد الإلكتروني: privacy@shoporia.app
                   <br />
                   الهاتف: 19999
                 </p>

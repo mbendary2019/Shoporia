@@ -81,8 +81,8 @@ export const APP_CONFIG = {
   currencySymbol: 'د.ك',
   locale: 'ar-KW',
   timezone: 'Asia/Kuwait',
-  url: process.env.NEXT_PUBLIC_APP_URL || 'https://shoporia.com',
-  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@shoporia.com',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'https://www.shoporia.app',
+  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@shoporia.app',
   supportPhone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || '+96550000000',
   whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '96550000000',
 } as const
