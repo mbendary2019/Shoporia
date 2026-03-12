@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { LanguageSwitcher } from '@/components/ui'
 import {
   Store,
   Facebook,
@@ -181,9 +184,7 @@ export function Footer() {
                 <span>🇰🇼</span>
                 <span>الكويت</span>
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 rounded border border-gray-600 hover:border-white text-sm">
-                <span>العربية</span>
-              </button>
+              <LanguageSwitcher variant="footer" />
             </div>
           </div>
         </div>

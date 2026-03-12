@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore, useCartStore } from '@/store'
-import { Button, Avatar } from '@/components/ui'
+import { Button, Avatar, LanguageSwitcher } from '@/components/ui'
 import { useDebounce } from '@/hooks/use-debounce'
 import {
   Search,
@@ -311,6 +311,9 @@ export function Header() {
                 <span className="block text-sm font-bold">والطلبات</span>
               </div>
             </Link>
+
+            {/* Language Switcher */}
+            <LanguageSwitcher className="hidden sm:flex" />
 
             {/* Cart */}
             <Link
