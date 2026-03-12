@@ -77,7 +77,7 @@ export default function LoginPage() {
         setError('هذا الموقع غير مصرح له. يرجى إضافته في Firebase Console')
       } else {
         console.error('Google sign-in error:', error.code, error.message)
-        setError(`حدث خطأ أثناء تسجيل الدخول بحساب Google${process.env.NODE_ENV === 'development' ? `: ${error.code}` : ''}`)
+        setError(`حدث خطأ أثناء تسجيل الدخول بحساب Google: ${error.code || error.message || 'unknown'}`)
       }
     } finally {
       setIsLoading(false)
