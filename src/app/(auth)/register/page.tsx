@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input } from '@/components/ui'
 import { registerSchema, type RegisterInput } from '@/lib/validations'
-import { signUpWithEmail, signInWithGoogle } from '@/services/auth'
+import { signUpWithEmail, signInWithGoogle, handleRedirectResult } from '@/services/auth'
 import { useAuthStore } from '@/store'
 import { Mail, Lock, Eye, EyeOff, User, Phone } from 'lucide-react'
 
@@ -18,6 +18,16 @@ export default function RegisterPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Handle Google redirect result (when popup fails and redirect is used)
+  useEffect(() => {
+    handleRedirectResult().then((user) => {
+      if (user) {
+        setUser(user)
+        router.push(user.role === 'seller' ? '/dashboard' : '/')
+      }
+    })
+  }, [setUser, router])
 
   const {
     register,

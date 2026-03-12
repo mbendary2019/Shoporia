@@ -2,6 +2,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   FacebookAuthProvider,
   signInWithPhoneNumber,
@@ -108,21 +110,58 @@ export async function signInWithEmail(
   return user
 }
 
-// Google Sign In with Popup
+// Google Sign In - tries popup first, falls back to redirect
 export async function signInWithGoogle(): Promise<User> {
   const provider = new GoogleAuthProvider()
   provider.setCustomParameters({ prompt: 'select_account' })
 
-  const { user: firebaseUser } = await signInWithPopup(auth, provider)
+  let firebaseUser: FirebaseUser
 
-  // Try to get/create user data in Firestore, but handle offline case
+  try {
+    const result = await signInWithPopup(auth, provider)
+    firebaseUser = result.user
+  } catch (popupError: unknown) {
+    const err = popupError as { code?: string }
+    // If popup fails (blocked, WebView, etc.), fall back to redirect
+    if (
+      err.code === 'auth/popup-blocked' ||
+      err.code === 'auth/popup-closed-by-user' ||
+      err.code === 'auth/cancelled-popup-request' ||
+      err.code === 'auth/operation-not-supported-in-this-environment'
+    ) {
+      await signInWithRedirect(auth, provider)
+      // After redirect, the page reloads — result is handled by handleRedirectResult()
+      // Return a placeholder that won't be used (page will reload)
+      return {} as User
+    }
+    throw popupError
+  }
+
+  return await getOrCreateUser(firebaseUser)
+}
+
+// Handle redirect result (call this on app init)
+export async function handleRedirectResult(): Promise<User | null> {
+  try {
+    const result = await getRedirectResult(auth)
+    if (result?.user) {
+      return await getOrCreateUser(result.user)
+    }
+  } catch (error) {
+    console.error('Redirect sign-in error:', error)
+  }
+  return null
+}
+
+// Helper: get or create user from Firebase user
+async function getOrCreateUser(firebaseUser: FirebaseUser): Promise<User> {
   try {
     const user = await getUserData(firebaseUser)
     if (!user) {
       return await createUserDocument(firebaseUser)
     }
     return user
-  } catch (error) {
+  } catch {
     // If Firestore is offline, return user data from Firebase Auth directly
     return {
       id: firebaseUser.uid,

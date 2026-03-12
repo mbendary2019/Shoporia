@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Input } from '@/components/ui'
 import { loginSchema, type LoginInput } from '@/lib/validations'
-import { signInWithEmail, signInWithGoogle } from '@/services/auth'
+import { signInWithEmail, signInWithGoogle, handleRedirectResult } from '@/services/auth'
 import { useAuthStore } from '@/store'
 import { Mail, Lock, Eye, EyeOff, Shield } from 'lucide-react'
 
@@ -17,6 +17,16 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Handle Google redirect result (when popup fails and redirect is used)
+  useEffect(() => {
+    handleRedirectResult().then((user) => {
+      if (user) {
+        setUser(user)
+        router.push(user.role === 'seller' ? '/dashboard' : '/')
+      }
+    })
+  }, [setUser, router])
 
   const {
     register,
@@ -56,16 +66,18 @@ export default function LoginPage() {
       router.push(user.role === 'seller' ? '/dashboard' : '/')
     } catch (err: unknown) {
       const error = err as { code?: string; message?: string }
-      if (error.code === 'auth/popup-closed-by-user') {
+      if (error.code === 'auth/popup-closed-by-user' || error.code === 'auth/cancelled-popup-request') {
         setError('تم إغلاق نافذة تسجيل الدخول')
       } else if (error.code === 'auth/popup-blocked') {
-        setError('تم حظر النافذة المنبثقة. يرجى السماح بالنوافذ المنبثقة')
+        // Redirect will be used as fallback automatically
+        return
       } else if (error.code === 'auth/operation-not-allowed') {
         setError('تسجيل الدخول عبر Google غير مفعّل. يرجى تفعيله في Firebase Console')
       } else if (error.code === 'auth/unauthorized-domain') {
         setError('هذا الموقع غير مصرح له. يرجى إضافته في Firebase Console')
       } else {
-        setError('حدث خطأ أثناء تسجيل الدخول بحساب Google')
+        console.error('Google sign-in error:', error.code, error.message)
+        setError(`حدث خطأ أثناء تسجيل الدخول بحساب Google${process.env.NODE_ENV === 'development' ? `: ${error.code}` : ''}`)
       }
     } finally {
       setIsLoading(false)
