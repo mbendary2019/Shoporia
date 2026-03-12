@@ -56,7 +56,7 @@ const transactions = [
     amount: 4200,
     fee: 126,
     net: 4074,
-    method: 'instapay',
+    method: 'bank_transfer',
     status: 'failed',
     date: '2024-01-14 10:20',
   },
@@ -84,7 +84,9 @@ const methodConfig = {
   bank: { label: 'تحويل بنكي', icon: Building },
   wallet: { label: 'محفظة إلكترونية', icon: Wallet },
   card: { label: 'بطاقة ائتمان', icon: CreditCard },
-  instapay: { label: 'انستاباي', icon: Wallet },
+  knet: { label: 'كي نت', icon: CreditCard },
+  bank_transfer: { label: 'تحويل بنكي', icon: Building },
+  cash: { label: 'نقدي', icon: Wallet },
 }
 
 export default function PaymentsPage() {

@@ -59,7 +59,7 @@ export default function AboutPage() {
               من نحن
             </h1>
             <p className="text-white/70 max-w-2xl mx-auto text-lg">
-              Shoporia هي منصة التجارة الإلكترونية الرائدة في مصر والشرق الأوسط،
+              Shoporia هي منصة التجارة الإلكترونية الرائدة في الكويت والشرق الأوسط،
               نربط بين ملايين العملاء وآلاف البائعين المعتمدين.
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function AboutPage() {
               </h2>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
                 بدأت Shoporia في عام 2024 برؤية واضحة: جعل التسوق الإلكتروني
-                متاحاً وسهلاً وموثوقاً للجميع في مصر والعالم العربي.
+                متاحاً وسهلاً وموثوقاً للجميع في الكويت والعالم العربي.
               </p>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">
                 اليوم، نفخر بخدمة ملايين العملاء وتمكين آلاف رواد الأعمال والبائعين

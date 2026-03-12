@@ -87,7 +87,7 @@ export default function AdminSettingsPage() {
                     الدولة الافتراضية
                   </label>
                   <select className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800">
-                    <option value="EG">مصر</option>
+                    <option value="KW">الكويت</option>
                     <option value="SA">السعودية</option>
                     <option value="AE">الإمارات</option>
                   </select>
@@ -98,7 +98,7 @@ export default function AdminSettingsPage() {
                     العملة الافتراضية
                   </label>
                   <select className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800">
-                    <option value="EGP">جنيه مصري (EGP)</option>
+                    <option value="KWD">دينار كويتي (KWD)</option>
                     <option value="SAR">ريال سعودي (SAR)</option>
                     <option value="AED">درهم إماراتي (AED)</option>
                   </select>
@@ -120,7 +120,7 @@ export default function AdminSettingsPage() {
                   </label>
                   <textarea
                     rows={3}
-                    defaultValue="منصة التجارة الإلكترونية الرائدة في مصر"
+                    defaultValue="منصة التجارة الإلكترونية الرائدة في الكويت"
                     className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>

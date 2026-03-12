@@ -133,7 +133,6 @@ export default function MessagesPage() {
   const handleSendMessage = () => {
     if (!message.trim()) return
     // In real app, send message via chat service
-    console.log('Sending:', message)
     setMessage('')
   }
 

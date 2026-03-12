@@ -271,7 +271,7 @@ export type OrderStatus =
   | 'refunded'
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded'
-export type PaymentMethod = 'cash' | 'card' | 'vodafone_cash' | 'instapay' | 'fawry'
+export type PaymentMethod = 'knet' | 'card' | 'cash' | 'bank_transfer'
 
 export interface Order {
   id: string

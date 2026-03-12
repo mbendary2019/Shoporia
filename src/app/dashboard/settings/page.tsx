@@ -169,7 +169,7 @@ export default function SettingsPage() {
                   </label>
                   <input
                     type="tel"
-                    defaultValue="01012345678"
+                    defaultValue="50001234"
                     className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>
@@ -181,7 +181,7 @@ export default function SettingsPage() {
                   </label>
                   <input
                     type="text"
-                    defaultValue="القاهرة، مصر"
+                    defaultValue="الكويت"
                     className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>
@@ -232,8 +232,8 @@ export default function SettingsPage() {
               <div className="space-y-4">
                 {[
                   { id: 'cash', name: 'الدفع عند الاستلام', enabled: true },
-                  { id: 'vodafone', name: 'فودافون كاش', enabled: true, number: '01012345678' },
-                  { id: 'instapay', name: 'انستاباي', enabled: false, number: '' },
+                  { id: 'knet', name: 'كي نت (KNET)', enabled: true, number: '50001234' },
+                  { id: 'bank_transfer', name: 'تحويل بنكي', enabled: false, number: '' },
                   { id: 'card', name: 'بطاقة ائتمان', enabled: false },
                 ].map((method) => (
                   <div
@@ -280,7 +280,7 @@ export default function SettingsPage() {
                     </label>
                     <input
                       type="text"
-                      placeholder="البنك الأهلي المصري"
+                      placeholder="بنك الكويت الوطني"
                       className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                     />
                   </div>
@@ -308,7 +308,7 @@ export default function SettingsPage() {
               <div className="grid gap-6 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    تكلفة الشحن الافتراضية (ج.م)
+                    تكلفة الشحن الافتراضية (د.ك)
                   </label>
                   <input
                     type="number"
@@ -319,7 +319,7 @@ export default function SettingsPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    الحد الأدنى للشحن المجاني (ج.م)
+                    الحد الأدنى للشحن المجاني (د.ك)
                   </label>
                   <input
                     type="number"
@@ -345,15 +345,15 @@ export default function SettingsPage() {
                   أسعار الشحن حسب المحافظة
                 </h3>
                 <div className="space-y-3">
-                  {['القاهرة', 'الجيزة', 'الإسكندرية', 'باقي المحافظات'].map((gov) => (
+                  {['العاصمة', 'حولي', 'الفروانية', 'الأحمدي', 'الجهراء', 'مبارك الكبير'].map((gov) => (
                     <div key={gov} className="flex items-center gap-4">
                       <span className="w-40 text-sm text-gray-700 dark:text-gray-300">{gov}</span>
                       <input
                         type="number"
-                        defaultValue={gov === 'باقي المحافظات' ? 75 : 50}
+                        defaultValue={50}
                         className="h-10 w-32 rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                       />
-                      <span className="text-sm text-gray-500">ج.م</span>
+                      <span className="text-sm text-gray-500">د.ك</span>
                     </div>
                   ))}
                 </div>
@@ -445,7 +445,7 @@ export default function SettingsPage() {
                   </label>
                   <input
                     type="tel"
-                    placeholder="01012345678"
+                    placeholder="50001234"
                     className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
                   />
                 </div>

@@ -2,9 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuthStore } from '@/store'
+import { useNotificationStore } from '@/store'
+import { getStoreByOwnerId } from '@/services/store'
 import { Avatar, Button } from '@/components/ui'
+import { AuthGuard } from '@/components/auth/auth-guard'
 import { cn } from '@/utils/cn'
 import {
   Store,
@@ -42,9 +45,35 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname()
   const { user, logout } = useAuthStore()
+  const unreadCount = useNotificationStore((state) => state.getUnreadCount())
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const [storeName, setStoreName] = useState<string | null>(null)
+  const [storeSlug, setStoreSlug] = useState<string | null>(null)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  const fetchStore = useCallback(async () => {
+    if (!user?.id) return
+    try {
+      const store = await getStoreByOwnerId(user.id)
+      if (store) {
+        setStoreName(store.name)
+        setStoreSlug(store.slug || store.id)
+      }
+    } catch {
+      // silently fail - store name will remain null
+    }
+  }, [user?.id])
+
+  useEffect(() => {
+    fetchStore()
+  }, [fetchStore])
 
   return (
+    <AuthGuard requiredRole="seller">
     <div className="flex min-h-screen bg-gray-100 dark:bg-gray-900">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
@@ -57,7 +86,7 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 start-0 z-50 w-64 transform bg-white transition-transform duration-200 dark:bg-gray-800 lg:static lg:translate-x-0',
+          'fixed inset-y-0 start-0 z-50 w-64 max-w-[85vw] transform bg-white transition-transform duration-200 dark:bg-gray-800 lg:static lg:max-w-none lg:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'
         )}
       >
@@ -149,7 +178,7 @@ export default function DashboardLayout({
             <button className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700">
               <Store className="h-4 w-4 text-gray-500" />
               <span className="font-medium text-gray-900 dark:text-white">
-                متجر الأناقة
+                {storeName || 'متجري'}
               </span>
               <ChevronDown className="h-4 w-4 text-gray-500" />
             </button>
@@ -158,18 +187,23 @@ export default function DashboardLayout({
           {/* Right Actions */}
           <div className="flex items-center gap-4">
             {/* View Store */}
-            <Link href="/store/my-store" target="_blank">
+            <Link href={`/store/${storeSlug || 'my-store'}`} target="_blank">
               <Button variant="outline" size="sm">
                 عرض المتجر
               </Button>
             </Link>
 
             {/* Notifications */}
-            <button className="relative rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <button
+              className="relative rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+              aria-label={`الإشعارات${isMounted && unreadCount > 0 ? ` (${unreadCount} غير مقروءة)` : ''}`}
+            >
               <Bell className="h-5 w-5 text-gray-500" />
-              <span className="absolute end-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
-                3
-              </span>
+              {isMounted && unreadCount > 0 && (
+                <span className="absolute end-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {/* Profile */}
@@ -193,5 +227,6 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
       </div>
     </div>
+    </AuthGuard>
   )
 }

@@ -7,12 +7,33 @@ import {
   where,
   orderBy,
   limit,
+  QueryConstraint,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { COLLECTIONS } from '@/lib/firebase/collections'
+import { z } from 'zod'
+import { rateLimit, rateLimitResponse, getClientIP } from '@/lib/rate-limit'
+import { getAuthUser, unauthorizedResponse } from '@/lib/api-auth'
+
+const createReviewSchema = z.object({
+  targetId: z.string().min(1, 'targetId is required'),
+  storeId: z.string().min(1, 'storeId is required'),
+  customerId: z.string().min(1, 'customerId is required'),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().min(1, 'comment must be at least 1 character'),
+  userId: z.string().optional(),
+  productId: z.string().optional(),
+  orderId: z.string().optional(),
+  title: z.string().optional(),
+  images: z.array(z.string()).optional(),
+})
 
 // GET /api/reviews - Get reviews
 export async function GET(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`reviews-get:${ip}`, { maxRequests: 20 })
+  if (!limiter.success) return rateLimitResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
     const productId = searchParams.get('productId')
@@ -20,7 +41,7 @@ export async function GET(request: NextRequest) {
     const userId = searchParams.get('userId')
     const pageSize = parseInt(searchParams.get('pageSize') || '20')
 
-    const constraints: any[] = []
+    const constraints: QueryConstraint[] = []
 
     if (productId) {
       constraints.push(where('productId', '==', productId))
@@ -49,12 +70,12 @@ export async function GET(request: NextRequest) {
     const totalReviews = reviews.length
     const averageRating =
       totalReviews > 0
-        ? reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / totalReviews
+        ? reviews.reduce((sum: number, r: Record<string, unknown>) => sum + (r.rating as number), 0) / totalReviews
         : 0
 
     const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
       rating,
-      count: reviews.filter((r: any) => r.rating === rating).length,
+      count: reviews.filter((r: Record<string, unknown>) => r.rating === rating).length,
     }))
 
     return NextResponse.json({
@@ -69,7 +90,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching reviews:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error fetching reviews:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch reviews' },
       { status: 500 }
@@ -79,37 +100,39 @@ export async function GET(request: NextRequest) {
 
 // POST /api/reviews - Create new review
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`reviews-post:${ip}`, { maxRequests: 20 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const body = await request.json()
 
-    const { userId, productId, storeId, orderId, rating, title, comment, images } = body
-
-    // Validate required fields
-    if (!userId || !productId || !rating) {
+    const parsed = createReviewSchema.safeParse(body)
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
+        { success: false, error: parsed.error.errors.map((e) => e.message).join(', ') },
         { status: 400 }
       )
     }
 
-    // Validate rating
-    if (rating < 1 || rating > 5) {
-      return NextResponse.json(
-        { success: false, error: 'Rating must be between 1 and 5' },
-        { status: 400 }
-      )
-    }
+    const { productId, storeId, orderId, rating, title, comment, images, targetId } = parsed.data
 
+    // Force userId to be the authenticated user (prevent impersonation)
     const reviewData = {
-      userId,
-      productId,
+      userId: user.id,
+      productId: productId || targetId,
+      targetId,
+      customerId: user.id,
       storeId: storeId || null,
       orderId: orderId || null,
       rating,
       title: title || null,
       comment: comment || null,
       images: images || [],
-      isVerified: !!orderId, // Verified if from an order
+      isVerified: false, // Will be verified server-side by checking order ownership
       helpfulCount: 0,
       reply: null,
       isReported: false,
@@ -128,7 +151,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error creating review:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error creating review:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to create review' },
       { status: 500 }

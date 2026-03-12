@@ -10,23 +10,30 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { COLLECTIONS } from '@/lib/firebase/collections'
+import { rateLimit, rateLimitResponse, getClientIP } from '@/lib/rate-limit'
+import { getAuthUser, unauthorizedResponse, forbiddenResponse } from '@/lib/api-auth'
 
 // GET /api/wishlist - Get user's wishlist
 export async function GET(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`wishlist-get:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
     const userId = searchParams.get('userId')
 
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'User ID is required' },
-        { status: 400 }
-      )
+    // Users can only access their own wishlist
+    if (userId && userId !== user.id && user.role !== 'admin') {
+      return forbiddenResponse()
     }
 
     const q = query(
       collection(db, COLLECTIONS.WISHLIST),
-      where('userId', '==', userId)
+      where('userId', '==', userId || user.id)
     )
     const snapshot = await getDocs(q)
 
@@ -40,7 +47,7 @@ export async function GET(request: NextRequest) {
       data: wishlistItems,
     })
   } catch (error) {
-    console.error('Error fetching wishlist:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error fetching wishlist:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch wishlist' },
       { status: 500 }
@@ -50,16 +57,26 @@ export async function GET(request: NextRequest) {
 
 // POST /api/wishlist - Add item to wishlist
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`wishlist-post:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const body = await request.json()
-    const { userId, productId } = body
+    const { productId } = body
 
-    if (!userId || !productId) {
+    if (!productId) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
       )
     }
+
+    // Always use authenticated user's ID
+    const userId = user.id
 
     // Check if already in wishlist
     const existingQuery = query(
@@ -96,7 +113,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error adding to wishlist:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error adding to wishlist:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to add to wishlist' },
       { status: 500 }
@@ -106,21 +123,28 @@ export async function POST(request: NextRequest) {
 
 // DELETE /api/wishlist - Remove item from wishlist
 export async function DELETE(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`wishlist-delete:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
-    const userId = searchParams.get('userId')
     const productId = searchParams.get('productId')
 
-    if (!userId || !productId) {
+    if (!productId) {
       return NextResponse.json(
         { success: false, error: 'Missing required fields' },
         { status: 400 }
       )
     }
 
+    // Always use authenticated user's ID
     const q = query(
       collection(db, COLLECTIONS.WISHLIST),
-      where('userId', '==', userId),
+      where('userId', '==', user.id),
       where('productId', '==', productId)
     )
     const snapshot = await getDocs(q)
@@ -139,7 +163,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Item removed from wishlist',
     })
   } catch (error) {
-    console.error('Error removing from wishlist:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error removing from wishlist:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to remove from wishlist' },
       { status: 500 }

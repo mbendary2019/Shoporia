@@ -11,27 +11,31 @@ import {
   limit,
   doc,
   writeBatch,
+  QueryConstraint,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { COLLECTIONS } from '@/lib/firebase/collections'
+import { rateLimit, rateLimitResponse, getClientIP } from '@/lib/rate-limit'
+import { getAuthUser, unauthorizedResponse, forbiddenResponse } from '@/lib/api-auth'
+
+const BATCH_LIMIT = 500 // Firestore batch limit
 
 // GET /api/notifications - Get user's notifications
 export async function GET(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`notifications-get:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
-    const userId = searchParams.get('userId')
     const type = searchParams.get('type')
     const unreadOnly = searchParams.get('unreadOnly') === 'true'
-    const pageSize = parseInt(searchParams.get('pageSize') || '50')
+    const pageSize = Math.min(parseInt(searchParams.get('pageSize') || '50'), 100)
 
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
-
-    const constraints: any[] = [where('userId', '==', userId)]
+    const constraints: QueryConstraint[] = [where('userId', '==', user.id)]
 
     if (type) {
       constraints.push(where('type', '==', type))
@@ -55,7 +59,7 @@ export async function GET(request: NextRequest) {
     // Get unread count
     const unreadQuery = query(
       collection(db, COLLECTIONS.NOTIFICATIONS),
-      where('userId', '==', userId),
+      where('userId', '==', user.id),
       where('isRead', '==', false)
     )
     const unreadSnapshot = await getDocs(unreadQuery)
@@ -68,7 +72,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching notifications:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error fetching notifications:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch notifications' },
       { status: 500 }
@@ -76,8 +80,16 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/notifications - Create new notification
+// POST /api/notifications - Create new notification (internal use)
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`notifications-post:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
+  // Only admins or the system can create notifications for other users
   try {
     const body = await request.json()
     const { userId, type, title, message, link } = body
@@ -87,6 +99,11 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'Missing required fields' },
         { status: 400 }
       )
+    }
+
+    // Only admin can send notifications to other users
+    if (userId !== user.id && user.role !== 'admin') {
+      return forbiddenResponse()
     }
 
     const notificationData = {
@@ -112,7 +129,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error creating notification:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error creating notification:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to create notification' },
       { status: 500 }
@@ -122,23 +139,24 @@ export async function POST(request: NextRequest) {
 
 // PATCH /api/notifications - Mark notifications as read
 export async function PATCH(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`notifications-patch:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const body = await request.json()
-    const { userId, notificationIds, markAll } = body
-
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
+    const { notificationIds, markAll } = body
 
     if (markAll) {
-      // Mark all as read
+      // Mark all as read (limited to BATCH_LIMIT)
       const q = query(
         collection(db, COLLECTIONS.NOTIFICATIONS),
-        where('userId', '==', userId),
-        where('isRead', '==', false)
+        where('userId', '==', user.id),
+        where('isRead', '==', false),
+        limit(BATCH_LIMIT)
       )
       const snapshot = await getDocs(q)
 
@@ -155,9 +173,10 @@ export async function PATCH(request: NextRequest) {
         message: `Marked ${snapshot.size} notifications as read`,
       })
     } else if (notificationIds && Array.isArray(notificationIds)) {
-      // Mark specific notifications as read
+      // Limit batch size
+      const ids = notificationIds.slice(0, BATCH_LIMIT)
       const batch = writeBatch(db)
-      notificationIds.forEach((id: string) => {
+      ids.forEach((id: string) => {
         batch.update(doc(db, COLLECTIONS.NOTIFICATIONS, id), {
           isRead: true,
         })
@@ -166,7 +185,7 @@ export async function PATCH(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: `Marked ${notificationIds.length} notifications as read`,
+        message: `Marked ${ids.length} notifications as read`,
       })
     }
 
@@ -175,7 +194,7 @@ export async function PATCH(request: NextRequest) {
       { status: 400 }
     )
   } catch (error) {
-    console.error('Error updating notifications:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error updating notifications:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to update notifications' },
       { status: 500 }
@@ -185,24 +204,24 @@ export async function PATCH(request: NextRequest) {
 
 // DELETE /api/notifications - Delete notifications
 export async function DELETE(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`notifications-delete:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
-    const userId = searchParams.get('userId')
     const notificationId = searchParams.get('notificationId')
     const deleteAll = searchParams.get('deleteAll') === 'true'
 
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, error: 'User ID is required' },
-        { status: 400 }
-      )
-    }
-
     if (deleteAll) {
-      // Delete all notifications
+      // Delete all (limited to BATCH_LIMIT)
       const q = query(
         collection(db, COLLECTIONS.NOTIFICATIONS),
-        where('userId', '==', userId)
+        where('userId', '==', user.id),
+        limit(BATCH_LIMIT)
       )
       const snapshot = await getDocs(q)
 
@@ -217,7 +236,16 @@ export async function DELETE(request: NextRequest) {
         message: `Deleted ${snapshot.size} notifications`,
       })
     } else if (notificationId) {
-      // Delete specific notification
+      // Delete specific notification - verify ownership
+      const notifDoc = await getDocs(query(
+        collection(db, COLLECTIONS.NOTIFICATIONS),
+        where('userId', '==', user.id),
+      ))
+      const owned = notifDoc.docs.find(d => d.id === notificationId)
+      if (!owned) {
+        return forbiddenResponse()
+      }
+
       await deleteDoc(doc(db, COLLECTIONS.NOTIFICATIONS, notificationId))
 
       return NextResponse.json({
@@ -231,7 +259,7 @@ export async function DELETE(request: NextRequest) {
       { status: 400 }
     )
   } catch (error) {
-    console.error('Error deleting notifications:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error deleting notifications:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to delete notifications' },
       { status: 500 }

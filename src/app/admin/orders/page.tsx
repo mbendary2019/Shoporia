@@ -26,7 +26,7 @@ const orders = [
     total: 2500,
     status: 'delivered',
     paymentStatus: 'paid',
-    paymentMethod: 'vodafone_cash',
+    paymentMethod: 'knet',
     createdAt: '2024-12-10T10:30:00',
   },
   {
@@ -37,7 +37,7 @@ const orders = [
     total: 1250,
     status: 'shipped',
     paymentStatus: 'paid',
-    paymentMethod: 'instapay',
+    paymentMethod: 'bank_transfer',
     createdAt: '2024-12-11T09:15:00',
   },
   {
@@ -70,7 +70,7 @@ const orders = [
     total: 1800,
     status: 'cancelled',
     paymentStatus: 'refunded',
-    paymentMethod: 'vodafone_cash',
+    paymentMethod: 'knet',
     createdAt: '2024-12-08T14:20:00',
   },
 ]

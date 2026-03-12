@@ -47,3 +47,13 @@ firestore-debug.log
 ui-debug.log
 .claude/
 .env.local
+
+# Indexing
+.f0/
+
+# iOS build artifacts
+ios-app/Shoporia.xcodeproj/xcuserdata/
+ios-app/Shoporia.xcodeproj/project.xcworkspace/xcuserdata/
+
+# Lock files (use npm)
+pnpm-lock.yaml

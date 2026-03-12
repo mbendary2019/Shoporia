@@ -11,6 +11,7 @@ import {
   Phone,
   MessageCircle,
 } from 'lucide-react'
+import { APP_CONFIG } from '@/utils/constants'
 
 export default function CheckoutSuccessPage() {
   const orderNumber = 'SH-ABC123XYZ' // This would come from the order creation
@@ -126,14 +127,14 @@ export default function CheckoutSuccessPage() {
               </p>
               <div className="mt-3 flex items-center justify-center gap-4">
                 <a
-                  href="tel:01012345678"
+                  href={`tel:${APP_CONFIG.supportPhone}`}
                   className="flex items-center gap-2 text-sm text-primary-500 hover:underline"
                 >
                   <Phone className="h-4 w-4" />
-                  01012345678
+                  {APP_CONFIG.supportPhone}
                 </a>
                 <a
-                  href="https://wa.me/201012345678"
+                  href={`https://wa.me/${APP_CONFIG.whatsappNumber}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm text-green-600 hover:underline"

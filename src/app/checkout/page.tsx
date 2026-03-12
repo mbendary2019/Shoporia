@@ -11,6 +11,8 @@ import { Card, Button, Input, Textarea, Select } from '@/components/ui'
 import { useCartStore, useAuthStore } from '@/store'
 import { formatCurrency } from '@/utils/format'
 import { GOVERNORATES } from '@/utils/constants'
+import { createOrder } from '@/services/order'
+import type { OrderItem, Address } from '@/types'
 import {
   ShoppingCart,
   MapPin,
@@ -43,7 +45,7 @@ const checkoutSchema = z.object({
   apartment: z.string().optional(),
   notes: z.string().optional(),
   // Payment
-  paymentMethod: z.enum(['cash', 'vodafone_cash', 'instapay', 'fawry']),
+  paymentMethod: z.enum(['cash', 'knet', 'bank_transfer']),
 })
 
 type CheckoutInput = z.infer<typeof checkoutSchema>
@@ -62,31 +64,26 @@ const paymentMethods = [
     icon: Banknote,
   },
   {
-    id: 'vodafone_cash',
-    name: 'فودافون كاش',
-    description: 'ادفع عبر محفظة فودافون كاش',
+    id: 'knet',
+    name: 'كي نت (KNET)',
+    description: 'ادفع عبر بطاقة كي نت',
     icon: Smartphone,
   },
   {
-    id: 'instapay',
-    name: 'انستاباي',
-    description: 'تحويل بنكي فوري عبر انستاباي',
+    id: 'bank_transfer',
+    name: 'تحويل بنكي',
+    description: 'تحويل بنكي مباشر لحسابنا',
     icon: Building2,
-  },
-  {
-    id: 'fawry',
-    name: 'فوري',
-    description: 'ادفع في أي فرع فوري',
-    icon: Building,
   },
 ]
 
 export default function CheckoutPage() {
   const router = useRouter()
   const { user, isAuthenticated } = useAuthStore()
-  const { items, getSubtotal, getItemCount, clearCart } = useCartStore()
+  const { items, getSubtotal, getItemCount, clearCart, storeId: cartStoreId } = useCartStore()
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
+  const [orderError, setOrderError] = useState<string | null>(null)
   const [deliveryMethod, setDeliveryMethod] = useState<'standard' | 'express'>('standard')
 
   const {
@@ -122,21 +119,53 @@ export default function CheckoutPage() {
   }
 
   const onSubmit = async (data: CheckoutInput) => {
+    if (!user) return
+
     try {
       setIsLoading(true)
-      console.log('Order data:', {
-        ...data,
-        items,
-        subtotal,
-        deliveryFee,
-        total,
-        deliveryMethod,
-      })
-      // TODO: Create order in Firestore
+      setOrderError(null)
+
+      const orderItems: OrderItem[] = items.map((item) => ({
+        productId: item.product.id,
+        variantId: item.variant?.id,
+        name: item.product.name,
+        image: item.product.images?.[0]?.url || '',
+        quantity: item.quantity,
+        price: item.variant?.price ?? item.product.price,
+        total: (item.variant?.price ?? item.product.price) * item.quantity,
+        options: item.variant?.options,
+      }))
+
+      const deliveryAddress: Address = {
+        id: crypto.randomUUID(),
+        label: 'عنوان التوصيل',
+        fullName: data.fullName,
+        phone: data.phone,
+        street: data.street,
+        city: data.city,
+        governorate: data.governorate,
+        isDefault: false,
+      }
+
+      const storeId = cartStoreId || items[0]?.product.storeId || ''
+
+      await createOrder(
+        user.id,
+        storeId,
+        orderItems,
+        deliveryAddress,
+        data.paymentMethod,
+        {
+          deliveryMethod,
+          deliveryNotes: data.notes,
+        }
+      )
+
       clearCart()
       router.push('/checkout/success')
     } catch (error) {
-      console.error('Error creating order:', error)
+      const message = error instanceof Error ? error.message : 'حدث خطأ أثناء إنشاء الطلب'
+      setOrderError(message)
     } finally {
       setIsLoading(false)
     }
@@ -285,7 +314,7 @@ export default function CheckoutPage() {
                         <Input
                           label="رقم الهاتف"
                           type="tel"
-                          placeholder="01xxxxxxxxx"
+                          placeholder="5xxxxxxx"
                           leftIcon={<Phone className="h-5 w-5" />}
                           error={errors.phone?.message}
                           {...register('phone')}
@@ -307,7 +336,7 @@ export default function CheckoutPage() {
 
                         <Input
                           label="المدينة / المنطقة"
-                          placeholder="مثال: مدينة نصر"
+                          placeholder="مثال: السالمية"
                           error={errors.city?.message}
                           {...register('city')}
                         />
@@ -439,7 +468,7 @@ export default function CheckoutPage() {
                         <button
                           key={method.id}
                           type="button"
-                          onClick={() => setValue('paymentMethod', method.id as any)}
+                          onClick={() => setValue('paymentMethod', method.id as CheckoutInput['paymentMethod'])}
                           className={`flex w-full items-start gap-4 rounded-lg border p-4 text-start transition-colors ${
                             watchedValues.paymentMethod === method.id
                               ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
@@ -473,39 +502,26 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Payment Instructions */}
-                    {watchedValues.paymentMethod === 'vodafone_cash' && (
-                      <div className="mt-6 rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
-                        <h4 className="font-medium text-red-700 dark:text-red-400">
-                          تعليمات فودافون كاش
-                        </h4>
-                        <p className="mt-2 text-sm text-red-600 dark:text-red-400">
-                          بعد إتمام الطلب، قم بتحويل المبلغ إلى الرقم: <strong>01012345678</strong>
-                          <br />
-                          ثم أرسل صورة إيصال التحويل عبر واتساب
-                        </p>
-                      </div>
-                    )}
-
-                    {watchedValues.paymentMethod === 'instapay' && (
+                    {watchedValues.paymentMethod === 'knet' && (
                       <div className="mt-6 rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
                         <h4 className="font-medium text-blue-700 dark:text-blue-400">
-                          تعليمات انستاباي
+                          تعليمات كي نت (KNET)
                         </h4>
                         <p className="mt-2 text-sm text-blue-600 dark:text-blue-400">
-                          بعد إتمام الطلب، قم بالتحويل إلى: <strong>shoporia@instapay</strong>
-                          <br />
-                          سيتم تأكيد طلبك تلقائياً بعد استلام المبلغ
+                          بعد إتمام الطلب، سيتم توجيهك لبوابة الدفع الإلكتروني لإتمام الدفع عبر بطاقة كي نت
                         </p>
                       </div>
                     )}
 
-                    {watchedValues.paymentMethod === 'fawry' && (
-                      <div className="mt-6 rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
-                        <h4 className="font-medium text-yellow-700 dark:text-yellow-400">
-                          تعليمات فوري
+                    {watchedValues.paymentMethod === 'bank_transfer' && (
+                      <div className="mt-6 rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
+                        <h4 className="font-medium text-green-700 dark:text-green-400">
+                          تعليمات التحويل البنكي
                         </h4>
-                        <p className="mt-2 text-sm text-yellow-600 dark:text-yellow-400">
-                          بعد إتمام الطلب، ستحصل على رقم مرجعي للدفع في أي فرع فوري خلال 48 ساعة
+                        <p className="mt-2 text-sm text-green-600 dark:text-green-400">
+                          بعد إتمام الطلب، قم بالتحويل إلى حسابنا البنكي: <strong>بنك الكويت الوطني</strong>
+                          <br />
+                          ثم أرسل صورة إيصال التحويل عبر واتساب على الرقم: <strong>50001234</strong>
                         </p>
                       </div>
                     )}
@@ -653,6 +669,12 @@ export default function CheckoutPage() {
                     </Button>
                   )}
                 </div>
+
+                {orderError && (
+                  <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                    {orderError}
+                  </div>
+                )}
               </form>
             </div>
 

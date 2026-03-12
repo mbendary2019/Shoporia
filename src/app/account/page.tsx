@@ -19,7 +19,7 @@ export default function AccountPage() {
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
     name: user?.displayName || '',
-    phone: '01012345678',
+    phone: '+965 5000 1234',
     birthDate: '1990-01-15',
     gender: 'male',
   })

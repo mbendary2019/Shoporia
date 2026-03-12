@@ -174,6 +174,7 @@ export function ProductCard({
         >
           <button
             onClick={handleAddToWishlist}
+            aria-label={isWishlisted ? 'إزالة من المفضلة' : 'إضافة للمفضلة'}
             className={cn(
               'flex h-9 w-9 items-center justify-center rounded-full shadow-md transition-all',
               isWishlisted
@@ -184,7 +185,7 @@ export function ProductCard({
             <Heart className={cn('h-5 w-5', isWishlisted && 'fill-current')} />
           </button>
           {showQuickView && (
-            <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100">
+            <button aria-label="عرض سريع" className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-md hover:bg-gray-100">
               <Eye className="h-5 w-5 text-gray-600" />
             </button>
           )}
@@ -217,8 +218,8 @@ export function ProductCard({
         </Link>
 
         {/* Rating */}
-        <div className="mt-2 flex items-center gap-1">
-          <div className="flex">
+        <div className="mt-2 flex items-center gap-1" role="img" aria-label={`تقييم ${product.rating} من 5 نجوم`}>
+          <div className="flex" aria-hidden="true">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
@@ -240,23 +241,23 @@ export function ProductCard({
         </div>
 
         {/* Price */}
-        <div className="mt-2">
+        <div className="mt-2 overflow-hidden">
           {discount > 0 && (
-            <div className="flex items-center gap-2">
-              <span className="rounded bg-amazon-deal px-1.5 py-0.5 text-xs font-bold text-white">
+            <div className="flex items-center gap-1 sm:gap-2 flex-wrap">
+              <span className="rounded bg-amazon-deal px-1 sm:px-1.5 py-0.5 text-[10px] sm:text-xs font-bold text-white shrink-0">
                 -{discount}%
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-[10px] sm:text-xs text-gray-500 truncate">
                 كان: <span className="line-through">{formatCurrency(product.compareAtPrice!)}</span>
               </span>
             </div>
           )}
-          <div className="mt-1 flex items-baseline gap-1">
-            <span className="text-xs text-gray-600">جنيه</span>
-            <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          <div className="mt-1 flex items-baseline gap-0.5 sm:gap-1 flex-wrap">
+            <span className="text-[10px] sm:text-xs text-gray-600">د.ك</span>
+            <span className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
               {Math.floor(product.price)}
             </span>
-            <span className="text-sm text-gray-900 dark:text-white">
+            <span className="text-xs sm:text-sm text-gray-900 dark:text-white">
               {((product.price % 1) * 100).toFixed(0).padStart(2, '0')}
             </span>
           </div>
@@ -358,11 +359,11 @@ export function DealCard({ product }: { product: Product }) {
       </div>
 
       {/* Price */}
-      <div className="mt-3 text-center">
-        <span className="text-2xl font-bold text-amazon-deal">
+      <div className="mt-3 text-center overflow-hidden">
+        <span className="text-lg sm:text-xl md:text-2xl font-bold text-amazon-deal">
           {formatCurrency(product.price)}
         </span>
-        <span className="ms-2 text-sm text-gray-500 line-through">
+        <span className="ms-1 sm:ms-2 text-xs sm:text-sm text-gray-500 line-through">
           {formatCurrency(product.compareAtPrice!)}
         </span>
       </div>

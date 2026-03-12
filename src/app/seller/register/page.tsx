@@ -10,6 +10,10 @@ import { Button, Input, Textarea, Select, Card } from '@/components/ui'
 import { storeSchema, type StoreInput } from '@/lib/validations'
 import { STORE_CATEGORIES, GOVERNORATES } from '@/utils/constants'
 import { useAuthStore } from '@/store'
+import { createStore } from '@/services/store'
+import { updateDoc } from 'firebase/firestore'
+import { userDoc } from '@/lib/firebase'
+import type { StoreCategory } from '@/types'
 import {
   Store,
   Sparkles,
@@ -35,6 +39,7 @@ export default function SellerRegisterPage() {
   const [currentStep, setCurrentStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const {
     register,
@@ -67,13 +72,34 @@ export default function SellerRegisterPage() {
   }
 
   const onSubmit = async (data: StoreInput) => {
+    if (!user) return
+
     try {
       setIsLoading(true)
-      // TODO: Create store in Firestore
-      console.log('Store data:', data)
+      setSubmitError(null)
+
+      const store = await createStore(user.id, {
+        name: data.name,
+        description: data.description,
+        category: data.category as StoreCategory,
+        phone: data.phone,
+        whatsapp: data.whatsapp,
+        email: data.email,
+        governorate: data.governorate,
+        city: data.city,
+        address: data.address,
+      })
+
+      // Update user role to seller and link store
+      await updateDoc(userDoc(user.id), {
+        role: 'seller',
+        storeId: store.id,
+      })
+
       router.push('/dashboard')
     } catch (error) {
-      console.error('Error creating store:', error)
+      const message = error instanceof Error ? error.message : 'حدث خطأ أثناء إنشاء المتجر'
+      setSubmitError(message)
     } finally {
       setIsLoading(false)
     }
@@ -497,6 +523,12 @@ export default function SellerRegisterPage() {
                     </Button>
                   )}
                 </div>
+
+                {submitError && (
+                  <div className="mt-4 rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                    {submitError}
+                  </div>
+                )}
               </form>
             </Card>
           </div>

@@ -21,6 +21,7 @@ import {
   Send,
   CheckCircle,
 } from 'lucide-react'
+import { APP_CONFIG } from '@/utils/constants'
 
 const faqs = [
   {
@@ -130,7 +131,7 @@ export default function SupportPage() {
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
                   تواصل معنا مباشرة عبر واتساب
                 </p>
-                <a href="https://wa.me/201000000000" target="_blank" rel="noopener noreferrer">
+                <a href={`https://wa.me/${APP_CONFIG.whatsappNumber}`} target="_blank" rel="noopener noreferrer">
                   <Button className="bg-green-600 hover:bg-green-700 w-full">
                     ابدأ المحادثة
                   </Button>
@@ -239,7 +240,7 @@ export default function SupportPage() {
               <div className="flex items-center justify-center gap-3">
                 <MapPin className="h-6 w-6 text-amazon-orange" />
                 <span className="text-gray-600 dark:text-gray-400">
-                  القاهرة، مصر
+                  الكويت
                 </span>
               </div>
               <div className="flex items-center justify-center gap-3">

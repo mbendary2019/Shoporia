@@ -4,7 +4,7 @@ export const addressSchema = z.object({
   id: z.string().optional(),
   label: z.string().min(1, 'يرجى إدخال تسمية العنوان'),
   fullName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل'),
-  phone: z.string().regex(/^01[0125][0-9]{8}$/, 'رقم الهاتف غير صالح'),
+  phone: z.string().regex(/^[569][0-9]{7}$/, 'رقم الهاتف غير صالح'),
   street: z.string().min(5, 'يرجى إدخال العنوان بالتفصيل'),
   city: z.string().min(2, 'يرجى إدخال المدينة'),
   governorate: z.string().min(2, 'يرجى اختيار المحافظة'),
@@ -27,7 +27,7 @@ export const checkoutSchema = z.object({
   items: z.array(orderItemSchema).min(1, 'السلة فارغة'),
   deliveryAddress: addressSchema,
   deliveryMethod: z.enum(['standard', 'express', 'pickup']).default('standard'),
-  paymentMethod: z.enum(['cash', 'card', 'vodafone_cash', 'instapay', 'fawry']),
+  paymentMethod: z.enum(['cash', 'card', 'knet', 'bank_transfer']),
   couponCode: z.string().optional(),
   deliveryNotes: z.string().max(500).optional(),
 })

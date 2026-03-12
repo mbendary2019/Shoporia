@@ -6,8 +6,9 @@ import { useParams } from 'next/navigation'
 import { Header, Footer } from '@/components/layout'
 import { Card, Button, Badge, Input } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
+import { useStore, useStoreProducts } from '@/hooks/queries/use-stores'
 import {
-  Store,
+  Store as StoreIcon,
   Star,
   MapPin,
   Phone,
@@ -25,96 +26,10 @@ import {
   Calendar,
   Users,
   ShoppingBag,
+  Loader2,
 } from 'lucide-react'
 
-// Mock store data
-const store = {
-  id: 'store-1',
-  name: 'متجر الأناقة',
-  slug: 'elegance-store',
-  description: 'متجر متخصص في الملابس الرجالية الفاخرة والأنيقة. نقدم أجود أنواع الأقمشة وأحدث صيحات الموضة بأسعار منافسة. نسعى دائماً لتقديم أفضل تجربة تسوق لعملائنا.',
-  logo: '/images/stores/elegance-logo.jpg',
-  banner: '/images/stores/elegance-banner.jpg',
-  category: 'fashion',
-  categoryAr: 'أزياء',
-  rating: 4.8,
-  reviewCount: 256,
-  productCount: 156,
-  followerCount: 1250,
-  orderCount: 3500,
-  phone: '01012345678',
-  whatsapp: '01012345678',
-  email: 'contact@elegance-store.com',
-  address: 'مدينة نصر، القاهرة',
-  isVerified: true,
-  createdAt: '2023-06-15',
-  workingHours: {
-    saturday: { open: '10:00', close: '22:00', isOpen: true },
-    sunday: { open: '10:00', close: '22:00', isOpen: true },
-    monday: { open: '10:00', close: '22:00', isOpen: true },
-    tuesday: { open: '10:00', close: '22:00', isOpen: true },
-    wednesday: { open: '10:00', close: '22:00', isOpen: true },
-    thursday: { open: '10:00', close: '22:00', isOpen: true },
-    friday: { open: '14:00', close: '22:00', isOpen: true },
-  },
-}
-
-const products = [
-  {
-    id: '1',
-    name: 'قميص قطن رجالي كلاسيك',
-    price: 450,
-    compareAtPrice: 599,
-    rating: 4.5,
-    reviewCount: 128,
-    soldCount: 256,
-  },
-  {
-    id: '2',
-    name: 'بنطلون قماش رجالي',
-    price: 550,
-    compareAtPrice: 700,
-    rating: 4.3,
-    reviewCount: 89,
-    soldCount: 180,
-  },
-  {
-    id: '3',
-    name: 'جاكيت شتوي فاخر',
-    price: 1200,
-    compareAtPrice: 1500,
-    rating: 4.7,
-    reviewCount: 45,
-    soldCount: 120,
-  },
-  {
-    id: '4',
-    name: 'حذاء جلد طبيعي',
-    price: 850,
-    rating: 4.6,
-    reviewCount: 67,
-    soldCount: 200,
-  },
-  {
-    id: '5',
-    name: 'كرافت حرير',
-    price: 120,
-    compareAtPrice: 150,
-    rating: 4.5,
-    reviewCount: 34,
-    soldCount: 300,
-  },
-  {
-    id: '6',
-    name: 'حزام جلد طبيعي',
-    price: 180,
-    rating: 4.7,
-    reviewCount: 56,
-    soldCount: 250,
-  },
-]
-
-const reviews = [
+const mockReviews = [
   {
     id: '1',
     customerName: 'أحمد محمد',
@@ -133,22 +48,68 @@ const reviews = [
 
 export default function StorePage() {
   const params = useParams()
+  const slug = params.slug as string
   const [isFollowing, setIsFollowing] = useState(false)
   const [activeTab, setActiveTab] = useState<'products' | 'about' | 'reviews'>('products')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
 
+  const { data: store, isLoading: storeLoading } = useStore(slug)
+  const { data: storeProducts = [], isLoading: productsLoading } = useStoreProducts(store?.id)
+
+  const reviews = mockReviews
+
+  if (storeLoading) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900">
+          <div className="text-center">
+            <Loader2 className="mx-auto h-12 w-12 animate-spin text-primary-500" />
+            <p className="mt-4 text-gray-600 dark:text-gray-400">جاري تحميل المتجر...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (!store) {
+    return (
+      <div className="flex min-h-screen flex-col">
+        <Header />
+        <main className="flex flex-1 items-center justify-center bg-gray-50 dark:bg-gray-900">
+          <div className="text-center">
+            <Package className="mx-auto h-16 w-16 text-gray-300" />
+            <h2 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">
+              المتجر غير موجود
+            </h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              عذراً، لم نتمكن من العثور على المتجر المطلوب
+            </p>
+            <Link href="/marketplace">
+              <Button className="mt-6">تصفح المنتجات</Button>
+            </Link>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  const products = storeProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: p.price,
+    compareAtPrice: p.compareAtPrice,
+    rating: p.rating,
+    reviewCount: p.reviewCount,
+    soldCount: p.soldCount,
+    image: p.images?.[0]?.url,
+  }))
+
   const isOpen = () => {
-    const now = new Date()
-    const day = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase() as keyof typeof store.workingHours
-    const hours = store.workingHours[day]
-
-    if (!hours?.isOpen) return false
-
-    const currentTime = now.getHours() * 100 + now.getMinutes()
-    const openTime = parseInt(hours.open.replace(':', ''))
-    const closeTime = parseInt(hours.close.replace(':', ''))
-
-    return currentTime >= openTime && currentTime <= closeTime
+    // Working hours not stored in current schema
+    return false
   }
 
   return (
@@ -169,9 +130,13 @@ export default function StorePage() {
                 {/* Logo */}
                 <div className="relative -mt-20 md:-mt-24">
                   <div className="flex h-32 w-32 items-center justify-center rounded-xl border-4 border-white bg-white shadow-lg dark:border-gray-800 dark:bg-gray-800 md:h-40 md:w-40">
-                    <Store className="h-16 w-16 text-primary-500 md:h-20 md:w-20" />
+                    {store.logo ? (
+                      <img src={store.logo} alt={store.name} className="h-full w-full rounded-xl object-cover" />
+                    ) : (
+                      <StoreIcon className="h-16 w-16 text-primary-500 md:h-20 md:w-20" />
+                    )}
                   </div>
-                  {store.isVerified && (
+                  {store.status === 'active' && (
                     <div className="absolute -bottom-2 -end-2 rounded-full bg-white p-1 shadow dark:bg-gray-800">
                       <CheckCircle className="h-6 w-6 text-blue-500" />
                     </div>
@@ -186,12 +151,12 @@ export default function StorePage() {
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white md:text-3xl">
                           {store.name}
                         </h1>
-                        {store.isVerified && (
+                        {store.status === 'active' && (
                           <Badge variant="info">موثق</Badge>
                         )}
                       </div>
                       <p className="mt-1 text-gray-600 dark:text-gray-400">
-                        {store.categoryAr}
+                        {store.category}
                       </p>
                     </div>
 
@@ -226,7 +191,7 @@ export default function StorePage() {
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <Users className="h-5 w-5" />
-                      <span>{store.followerCount} متابع</span>
+                      <span>{0} متابع</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <ShoppingBag className="h-5 w-5" />
@@ -236,10 +201,12 @@ export default function StorePage() {
 
                   {/* Contact & Location */}
                   <div className="mt-6 flex flex-wrap gap-4 text-sm">
-                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                      <MapPin className="h-4 w-4" />
-                      {store.address}
-                    </div>
+                    {store.address && (
+                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <MapPin className="h-4 w-4" />
+                        {store.address}
+                      </div>
+                    )}
                     <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                       <Phone className="h-4 w-4" />
                       {store.phone}
@@ -355,7 +322,11 @@ export default function StorePage() {
                       viewMode === 'grid' ? 'aspect-square' : 'h-40 w-40 shrink-0'
                     }`}>
                       <div className="flex h-full items-center justify-center">
-                        <Package className="h-12 w-12 text-gray-300" />
+                        {product.image ? (
+                          <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                        ) : (
+                          <Package className="h-12 w-12 text-gray-300" />
+                        )}
                       </div>
 
                       {product.compareAtPrice && (
@@ -432,29 +403,7 @@ export default function StorePage() {
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                     أوقات العمل
                   </h3>
-                  <div className="space-y-3">
-                    {Object.entries(store.workingHours).map(([day, hours]) => {
-                      const dayNames: Record<string, string> = {
-                        saturday: 'السبت',
-                        sunday: 'الأحد',
-                        monday: 'الإثنين',
-                        tuesday: 'الثلاثاء',
-                        wednesday: 'الأربعاء',
-                        thursday: 'الخميس',
-                        friday: 'الجمعة',
-                      }
-                      return (
-                        <div key={day} className="flex items-center justify-between">
-                          <span className="text-gray-600 dark:text-gray-400">
-                            {dayNames[day]}
-                          </span>
-                          <span className={hours.isOpen ? 'text-gray-900 dark:text-white' : 'text-red-500'}>
-                            {hours.isOpen ? `${hours.open} - ${hours.close}` : 'مغلق'}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
+                  <p className="text-gray-500 text-sm">لا تتوفر معلومات أوقات العمل حالياً</p>
                 </Card>
 
                 <Card className="p-6">
@@ -477,7 +426,7 @@ export default function StorePage() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">واتساب</p>
-                        <p className="text-gray-900 dark:text-white">{store.whatsapp}</p>
+                        <p className="text-gray-900 dark:text-white">{store.whatsapp || store.phone}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
@@ -486,7 +435,7 @@ export default function StorePage() {
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">العنوان</p>
-                        <p className="text-gray-900 dark:text-white">{store.address}</p>
+                        <p className="text-gray-900 dark:text-white">{store.address || 'غير محدد'}</p>
                       </div>
                     </div>
                   </div>
@@ -506,7 +455,7 @@ export default function StorePage() {
                       <p className="text-sm text-gray-500">طلب مكتمل</p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-4 text-center dark:bg-gray-800">
-                      <p className="text-2xl font-bold text-primary-500">{store.followerCount}</p>
+                      <p className="text-2xl font-bold text-primary-500">{0}</p>
                       <p className="text-sm text-gray-500">متابع</p>
                     </div>
                     <div className="rounded-lg bg-gray-50 p-4 text-center dark:bg-gray-800">

@@ -171,7 +171,6 @@ export default function DashboardMessagesPage() {
 
   const handleSendMessage = () => {
     if (!message.trim()) return
-    console.log('Sending:', message)
     setMessage('')
   }
 

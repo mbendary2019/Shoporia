@@ -12,44 +12,22 @@ export const STORE_CATEGORIES = [
   { id: 'other', name: 'Other', nameAr: 'أخرى', icon: 'Package' },
 ] as const
 
-// Egyptian Governorates
+// Kuwait Governorates
 export const GOVERNORATES = [
-  { id: 'cairo', name: 'Cairo', nameAr: 'القاهرة' },
-  { id: 'giza', name: 'Giza', nameAr: 'الجيزة' },
-  { id: 'alexandria', name: 'Alexandria', nameAr: 'الإسكندرية' },
-  { id: 'dakahlia', name: 'Dakahlia', nameAr: 'الدقهلية' },
-  { id: 'sharqia', name: 'Sharqia', nameAr: 'الشرقية' },
-  { id: 'qalyubia', name: 'Qalyubia', nameAr: 'القليوبية' },
-  { id: 'beheira', name: 'Beheira', nameAr: 'البحيرة' },
-  { id: 'gharbia', name: 'Gharbia', nameAr: 'الغربية' },
-  { id: 'monufia', name: 'Monufia', nameAr: 'المنوفية' },
-  { id: 'kafr_el_sheikh', name: 'Kafr El Sheikh', nameAr: 'كفر الشيخ' },
-  { id: 'damietta', name: 'Damietta', nameAr: 'دمياط' },
-  { id: 'port_said', name: 'Port Said', nameAr: 'بورسعيد' },
-  { id: 'ismailia', name: 'Ismailia', nameAr: 'الإسماعيلية' },
-  { id: 'suez', name: 'Suez', nameAr: 'السويس' },
-  { id: 'north_sinai', name: 'North Sinai', nameAr: 'شمال سيناء' },
-  { id: 'south_sinai', name: 'South Sinai', nameAr: 'جنوب سيناء' },
-  { id: 'red_sea', name: 'Red Sea', nameAr: 'البحر الأحمر' },
-  { id: 'matrouh', name: 'Matrouh', nameAr: 'مطروح' },
-  { id: 'fayoum', name: 'Fayoum', nameAr: 'الفيوم' },
-  { id: 'beni_suef', name: 'Beni Suef', nameAr: 'بني سويف' },
-  { id: 'minya', name: 'Minya', nameAr: 'المنيا' },
-  { id: 'asyut', name: 'Asyut', nameAr: 'أسيوط' },
-  { id: 'sohag', name: 'Sohag', nameAr: 'سوهاج' },
-  { id: 'qena', name: 'Qena', nameAr: 'قنا' },
-  { id: 'luxor', name: 'Luxor', nameAr: 'الأقصر' },
-  { id: 'aswan', name: 'Aswan', nameAr: 'أسوان' },
-  { id: 'new_valley', name: 'New Valley', nameAr: 'الوادي الجديد' },
+  { id: 'capital', name: 'Al Asimah', nameAr: 'العاصمة' },
+  { id: 'hawalli', name: 'Hawalli', nameAr: 'حولي' },
+  { id: 'farwaniya', name: 'Al Farwaniyah', nameAr: 'الفروانية' },
+  { id: 'ahmadi', name: 'Al Ahmadi', nameAr: 'الأحمدي' },
+  { id: 'jahra', name: 'Al Jahra', nameAr: 'الجهراء' },
+  { id: 'mubarak_al_kabeer', name: 'Mubarak Al-Kabeer', nameAr: 'مبارك الكبير' },
 ] as const
 
 // Payment Methods
 export const PAYMENT_METHODS = [
-  { id: 'cash', name: 'Cash on Delivery', nameAr: 'الدفع عند الاستلام', icon: 'Banknote' },
-  { id: 'vodafone_cash', name: 'Vodafone Cash', nameAr: 'فودافون كاش', icon: 'Smartphone' },
-  { id: 'instapay', name: 'InstaPay', nameAr: 'انستاباي', icon: 'CreditCard' },
-  { id: 'fawry', name: 'Fawry', nameAr: 'فوري', icon: 'Building' },
+  { id: 'knet', name: 'KNET', nameAr: 'كي نت', icon: 'CreditCard' },
   { id: 'card', name: 'Credit/Debit Card', nameAr: 'بطاقة ائتمان', icon: 'CreditCard' },
+  { id: 'cash', name: 'Cash on Delivery', nameAr: 'الدفع عند الاستلام', icon: 'Banknote' },
+  { id: 'bank_transfer', name: 'Bank Transfer', nameAr: 'تحويل بنكي', icon: 'Building' },
 ] as const
 
 // Order Statuses
@@ -87,8 +65,8 @@ export const DAYS_OF_WEEK = [
 
 // Delivery Providers
 export const DELIVERY_PROVIDERS = [
-  { id: 'bosta', name: 'Bosta', nameAr: 'بوسطة' },
   { id: 'aramex', name: 'Aramex', nameAr: 'أرامكس' },
+  { id: 'fetchr', name: 'Fetchr', nameAr: 'فيتشر' },
   { id: 'local', name: 'Local Delivery', nameAr: 'توصيل محلي' },
   { id: 'self', name: 'Self Delivery', nameAr: 'توصيل ذاتي' },
 ] as const
@@ -99,12 +77,14 @@ export const APP_CONFIG = {
   nameAr: 'شوبوريا',
   description: 'AI-powered e-commerce platform',
   descriptionAr: 'منصة تجارة إلكترونية ذكية',
-  currency: 'EGP',
-  currencySymbol: 'ج.م',
-  locale: 'ar-EG',
-  timezone: 'Africa/Cairo',
-  supportEmail: 'support@shoporia.com',
-  supportPhone: '+201000000000',
+  currency: 'KWD',
+  currencySymbol: 'د.ك',
+  locale: 'ar-KW',
+  timezone: 'Asia/Kuwait',
+  url: process.env.NEXT_PUBLIC_APP_URL || 'https://shoporia.com',
+  supportEmail: process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@shoporia.com',
+  supportPhone: process.env.NEXT_PUBLIC_SUPPORT_PHONE || '+96550000000',
+  whatsappNumber: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '96550000000',
 } as const
 
 // Pagination

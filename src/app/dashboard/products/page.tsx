@@ -1,9 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import Link from 'next/link'
 import { Card, Button, Badge, Input } from '@/components/ui'
 import { formatCurrency } from '@/utils/format'
+import { usePaginatedQuery } from '@/hooks/use-paginated-query'
+import { getProductsPaginated } from '@/services/product'
+import type { DocumentSnapshot } from 'firebase/firestore'
 import {
   Plus,
   Search,
@@ -15,64 +18,10 @@ import {
   Copy,
   Package,
   Sparkles,
+  Loader2,
 } from 'lucide-react'
 
-// Mock products data
-const products = [
-  {
-    id: '1',
-    name: 'قميص قطن رجالي كلاسيك',
-    sku: 'SKU-001',
-    price: 450,
-    compareAtPrice: 599,
-    quantity: 25,
-    status: 'active',
-    image: '/images/products/shirt.jpg',
-    category: 'ملابس رجالي',
-  },
-  {
-    id: '2',
-    name: 'سماعات بلوتوث لاسلكية',
-    sku: 'SKU-002',
-    price: 899,
-    compareAtPrice: 1200,
-    quantity: 50,
-    status: 'active',
-    image: '/images/products/headphones.jpg',
-    category: 'إلكترونيات',
-  },
-  {
-    id: '3',
-    name: 'حقيبة يد جلد طبيعي',
-    sku: 'SKU-003',
-    price: 1250,
-    quantity: 0,
-    status: 'out_of_stock',
-    image: '/images/products/bag.jpg',
-    category: 'حقائب',
-  },
-  {
-    id: '4',
-    name: 'ساعة ذكية سبورت',
-    sku: 'SKU-004',
-    price: 2500,
-    compareAtPrice: 3200,
-    quantity: 15,
-    status: 'active',
-    image: '/images/products/watch.jpg',
-    category: 'إلكترونيات',
-  },
-  {
-    id: '5',
-    name: 'كريم مرطب للبشرة',
-    sku: 'SKU-005',
-    price: 180,
-    quantity: 100,
-    status: 'draft',
-    image: '/images/products/cream.jpg',
-    category: 'العناية بالبشرة',
-  },
-]
+const PAGE_SIZE = 12
 
 const statusConfig = {
   active: { label: 'نشط', variant: 'success' as const },
@@ -85,11 +34,41 @@ export default function ProductsPage() {
   const [selectedProducts, setSelectedProducts] = useState<string[]>([])
   const [searchQuery, setSearchQuery] = useState('')
 
+  const fetchProducts = useCallback(
+    async (cursor?: DocumentSnapshot) => {
+      const result = await getProductsPaginated({
+        pageSize: PAGE_SIZE,
+        lastDoc: cursor,
+      })
+      return {
+        items: result.products,
+        lastDoc: result.lastDoc,
+        hasMore: result.hasMore,
+      }
+    },
+    []
+  )
+
+  const {
+    items: products,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    error,
+  } = usePaginatedQuery(fetchProducts)
+
+  const filteredProducts = searchQuery
+    ? products.filter((p) =>
+        p.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : products
+
   const toggleSelectAll = () => {
-    if (selectedProducts.length === products.length) {
+    if (selectedProducts.length === filteredProducts.length) {
       setSelectedProducts([])
     } else {
-      setSelectedProducts(products.map((p) => p.id))
+      setSelectedProducts(filteredProducts.map((p) => p.id))
     }
   }
 
@@ -179,139 +158,190 @@ export default function ProductsPage() {
         )}
       </Card>
 
+      {/* Loading State */}
+      {isLoading && (
+        <Card className="flex items-center justify-center p-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+          <span className="ms-3 text-gray-600 dark:text-gray-400">
+            جاري تحميل المنتجات...
+          </span>
+        </Card>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <Card className="p-6 text-center text-red-600">
+          <p>حدث خطأ أثناء تحميل المنتجات: {error.message}</p>
+        </Card>
+      )}
+
       {/* Products Table */}
-      <Card className="overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="p-4 text-start">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.length === products.length}
-                    onChange={toggleSelectAll}
-                    className="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
-                  />
-                </th>
-                <th className="p-4 text-start text-sm font-medium text-gray-500">
-                  المنتج
-                </th>
-                <th className="p-4 text-start text-sm font-medium text-gray-500">
-                  الحالة
-                </th>
-                <th className="p-4 text-start text-sm font-medium text-gray-500">
-                  المخزون
-                </th>
-                <th className="p-4 text-start text-sm font-medium text-gray-500">
-                  السعر
-                </th>
-                <th className="p-4 text-start text-sm font-medium text-gray-500">
-                  الفئة
-                </th>
-                <th className="p-4 text-start text-sm font-medium text-gray-500">
-                  الإجراءات
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {products.map((product) => (
-                <tr
-                  key={product.id}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <td className="p-4">
+      {!isLoading && !error && (
+        <Card className="overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="p-4 text-start">
                     <input
                       type="checkbox"
-                      checked={selectedProducts.includes(product.id)}
-                      onChange={() => toggleSelect(product.id)}
+                      checked={
+                        filteredProducts.length > 0 &&
+                        selectedProducts.length === filteredProducts.length
+                      }
+                      onChange={toggleSelectAll}
                       className="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
                     />
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
-                        <Package className="h-6 w-6 text-gray-400" />
+                  </th>
+                  <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    المنتج
+                  </th>
+                  <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    الحالة
+                  </th>
+                  <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    المخزون
+                  </th>
+                  <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    السعر
+                  </th>
+                  <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    الفئة
+                  </th>
+                  <th className="p-4 text-start text-sm font-medium text-gray-500">
+                    الإجراءات
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {filteredProducts.map((product) => (
+                  <tr
+                    key={product.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <td className="p-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product.id)}
+                        onChange={() => toggleSelect(product.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-primary-500 focus:ring-primary-500"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700">
+                          <Package className="h-6 w-6 text-gray-400" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">
+                            {product.name}
+                          </p>
+                          <p className="text-xs text-gray-500">{product.id}</p>
+                        </div>
                       </div>
+                    </td>
+                    <td className="p-4">
+                      <Badge
+                        variant={
+                          statusConfig[
+                            product.status as keyof typeof statusConfig
+                          ]?.variant ?? 'secondary'
+                        }
+                      >
+                        {statusConfig[
+                          product.status as keyof typeof statusConfig
+                        ]?.label ?? product.status}
+                      </Badge>
+                    </td>
+                    <td className="p-4">
+                      <span
+                        className={`text-sm ${
+                          product.quantity === 0
+                            ? 'text-red-600'
+                            : product.quantity < 10
+                              ? 'text-yellow-600'
+                              : 'text-gray-900 dark:text-white'
+                        }`}
+                      >
+                        {product.quantity}
+                      </span>
+                    </td>
+                    <td className="p-4">
                       <div>
                         <p className="font-medium text-gray-900 dark:text-white">
-                          {product.name}
+                          {formatCurrency(product.price)}
                         </p>
-                        <p className="text-xs text-gray-500">{product.sku}</p>
                       </div>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <Badge variant={statusConfig[product.status as keyof typeof statusConfig].variant}>
-                      {statusConfig[product.status as keyof typeof statusConfig].label}
-                    </Badge>
-                  </td>
-                  <td className="p-4">
-                    <span
-                      className={`text-sm ${
-                        product.quantity === 0
-                          ? 'text-red-600'
-                          : product.quantity < 10
-                            ? 'text-yellow-600'
-                            : 'text-gray-900 dark:text-white'
-                      }`}
-                    >
-                      {product.quantity}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-white">
-                        {formatCurrency(product.price)}
-                      </p>
-                      {product.compareAtPrice && (
-                        <p className="text-xs text-gray-500 line-through">
-                          {formatCurrency(product.compareAtPrice)}
-                        </p>
-                      )}
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {product.category}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-1">
-                      <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <Eye className="h-4 w-4 text-gray-500" />
-                      </button>
-                      <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <Edit className="h-4 w-4 text-gray-500" />
-                      </button>
-                      <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <Copy className="h-4 w-4 text-gray-500" />
-                      </button>
-                      <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex items-center justify-between border-t border-gray-200 p-4 dark:border-gray-700">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            عرض 1-{products.length} من {products.length} منتج
-          </p>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled>
-              السابق
-            </Button>
-            <Button variant="outline" size="sm" disabled>
-              التالي
-            </Button>
+                    </td>
+                    <td className="p-4">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        {product.category}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-1">
+                        <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          <Eye className="h-4 w-4 text-gray-500" />
+                        </button>
+                        <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          <Edit className="h-4 w-4 text-gray-500" />
+                        </button>
+                        <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          <Copy className="h-4 w-4 text-gray-500" />
+                        </button>
+                        <button className="rounded p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700">
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        </div>
-      </Card>
+
+          {/* Empty state */}
+          {filteredProducts.length === 0 && (
+            <div className="flex flex-col items-center justify-center p-12 text-center">
+              <Package className="h-12 w-12 text-gray-300" />
+              <p className="mt-4 text-gray-600 dark:text-gray-400">
+                لا توجد منتجات
+              </p>
+            </div>
+          )}
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between border-t border-gray-200 p-4 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              عرض {filteredProducts.length} منتج
+            </p>
+            <div className="flex gap-2">
+              {hasMore && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadMore}
+                  disabled={isLoadingMore}
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      جاري التحميل...
+                    </>
+                  ) : (
+                    'تحميل المزيد'
+                  )}
+                </Button>
+              )}
+              {!hasMore && filteredProducts.length > 0 && (
+                <span className="text-sm text-gray-500">
+                  تم عرض جميع المنتجات
+                </span>
+              )}
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   )
 }

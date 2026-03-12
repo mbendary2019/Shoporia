@@ -19,7 +19,21 @@ import {
 import { cn } from '@/utils/cn'
 
 // Mock products for each category
-const mockProducts: Record<string, any[]> = {
+interface MockProduct {
+  id: string
+  name: string
+  price: number
+  compareAtPrice?: number
+  image: string
+  rating: number
+  reviewCount: number
+  store: { name: string; slug: string }
+  isPrime: boolean
+  inStock: boolean
+  stockCount?: number
+}
+
+const mockProducts: Record<string, MockProduct[]> = {
   electronics: [
     {
       id: '1',

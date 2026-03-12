@@ -33,7 +33,7 @@ export async function createPayment(data: {
     storeId: data.storeId,
     customerId: data.customerId,
     amount: data.amount,
-    currency: 'EGP',
+    currency: 'KWD',
     method: data.method,
     status: 'pending',
     provider: data.provider,
@@ -150,22 +150,19 @@ export async function processCashPayment(paymentId: string): Promise<void> {
   await updatePaymentRecordStatus(paymentId, 'paid')
 }
 
-// Process Vodafone Cash payment
-export async function processVodafoneCashPayment(
+// Process KNET payment
+export async function processKnetPayment(
   paymentId: string,
-  phoneNumber: string,
   transactionId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // In production, integrate with Vodafone Cash API
-    // For now, we'll simulate the payment
+    // In production, integrate with KNET payment gateway
 
     await updateDoc(paymentDoc(paymentId), {
       status: 'paid',
       transactionId,
       metadata: {
-        phoneNumber,
-        provider: 'vodafone_cash',
+        provider: 'knet',
         paidAt: new Date().toISOString(),
       },
       updatedAt: serverTimestamp(),
@@ -177,46 +174,21 @@ export async function processVodafoneCashPayment(
   }
 }
 
-// Process InstaPay payment
-export async function processInstaPayPayment(
+// Process bank transfer payment
+export async function processBankTransferPayment(
   paymentId: string,
   accountNumber: string,
   transactionId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    // In production, integrate with InstaPay API
+    // In production, integrate with bank transfer API
 
     await updateDoc(paymentDoc(paymentId), {
       status: 'paid',
       transactionId,
       metadata: {
         accountNumber,
-        provider: 'instapay',
-        paidAt: new Date().toISOString(),
-      },
-      updatedAt: serverTimestamp(),
-    })
-
-    return { success: true }
-  } catch (error) {
-    return { success: false, error: 'Payment failed' }
-  }
-}
-
-// Process Fawry payment
-export async function processFawryPayment(
-  paymentId: string,
-  referenceNumber: string
-): Promise<{ success: boolean; error?: string }> {
-  try {
-    // In production, integrate with Fawry API
-
-    await updateDoc(paymentDoc(paymentId), {
-      status: 'paid',
-      transactionId: referenceNumber,
-      metadata: {
-        referenceNumber,
-        provider: 'fawry',
+        provider: 'bank_transfer',
         paidAt: new Date().toISOString(),
       },
       updatedAt: serverTimestamp(),
@@ -279,23 +251,17 @@ export function getPaymentMethodInfo(method: PaymentMethod): {
       icon: 'credit-card',
       description: 'ادفع باستخدام Visa أو Mastercard',
     },
-    vodafone_cash: {
-      label: 'Vodafone Cash',
-      labelAr: 'فودافون كاش',
-      icon: 'smartphone',
-      description: 'ادفع عبر محفظة فودافون كاش',
+    knet: {
+      label: 'KNET',
+      labelAr: 'كي نت',
+      icon: 'credit-card',
+      description: 'ادفع عبر بوابة كي نت',
     },
-    instapay: {
-      label: 'InstaPay',
-      labelAr: 'انستاباي',
+    bank_transfer: {
+      label: 'Bank Transfer',
+      labelAr: 'تحويل بنكي',
       icon: 'building-bank',
-      description: 'تحويل بنكي فوري عبر انستاباي',
-    },
-    fawry: {
-      label: 'Fawry',
-      labelAr: 'فوري',
-      icon: 'store',
-      description: 'ادفع في أي فرع فوري',
+      description: 'تحويل بنكي مباشر',
     },
   }
 
@@ -331,9 +297,8 @@ export async function getStoreRevenue(
   const byMethod: Record<PaymentMethod, number> = {
     cash: 0,
     card: 0,
-    vodafone_cash: 0,
-    instapay: 0,
-    fawry: 0,
+    knet: 0,
+    bank_transfer: 0,
   }
 
   const total = payments.reduce((sum, p) => {

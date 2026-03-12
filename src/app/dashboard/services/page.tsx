@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Card, Button, Badge, Modal } from '@/components/ui'
+import { deleteService } from '@/services/service'
 import { formatCurrency } from '@/utils/format'
 import {
   Plus,
@@ -436,9 +437,17 @@ export default function ServicesPage() {
             <Button
               variant="default"
               className="bg-red-500 hover:bg-red-600"
-              onClick={() => {
-                // TODO: Delete service
-                setShowDeleteModal(false)
+              onClick={async () => {
+                if (selectedService?.id) {
+                  try {
+                    await deleteService(selectedService.id)
+                    setShowDeleteModal(false)
+                    // Refresh the page to update the list
+                    window.location.reload()
+                  } catch {
+                    setShowDeleteModal(false)
+                  }
+                }
               }}
             >
               <Trash2 className="h-4 w-4" />

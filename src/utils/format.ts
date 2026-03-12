@@ -4,8 +4,8 @@ import { ar, enUS } from 'date-fns/locale'
 // Format currency
 export function formatCurrency(
   amount: number,
-  currency: string = 'EGP',
-  locale: string = 'ar-EG'
+  currency: string = 'KWD',
+  locale: string = 'ar-KW'
 ): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
@@ -16,12 +16,12 @@ export function formatCurrency(
 }
 
 // Format number
-export function formatNumber(num: number, locale: string = 'ar-EG'): string {
+export function formatNumber(num: number, locale: string = 'ar-KW'): string {
   return new Intl.NumberFormat(locale).format(num)
 }
 
 // Format percentage
-export function formatPercentage(value: number, locale: string = 'ar-EG'): string {
+export function formatPercentage(value: number, locale: string = 'ar-KW'): string {
   return new Intl.NumberFormat(locale, {
     style: 'percent',
     minimumFractionDigits: 0,
@@ -65,10 +65,13 @@ export function formatRelativeTime(date: Date | string, locale: string = 'ar'): 
 // Format phone number
 export function formatPhone(phone: string): string {
   if (!phone) return ''
-  // Format Egyptian phone: 01X XXXX XXXX
+  // Format Kuwait phone: XXXX XXXX
   const cleaned = phone.replace(/\D/g, '')
-  if (cleaned.length === 11) {
-    return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 7)} ${cleaned.slice(7)}`
+  if (cleaned.length === 8) {
+    return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`
+  }
+  if (cleaned.length === 11 && cleaned.startsWith('965')) {
+    return `+965 ${cleaned.slice(3, 7)} ${cleaned.slice(7)}`
   }
   return phone
 }

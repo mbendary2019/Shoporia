@@ -56,7 +56,6 @@ export default function LoginPage() {
       router.push(user.role === 'seller' ? '/dashboard' : '/')
     } catch (err: unknown) {
       const error = err as { code?: string; message?: string }
-      console.error('Google Sign-In Error:', error)
       if (error.code === 'auth/popup-closed-by-user') {
         setError('تم إغلاق نافذة تسجيل الدخول')
       } else if (error.code === 'auth/popup-blocked') {

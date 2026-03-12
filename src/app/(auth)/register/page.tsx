@@ -65,7 +65,6 @@ export default function RegisterPage() {
       router.push('/')
     } catch (err: unknown) {
       const error = err as { code?: string; message?: string }
-      console.error('Google Sign-Up Error:', error)
       if (error.code === 'auth/popup-closed-by-user') {
         setError('تم إغلاق نافذة التسجيل')
       } else if (error.code === 'auth/popup-blocked') {

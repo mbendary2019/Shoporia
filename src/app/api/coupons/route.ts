@@ -10,19 +10,26 @@ import {
   getDoc,
   updateDoc,
   increment,
+  QueryConstraint,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { COLLECTIONS } from '@/lib/firebase/collections'
+import { rateLimit, rateLimitResponse, getClientIP } from '@/lib/rate-limit'
+import { getAuthUser, unauthorizedResponse, forbiddenResponse } from '@/lib/api-auth'
 
 // GET /api/coupons - Get coupons
 export async function GET(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`coupons-get:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
     const storeId = searchParams.get('storeId')
     const code = searchParams.get('code')
     const status = searchParams.get('status')
 
-    const constraints: any[] = []
+    const constraints: QueryConstraint[] = []
 
     if (storeId) {
       constraints.push(where('storeId', '==', storeId))
@@ -51,7 +58,7 @@ export async function GET(request: NextRequest) {
       data: coupons,
     })
   } catch (error) {
-    console.error('Error fetching coupons:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error fetching coupons:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch coupons' },
       { status: 500 }
@@ -61,6 +68,13 @@ export async function GET(request: NextRequest) {
 
 // POST /api/coupons - Create new coupon
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`coupons-post:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const body = await request.json()
 
@@ -83,6 +97,11 @@ export async function POST(request: NextRequest) {
         { success: false, error: 'Missing required fields' },
         { status: 400 }
       )
+    }
+
+    // Verify store ownership
+    if (user.role !== 'admin' && user.storeId !== storeId) {
+      return forbiddenResponse()
     }
 
     // Check if code already exists for this store
@@ -127,7 +146,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error creating coupon:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error creating coupon:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to create coupon' },
       { status: 500 }

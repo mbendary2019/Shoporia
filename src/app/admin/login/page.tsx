@@ -3,15 +3,17 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
+import { getDoc, doc } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase/config'
+import { useAuthStore } from '@/store'
 import { Card, Button, Input } from '@/components/ui'
 import { Shield, Eye, EyeOff, AlertCircle } from 'lucide-react'
-
-// Admin credentials - في الإنتاج يجب تخزينها في environment variables
-const ADMIN_EMAIL = 'admin@shoporia.app'
-const ADMIN_PASSWORD = 'Admin@123'
+import type { User } from '@/types'
 
 export default function AdminLoginPage() {
   const router = useRouter()
+  const { setUser } = useAuthStore()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -23,19 +25,45 @@ export default function AdminLoginPage() {
     setError('')
     setIsLoading(true)
 
-    // Simulate loading
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const firebaseUser = userCredential.user
 
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-      // Save admin session
-      localStorage.setItem('adminAuth', JSON.stringify({
-        isAdmin: true,
-        email: ADMIN_EMAIL,
-        loginTime: new Date().toISOString(),
-      }))
-      router.push('/admin')
-    } else {
-      setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
+      // Check if user has admin role in Firestore
+      const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
+
+      if (userDoc.exists() && userDoc.data().role === 'admin') {
+        const userData = userDoc.data()
+        const user: User = {
+          id: firebaseUser.uid,
+          email: firebaseUser.email || '',
+          displayName: userData.displayName || firebaseUser.displayName || '',
+          photoURL: userData.photoURL || firebaseUser.photoURL || undefined,
+          role: userData.role,
+          isVerified: userData.isVerified ?? false,
+          createdAt: userData.createdAt?.toDate?.() || new Date(),
+          updatedAt: userData.updatedAt?.toDate?.() || new Date(),
+          phone: userData.phone,
+          storeId: userData.storeId,
+          addresses: userData.addresses,
+          wishlist: userData.wishlist,
+        }
+        setUser(user)
+        router.push('/admin')
+      } else {
+        // Not an admin - sign out and show error
+        await signOut(auth)
+        setError('ليس لديك صلاحيات الوصول للوحة الإدارة')
+      }
+    } catch (err: unknown) {
+      const firebaseError = err as { code?: string }
+      if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/invalid-credential') {
+        setError('البريد الإلكتروني أو كلمة المرور غير صحيحة')
+      } else if (firebaseError.code === 'auth/too-many-requests') {
+        setError('تم تجاوز عدد المحاولات المسموح. حاول لاحقاً')
+      } else {
+        setError('حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى')
+      }
     }
 
     setIsLoading(false)
@@ -132,16 +160,18 @@ export default function AdminLoginPage() {
           </div>
         </Card>
 
-        {/* Demo Credentials */}
-        <div className="mt-6 rounded-lg bg-gray-800/50 p-4 text-center">
-          <p className="text-sm text-gray-400 mb-2">بيانات الدخول التجريبية:</p>
-          <p className="text-sm text-gray-300">
-            <span className="text-gray-500">الإيميل:</span> admin@shoporia.app
-          </p>
-          <p className="text-sm text-gray-300">
-            <span className="text-gray-500">كلمة المرور:</span> Admin@123
-          </p>
-        </div>
+        {/* Demo credentials only in development */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="mt-6 rounded-lg bg-gray-800/50 p-4 text-center">
+            <p className="text-sm text-gray-400 mb-2">بيانات الدخول التجريبية (تطوير فقط):</p>
+            <p className="text-sm text-gray-300">
+              <span className="text-gray-500">الإيميل:</span> admin@shoporia.app
+            </p>
+            <p className="text-sm text-gray-300">
+              <span className="text-gray-500">كلمة المرور:</span> Admin@123
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

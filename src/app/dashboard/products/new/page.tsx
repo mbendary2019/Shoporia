@@ -8,6 +8,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, Button, Input, Textarea, Select, Badge } from '@/components/ui'
 import { productWithVariantsSchema, type ProductWithVariantsInput } from '@/lib/validations'
 import { STORE_CATEGORIES } from '@/utils/constants'
+import { createProduct } from '@/services/product'
+import { useAuthStore } from '@/store'
+import { getStoreByOwnerId } from '@/services/store'
+import { useImageUpload } from '@/hooks/use-image-upload'
 import {
   ArrowRight,
   Save,
@@ -25,10 +29,17 @@ import {
 
 export default function NewProductPage() {
   const router = useRouter()
+  const { user } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const [isGeneratingAI, setIsGeneratingAI] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'basic' | 'pricing' | 'inventory' | 'variants'>('basic')
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
+
+  const { uploadMultiple, isUploading, progress, error: uploadError, clearError } = useImageUpload({
+    folder: 'products',
+    maxSizeMB: 5,
+  })
 
   const {
     register,
@@ -71,10 +82,20 @@ export default function NewProductPage() {
     setIsGeneratingAI(false)
   }
 
-  const handleImageUpload = () => {
-    // Simulate image upload
-    const newImage = `/images/product-${uploadedImages.length + 1}.jpg`
-    setUploadedImages([...uploadedImages, newImage])
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    clearError()
+    const remaining = 10 - uploadedImages.length
+    const selectedFiles = Array.from(files).slice(0, remaining)
+
+    const results = await uploadMultiple(selectedFiles)
+    if (results.length > 0) {
+      setUploadedImages((prev) => [...prev, ...results.map((r) => r.url)])
+    }
+
+    e.target.value = ''
   }
 
   const removeImage = (index: number) => {
@@ -82,13 +103,49 @@ export default function NewProductPage() {
   }
 
   const onSubmit = async (data: ProductWithVariantsInput) => {
+    if (!user) return
+
     try {
       setIsLoading(true)
-      console.log('Product data:', { ...data, images: uploadedImages })
-      // TODO: Create product in Firestore
+      setSubmitError(null)
+
+      // Get seller's store
+      const store = await getStoreByOwnerId(user.id)
+      if (!store) {
+        setSubmitError('لم يتم العثور على متجرك. يرجى إنشاء متجر أولاً.')
+        return
+      }
+
+      await createProduct(store.id, {
+        name: data.name,
+        description: data.description,
+        shortDescription: data.shortDescription,
+        category: data.category,
+        subcategory: data.subcategory,
+        price: data.price,
+        compareAtPrice: data.compareAtPrice,
+        costPrice: data.costPrice,
+        quantity: data.quantity,
+        trackInventory: data.trackInventory,
+        sku: data.sku,
+        barcode: data.barcode,
+        lowStockThreshold: data.lowStockThreshold,
+        hasVariants: data.hasVariants,
+        status: data.status as 'draft' | 'active',
+        isFeatured: data.isFeatured,
+        metaTitle: data.metaTitle,
+        metaDescription: data.metaDescription,
+        images: uploadedImages.map((url, i) => ({
+          id: crypto.randomUUID(),
+          url,
+          order: i,
+        })),
+      })
+
       router.push('/dashboard/products')
     } catch (error) {
-      console.error('Error creating product:', error)
+      const message = error instanceof Error ? error.message : 'حدث خطأ أثناء إنشاء المنتج'
+      setSubmitError(message)
     } finally {
       setIsLoading(false)
     }
@@ -103,6 +160,12 @@ export default function NewProductPage() {
 
   return (
     <div className="space-y-6">
+      {submitError && (
+        <div className="rounded-lg bg-red-50 p-4 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+          {submitError}
+        </div>
+      )}
+
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -452,21 +515,50 @@ export default function NewProductPage() {
               </h2>
 
               <div className="space-y-4">
-                {/* Upload Area */}
-                <div
-                  className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 transition-colors hover:border-primary-500 dark:border-gray-600"
-                  onClick={handleImageUpload}
-                >
-                  <div className="text-center">
-                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                    <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                      اضغط هنا أو اسحب الصور لرفعها
-                    </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      PNG, JPG حتى 5MB لكل صورة (حد أقصى 10 صور)
-                    </p>
+                {/* Upload Error */}
+                {uploadError && (
+                  <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/20 dark:text-red-400">
+                    {uploadError}
                   </div>
-                </div>
+                )}
+
+                {/* Upload Area */}
+                <label
+                  className={`flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors ${
+                    isUploading
+                      ? 'border-primary-400 bg-primary-50/50 dark:bg-primary-900/10'
+                      : 'border-gray-300 hover:border-primary-500 dark:border-gray-600'
+                  } ${uploadedImages.length >= 10 ? 'pointer-events-none opacity-50' : ''}`}
+                >
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    className="hidden"
+                    onChange={handleFileSelect}
+                    disabled={isUploading || uploadedImages.length >= 10}
+                  />
+                  <div className="text-center">
+                    {isUploading ? (
+                      <>
+                        <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-primary-200 border-t-primary-500" />
+                        <p className="mt-2 text-sm text-primary-600 dark:text-primary-400">
+                          جاري رفع الصور... {progress}%
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                          اضغط هنا لاختيار الصور
+                        </p>
+                        <p className="mt-1 text-xs text-gray-500">
+                          PNG, JPG, WebP حتى 5MB لكل صورة ({uploadedImages.length}/10)
+                        </p>
+                      </>
+                    )}
+                  </div>
+                </label>
 
                 {/* Uploaded Images */}
                 {uploadedImages.length > 0 && (
@@ -474,11 +566,14 @@ export default function NewProductPage() {
                     {uploadedImages.map((image, index) => (
                       <div
                         key={index}
-                        className="group relative aspect-square rounded-lg bg-gray-100 dark:bg-gray-700"
+                        className="group relative aspect-square rounded-lg bg-gray-100 dark:bg-gray-700 overflow-hidden"
                       >
-                        <div className="flex h-full items-center justify-center">
-                          <ImageIcon className="h-8 w-8 text-gray-400" />
-                        </div>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={image}
+                          alt={`صورة المنتج ${index + 1}`}
+                          className="h-full w-full object-cover"
+                        />
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
@@ -535,14 +630,19 @@ export default function NewProductPage() {
               </h3>
 
               <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-                <div className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-700 mb-4">
-                  <div className="flex h-full items-center justify-center">
-                    {uploadedImages.length > 0 ? (
-                      <ImageIcon className="h-12 w-12 text-gray-400" />
-                    ) : (
+                <div className="aspect-square rounded-lg bg-gray-100 dark:bg-gray-700 mb-4 overflow-hidden">
+                  {uploadedImages.length > 0 ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={uploadedImages[0]}
+                      alt="معاينة المنتج"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center">
                       <Package className="h-12 w-12 text-gray-400" />
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 <h4 className="font-medium text-gray-900 dark:text-white line-clamp-2">

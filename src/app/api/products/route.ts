@@ -9,12 +9,18 @@ import {
   startAfter,
   doc,
   getDoc,
+  QueryConstraint,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { COLLECTIONS } from '@/lib/firebase/collections'
+import { rateLimit, rateLimitResponse, getClientIP } from '@/lib/rate-limit'
 
 // GET /api/products - Get products with filters
 export async function GET(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`products-get:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
     const category = searchParams.get('category')
@@ -30,7 +36,7 @@ export async function GET(request: NextRequest) {
     let q = query(collection(db, COLLECTIONS.PRODUCTS))
 
     // Apply filters
-    const constraints: any[] = [where('status', '==', 'active')]
+    const constraints: QueryConstraint[] = [where('status', '==', 'active')]
 
     if (category) {
       constraints.push(where('category', '==', category))
@@ -74,9 +80,9 @@ export async function GET(request: NextRequest) {
     if (search) {
       const searchLower = search.toLowerCase()
       filteredProducts = products.filter(
-        (product: any) =>
-          product.name?.toLowerCase().includes(searchLower) ||
-          product.description?.toLowerCase().includes(searchLower)
+        (product: Record<string, unknown>) =>
+          (product.name as string | undefined)?.toLowerCase().includes(searchLower) ||
+          (product.description as string | undefined)?.toLowerCase().includes(searchLower)
       )
     }
 
@@ -92,7 +98,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching products:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error fetching products:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch products' },
       { status: 500 }

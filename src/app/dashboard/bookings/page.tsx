@@ -24,7 +24,7 @@ const bookings = [
     id: 'BK-001',
     customer: {
       name: 'أحمد محمد',
-      phone: '01012345678',
+      phone: '50001234',
       email: 'ahmed@example.com',
     },
     service: 'جلسة استشارية',
@@ -41,7 +41,7 @@ const bookings = [
     id: 'BK-002',
     customer: {
       name: 'سارة أحمد',
-      phone: '01098765432',
+      phone: '55987654',
       email: 'sara@example.com',
     },
     service: 'تصميم شعار',
@@ -58,7 +58,7 @@ const bookings = [
     id: 'BK-003',
     customer: {
       name: 'محمد علي',
-      phone: '01155566677',
+      phone: '66556677',
       email: 'mohamed@example.com',
     },
     service: 'صيانة جهاز',
@@ -75,7 +75,7 @@ const bookings = [
     id: 'BK-004',
     customer: {
       name: 'نور حسن',
-      phone: '01234567890',
+      phone: '96234567',
       email: 'nour@example.com',
     },
     service: 'درس خصوصي',
@@ -92,7 +92,7 @@ const bookings = [
     id: 'BK-005',
     customer: {
       name: 'فاطمة علي',
-      phone: '01011223344',
+      phone: '51122334',
       email: 'fatma@example.com',
     },
     service: 'جلسة تصوير',

@@ -1,16 +1,22 @@
 import { z } from 'zod'
 
+const passwordSchema = z.string()
+  .min(8, 'كلمة المرور يجب أن تكون 8 أحرف على الأقل')
+  .regex(/[A-Z]/, 'كلمة المرور يجب أن تحتوي على حرف كبير')
+  .regex(/[a-z]/, 'كلمة المرور يجب أن تحتوي على حرف صغير')
+  .regex(/[0-9]/, 'كلمة المرور يجب أن تحتوي على رقم')
+
 export const loginSchema = z.object({
   email: z.string().email('البريد الإلكتروني غير صالح'),
-  password: z.string().min(6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'),
+  password: z.string().min(1, 'كلمة المرور مطلوبة'),
 })
 
 export const registerSchema = z.object({
   email: z.string().email('البريد الإلكتروني غير صالح'),
-  password: z.string().min(6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'),
+  password: passwordSchema,
   confirmPassword: z.string(),
   displayName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل'),
-  phone: z.string().regex(/^01[0125][0-9]{8}$/, 'رقم الهاتف غير صالح').optional(),
+  phone: z.string().regex(/^[569][0-9]{7}$/, 'رقم الهاتف غير صالح').optional(),
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: 'يجب الموافقة على الشروط والأحكام',
   }),
@@ -20,7 +26,7 @@ export const registerSchema = z.object({
 })
 
 export const phoneLoginSchema = z.object({
-  phone: z.string().regex(/^01[0125][0-9]{8}$/, 'رقم الهاتف غير صالح'),
+  phone: z.string().regex(/^[569][0-9]{7}$/, 'رقم الهاتف غير صالح'),
 })
 
 export const otpSchema = z.object({
@@ -32,7 +38,7 @@ export const resetPasswordSchema = z.object({
 })
 
 export const newPasswordSchema = z.object({
-  password: z.string().min(6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل'),
+  password: passwordSchema,
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'كلمة المرور غير متطابقة',

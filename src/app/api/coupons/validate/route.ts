@@ -2,9 +2,29 @@ import { NextRequest, NextResponse } from 'next/server'
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { COLLECTIONS } from '@/lib/firebase/collections'
+import { rateLimit, rateLimitResponse, getClientIP } from '@/lib/rate-limit'
+
+interface CouponDoc {
+  id: string
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number
+  isActive: boolean
+  startDate?: Date | string
+  endDate?: Date | string
+  usageLimit?: number
+  usedCount: number
+  minOrderAmount?: number
+  maxDiscount?: number
+  applicableProducts?: string[]
+}
 
 // POST /api/coupons/validate - Validate a coupon code
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`coupons-validate:${ip}`, { maxRequests: 10 })
+  if (!limiter.success) return rateLimitResponse()
+
   try {
     const body = await request.json()
     const { code, storeId, orderTotal, productIds } = body
@@ -35,10 +55,10 @@ export async function POST(request: NextRequest) {
     const coupon = {
       id: snapshot.docs[0].id,
       ...snapshot.docs[0].data(),
-    } as any
+    } as CouponDoc
 
     // Check if coupon is active
-    if (coupon.status !== 'active') {
+    if (!coupon.isActive) {
       return NextResponse.json({
         success: false,
         error: 'الكوبون غير نشط',
@@ -47,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check start date
-    if (coupon.startDate && new Date(coupon.startDate) > new Date()) {
+    if (coupon.startDate && new Date(coupon.startDate as string) > new Date()) {
       return NextResponse.json({
         success: false,
         error: 'الكوبون لم يبدأ بعد',
@@ -56,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check end date
-    if (coupon.endDate && new Date(coupon.endDate) < new Date()) {
+    if (coupon.endDate && new Date(coupon.endDate as string) < new Date()) {
       return NextResponse.json({
         success: false,
         error: 'انتهت صلاحية الكوبون',
@@ -74,22 +94,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Check minimum order
-    if (orderTotal && coupon.minOrder && orderTotal < coupon.minOrder) {
+    if (orderTotal && coupon.minOrderAmount && orderTotal < coupon.minOrderAmount) {
       return NextResponse.json({
         success: false,
-        error: `الحد الأدنى للطلب ${coupon.minOrder} جنيه`,
+        error: `الحد الأدنى للطلب ${coupon.minOrderAmount} جنيه`,
         valid: false,
       })
     }
 
     // Check product restrictions
     if (
-      coupon.products !== 'all' &&
-      Array.isArray(coupon.products) &&
+      coupon.applicableProducts &&
+      coupon.applicableProducts.length > 0 &&
       productIds
     ) {
       const hasValidProduct = productIds.some((id: string) =>
-        coupon.products.includes(id)
+        coupon.applicableProducts!.includes(id)
       )
       if (!hasValidProduct) {
         return NextResponse.json({
@@ -124,7 +144,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error validating coupon:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error validating coupon:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to validate coupon' },
       { status: 500 }

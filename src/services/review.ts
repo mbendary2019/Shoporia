@@ -176,7 +176,7 @@ export async function markReviewHelpful(reviewId: string): Promise<void> {
   const review = await getReviewById(reviewId)
   if (!review) throw new Error('Review not found')
 
-  const currentCount = (review as any).helpfulCount || 0
+  const currentCount = (review as Review & { helpfulCount?: number }).helpfulCount || 0
   await updateDoc(reviewDoc(reviewId), {
     helpfulCount: currentCount + 1,
   })

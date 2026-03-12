@@ -90,7 +90,7 @@ export const bookingSchema = z.object({
   customerPhone: z.string().regex(/^01[0125][0-9]{8}$/, 'رقم الهاتف غير صالح'),
   customerEmail: z.string().email('البريد الإلكتروني غير صالح').optional(),
   notes: z.string().max(500).optional(),
-  paymentMethod: z.enum(['cash', 'card', 'vodafone_cash', 'instapay', 'fawry']).default('cash'),
+  paymentMethod: z.enum(['cash', 'card', 'knet', 'bank_transfer']).default('cash'),
 })
 
 export type ServiceInput = z.infer<typeof serviceSchema>

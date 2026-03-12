@@ -12,10 +12,18 @@ import {
   startAfter,
   serverTimestamp,
   DocumentSnapshot,
+  QueryConstraint,
 } from 'firebase/firestore'
 import { db, storesRef, storeDoc } from '@/lib/firebase'
 import { slugify } from '@/utils/format'
 import type { Store, StoreSettings } from '@/types'
+
+// Paginated store query result
+export type PaginatedStoresResult = {
+  stores: Store[]
+  lastDoc: DocumentSnapshot | null
+  hasMore: boolean
+}
 
 // Create a new store
 export async function createStore(
@@ -118,6 +126,49 @@ export async function getActiveStores(
   const newLastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null
 
   return { stores, lastDoc: newLastDoc }
+}
+
+// Get stores with cursor-based pagination
+export async function getStoresPaginated(options: {
+  pageSize?: number
+  lastDoc?: DocumentSnapshot
+  category?: string
+  status?: string
+  sortBy?: string
+}): Promise<PaginatedStoresResult> {
+  const {
+    pageSize = 10,
+    lastDoc: cursor,
+    category,
+    status = 'active',
+    sortBy = 'createdAt',
+  } = options
+
+  const constraints: QueryConstraint[] = []
+
+  if (status) {
+    constraints.push(where('status', '==', status))
+  }
+  if (category) {
+    constraints.push(where('category', '==', category))
+  }
+
+  constraints.push(orderBy(sortBy, 'desc'))
+  constraints.push(limit(pageSize + 1))
+
+  if (cursor) {
+    constraints.push(startAfter(cursor))
+  }
+
+  const q = query(storesRef, ...constraints)
+  const snapshot = await getDocs(q)
+  const docs = snapshot.docs
+  const hasMore = docs.length > pageSize
+  const resultDocs = hasMore ? docs.slice(0, pageSize) : docs
+  const stores = resultDocs.map((doc) => doc.data() as Store)
+  const newLastDoc = resultDocs.length > 0 ? resultDocs[resultDocs.length - 1] : null
+
+  return { stores, lastDoc: newLastDoc, hasMore }
 }
 
 // Get stores by category

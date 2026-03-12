@@ -1,8 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Card, Button, Badge } from '@/components/ui'
 import { formatCurrency, formatDate } from '@/utils/format'
+import { usePaginatedQuery } from '@/hooks/use-paginated-query'
+import { getOrdersPaginated } from '@/services/order'
+import type { DocumentSnapshot } from 'firebase/firestore'
+import type { Order, OrderStatus } from '@/types'
 import {
   Search,
   Filter,
@@ -13,87 +17,10 @@ import {
   Clock,
   Package,
   ChevronDown,
+  Loader2,
 } from 'lucide-react'
 
-// Mock orders data
-const orders = [
-  {
-    id: 'SH-ABC123',
-    customer: {
-      name: 'أحمد محمد',
-      phone: '01012345678',
-      email: 'ahmed@example.com',
-    },
-    items: [
-      { name: 'قميص قطن رجالي', quantity: 2, price: 450 },
-      { name: 'بنطلون جينز', quantity: 1, price: 650 },
-    ],
-    total: 1550,
-    status: 'pending',
-    paymentMethod: 'cash',
-    paymentStatus: 'pending',
-    createdAt: '2024-12-10T10:30:00',
-  },
-  {
-    id: 'SH-DEF456',
-    customer: {
-      name: 'سارة أحمد',
-      phone: '01098765432',
-      email: 'sara@example.com',
-    },
-    items: [{ name: 'حقيبة يد جلد', quantity: 1, price: 1250 }],
-    total: 1250,
-    status: 'confirmed',
-    paymentMethod: 'vodafone_cash',
-    paymentStatus: 'paid',
-    createdAt: '2024-12-10T09:15:00',
-  },
-  {
-    id: 'SH-GHI789',
-    customer: {
-      name: 'محمد علي',
-      phone: '01155566677',
-      email: 'mohamed@example.com',
-    },
-    items: [{ name: 'ساعة ذكية', quantity: 1, price: 2500 }],
-    total: 2500,
-    status: 'shipped',
-    paymentMethod: 'card',
-    paymentStatus: 'paid',
-    createdAt: '2024-12-09T16:45:00',
-  },
-  {
-    id: 'SH-JKL012',
-    customer: {
-      name: 'نور حسن',
-      phone: '01234567890',
-      email: 'nour@example.com',
-    },
-    items: [
-      { name: 'سماعات بلوتوث', quantity: 1, price: 899 },
-      { name: 'كفر موبايل', quantity: 2, price: 150 },
-    ],
-    total: 1199,
-    status: 'delivered',
-    paymentMethod: 'instapay',
-    paymentStatus: 'paid',
-    createdAt: '2024-12-08T14:20:00',
-  },
-  {
-    id: 'SH-MNO345',
-    customer: {
-      name: 'فاطمة علي',
-      phone: '01011223344',
-      email: 'fatma@example.com',
-    },
-    items: [{ name: 'فستان سهرة', quantity: 1, price: 1800 }],
-    total: 1800,
-    status: 'cancelled',
-    paymentMethod: 'cash',
-    paymentStatus: 'refunded',
-    createdAt: '2024-12-07T11:00:00',
-  },
-]
+const PAGE_SIZE = 10
 
 const statusConfig = {
   pending: {
@@ -136,19 +63,47 @@ const statusConfig = {
 
 const paymentMethodLabels: Record<string, string> = {
   cash: 'نقدي',
-  vodafone_cash: 'فودافون كاش',
-  instapay: 'انستاباي',
+  knet: 'كي نت',
+  bank_transfer: 'تحويل بنكي',
   card: 'بطاقة',
-  fawry: 'فوري',
 }
 
 export default function OrdersPage() {
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState<string>('')
 
-  const filteredOrders = filterStatus
-    ? orders.filter((o) => o.status === filterStatus)
-    : orders
+  const fetchOrders = useCallback(
+    async (cursor?: DocumentSnapshot) => {
+      const result = await getOrdersPaginated({
+        pageSize: PAGE_SIZE,
+        lastDoc: cursor,
+        status: filterStatus ? (filterStatus as OrderStatus) : undefined,
+      })
+      return {
+        items: result.orders,
+        lastDoc: result.lastDoc,
+        hasMore: result.hasMore,
+      }
+    },
+    [filterStatus]
+  )
+
+  const {
+    items: orders,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    loadMore,
+    refresh,
+    error,
+  } = usePaginatedQuery(fetchOrders)
+
+  const handleFilterStatus = (key: string) => {
+    setFilterStatus(filterStatus === key ? '' : key)
+    // Note: filtering by status triggers a new fetchFn via the dependency,
+    // but the hook needs to be refreshed. We call refresh after state updates.
+    setTimeout(() => refresh(), 0)
+  }
 
   return (
     <div className="space-y-6">
@@ -167,13 +122,10 @@ export default function OrdersPage() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {Object.entries(statusConfig).map(([key, config]) => {
-          const count = orders.filter((o) => o.status === key).length
           return (
             <button
               key={key}
-              onClick={() =>
-                setFilterStatus(filterStatus === key ? '' : key)
-              }
+              onClick={() => handleFilterStatus(key)}
               className={`rounded-lg border p-4 text-start transition-colors ${
                 filterStatus === key
                   ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
@@ -182,9 +134,6 @@ export default function OrdersPage() {
             >
               <div className="flex items-center justify-between">
                 <config.icon className={`h-5 w-5 ${config.color}`} />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {count}
-                </span>
               </div>
               <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 {config.label}
@@ -210,9 +159,9 @@ export default function OrdersPage() {
             <select className="h-10 rounded-lg border border-gray-300 bg-white px-3 text-sm dark:border-gray-600 dark:bg-gray-800">
               <option value="">كل طرق الدفع</option>
               <option value="cash">نقدي</option>
-              <option value="vodafone_cash">فودافون كاش</option>
-              <option value="instapay">انستاباي</option>
+              <option value="knet">كي نت</option>
               <option value="card">بطاقة</option>
+              <option value="bank_transfer">تحويل بنكي</option>
             </select>
 
             <input
@@ -223,162 +172,228 @@ export default function OrdersPage() {
         </div>
       </Card>
 
+      {/* Loading State */}
+      {isLoading && (
+        <Card className="flex items-center justify-center p-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary-500" />
+          <span className="ms-3 text-gray-600 dark:text-gray-400">
+            جاري تحميل الطلبات...
+          </span>
+        </Card>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <Card className="p-6 text-center text-red-600">
+          <p>حدث خطأ أثناء تحميل الطلبات: {error.message}</p>
+        </Card>
+      )}
+
       {/* Orders List */}
-      <div className="space-y-4">
-        {filteredOrders.map((order) => {
-          const config = statusConfig[order.status as keyof typeof statusConfig]
-          const isExpanded = expandedOrder === order.id
-
-          return (
-            <Card key={order.id} className="overflow-hidden">
-              {/* Order Header */}
-              <div
-                className="flex cursor-pointer items-center justify-between p-4"
-                onClick={() =>
-                  setExpandedOrder(isExpanded ? null : order.id)
-                }
-              >
-                <div className="flex items-center gap-4">
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {order.id}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {formatDate(new Date(order.createdAt), 'dd MMM yyyy, hh:mm a')}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-end">
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {order.customer.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {order.items.length} منتج
-                    </p>
-                  </div>
-
-                  <Badge variant={config.variant}>{config.label}</Badge>
-
-                  <p className="font-bold text-gray-900 dark:text-white">
-                    {formatCurrency(order.total)}
-                  </p>
-
-                  <ChevronDown
-                    className={`h-5 w-5 text-gray-400 transition-transform ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`}
-                  />
-                </div>
-              </div>
-
-              {/* Order Details */}
-              {isExpanded && (
-                <div className="border-t border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
-                  <div className="grid gap-6 lg:grid-cols-3">
-                    {/* Customer Info */}
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        معلومات العميل
-                      </h4>
-                      <div className="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
-                        <p>{order.customer.name}</p>
-                        <p>{order.customer.phone}</p>
-                        <p>{order.customer.email}</p>
-                      </div>
-                    </div>
-
-                    {/* Order Items */}
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        المنتجات
-                      </h4>
-                      <div className="mt-2 space-y-2">
-                        {order.items.map((item, index) => (
-                          <div
-                            key={index}
-                            className="flex justify-between text-sm"
-                          >
-                            <span className="text-gray-600 dark:text-gray-400">
-                              {item.name} × {item.quantity}
-                            </span>
-                            <span className="font-medium text-gray-900 dark:text-white">
-                              {formatCurrency(item.price * item.quantity)}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Payment Info */}
-                    <div>
-                      <h4 className="font-medium text-gray-900 dark:text-white">
-                        الدفع
-                      </h4>
-                      <div className="mt-2 space-y-1 text-sm">
-                        <p className="text-gray-600 dark:text-gray-400">
-                          الطريقة:{' '}
-                          {paymentMethodLabels[order.paymentMethod]}
-                        </p>
-                        <p className="text-gray-600 dark:text-gray-400">
-                          الحالة:{' '}
-                          <Badge
-                            variant={
-                              order.paymentStatus === 'paid'
-                                ? 'success'
-                                : order.paymentStatus === 'refunded'
-                                  ? 'danger'
-                                  : 'warning'
-                            }
-                            className="ms-1"
-                          >
-                            {order.paymentStatus === 'paid'
-                              ? 'مدفوع'
-                              : order.paymentStatus === 'refunded'
-                                ? 'مسترد'
-                                : 'قيد الانتظار'}
-                          </Badge>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="mt-4 flex gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
-                    <Button size="sm">
-                      <Eye className="h-4 w-4" />
-                      عرض التفاصيل
-                    </Button>
-                    {order.status === 'pending' && (
-                      <>
-                        <Button size="sm" variant="outline">
-                          <CheckCircle className="h-4 w-4" />
-                          تأكيد
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="text-red-600"
-                        >
-                          <XCircle className="h-4 w-4" />
-                          إلغاء
-                        </Button>
-                      </>
-                    )}
-                    {order.status === 'confirmed' && (
-                      <Button size="sm" variant="outline">
-                        <Truck className="h-4 w-4" />
-                        شحن
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              )}
+      {!isLoading && !error && (
+        <div className="space-y-4">
+          {orders.length === 0 && (
+            <Card className="flex flex-col items-center justify-center p-12 text-center">
+              <Package className="h-12 w-12 text-gray-300" />
+              <p className="mt-4 text-gray-600 dark:text-gray-400">
+                لا توجد طلبات
+              </p>
             </Card>
-          )
-        })}
-      </div>
+          )}
+
+          {orders.map((order) => {
+            const config =
+              statusConfig[order.status as keyof typeof statusConfig]
+            const isExpanded = expandedOrder === order.id
+
+            return (
+              <Card key={order.id} className="overflow-hidden">
+                {/* Order Header */}
+                <div
+                  className="flex cursor-pointer items-center justify-between p-4"
+                  onClick={() =>
+                    setExpandedOrder(isExpanded ? null : order.id)
+                  }
+                >
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {order.orderNumber}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {order.createdAt
+                          ? formatDate(
+                              order.createdAt instanceof Date
+                                ? order.createdAt
+                                : new Date(order.createdAt),
+                              'dd MMM yyyy, hh:mm a'
+                            )
+                          : ''}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="text-end">
+                      <p className="text-sm text-gray-500">
+                        {order.items.length} منتج
+                      </p>
+                    </div>
+
+                    {config && (
+                      <Badge variant={config.variant}>{config.label}</Badge>
+                    )}
+
+                    <p className="font-bold text-gray-900 dark:text-white">
+                      {formatCurrency(order.total)}
+                    </p>
+
+                    <ChevronDown
+                      className={`h-5 w-5 text-gray-400 transition-transform ${
+                        isExpanded ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                {/* Order Details */}
+                {isExpanded && (
+                  <div className="border-t border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+                    <div className="grid gap-6 lg:grid-cols-3">
+                      {/* Delivery Info */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">
+                          معلومات التوصيل
+                        </h4>
+                        <div className="mt-2 space-y-1 text-sm text-gray-600 dark:text-gray-400">
+                          {order.deliveryAddress && (
+                            <>
+                              <p>{order.deliveryAddress.city}</p>
+                              <p>{order.deliveryAddress.street}</p>
+                            </>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Order Items */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">
+                          المنتجات
+                        </h4>
+                        <div className="mt-2 space-y-2">
+                          {order.items.map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex justify-between text-sm"
+                            >
+                              <span className="text-gray-600 dark:text-gray-400">
+                                {item.name || item.productId} ×{' '}
+                                {item.quantity}
+                              </span>
+                              <span className="font-medium text-gray-900 dark:text-white">
+                                {formatCurrency(item.total)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Payment Info */}
+                      <div>
+                        <h4 className="font-medium text-gray-900 dark:text-white">
+                          الدفع
+                        </h4>
+                        <div className="mt-2 space-y-1 text-sm">
+                          <p className="text-gray-600 dark:text-gray-400">
+                            الطريقة:{' '}
+                            {paymentMethodLabels[order.paymentMethod] ||
+                              order.paymentMethod}
+                          </p>
+                          <p className="text-gray-600 dark:text-gray-400">
+                            الحالة:{' '}
+                            <Badge
+                              variant={
+                                order.paymentStatus === 'paid'
+                                  ? 'success'
+                                  : order.paymentStatus === 'refunded'
+                                    ? 'danger'
+                                    : 'warning'
+                              }
+                              className="ms-1"
+                            >
+                              {order.paymentStatus === 'paid'
+                                ? 'مدفوع'
+                                : order.paymentStatus === 'refunded'
+                                  ? 'مسترد'
+                                  : 'قيد الانتظار'}
+                            </Badge>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="mt-4 flex gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
+                      <Button size="sm">
+                        <Eye className="h-4 w-4" />
+                        عرض التفاصيل
+                      </Button>
+                      {order.status === 'pending' && (
+                        <>
+                          <Button size="sm" variant="outline">
+                            <CheckCircle className="h-4 w-4" />
+                            تأكيد
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-red-600"
+                          >
+                            <XCircle className="h-4 w-4" />
+                            إلغاء
+                          </Button>
+                        </>
+                      )}
+                      {order.status === 'confirmed' && (
+                        <Button size="sm" variant="outline">
+                          <Truck className="h-4 w-4" />
+                          شحن
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </Card>
+            )
+          })}
+
+          {/* Load More */}
+          {hasMore && (
+            <div className="flex justify-center pt-4">
+              <Button
+                variant="outline"
+                onClick={loadMore}
+                disabled={isLoadingMore}
+              >
+                {isLoadingMore ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    جاري التحميل...
+                  </>
+                ) : (
+                  'تحميل المزيد'
+                )}
+              </Button>
+            </div>
+          )}
+
+          {!hasMore && orders.length > 0 && (
+            <p className="text-center text-sm text-gray-500">
+              تم عرض جميع الطلبات
+            </p>
+          )}
+        </div>
+      )}
     </div>
   )
 }

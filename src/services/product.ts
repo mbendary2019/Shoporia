@@ -12,11 +12,19 @@ import {
   startAfter,
   serverTimestamp,
   DocumentSnapshot,
+  QueryConstraint,
 } from 'firebase/firestore'
 import { db, productsRef, productDoc } from '@/lib/firebase'
 import { slugify } from '@/utils/format'
 import { incrementProductCount } from './store'
 import type { Product, ProductImage, ProductVariant, ProductOption } from '@/types'
+
+// Paginated product query result
+export type PaginatedProductsResult = {
+  products: Product[]
+  lastDoc: DocumentSnapshot | null
+  hasMore: boolean
+}
 
 // Create a new product
 export async function createProduct(
@@ -108,6 +116,56 @@ export async function getProductsByStore(
   const newLastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null
 
   return { products, lastDoc: newLastDoc }
+}
+
+// Get products with cursor-based pagination
+export async function getProductsPaginated(options: {
+  pageSize?: number
+  lastDoc?: DocumentSnapshot
+  category?: string
+  storeId?: string
+  sortBy?: string
+  status?: string
+}): Promise<PaginatedProductsResult> {
+  const {
+    pageSize = 12,
+    lastDoc: cursor,
+    category,
+    storeId,
+    sortBy = 'createdAt',
+    status,
+  } = options
+
+  const constraints: QueryConstraint[] = []
+
+  if (storeId) {
+    constraints.push(where('storeId', '==', storeId))
+  }
+  if (status) {
+    constraints.push(where('status', '==', status))
+  }
+  if (category) {
+    constraints.push(where('category', '==', category))
+  }
+
+  const sortDirection = sortBy === 'price' ? 'asc' : 'desc'
+  constraints.push(orderBy(sortBy, sortDirection))
+  // Fetch one extra to determine if there are more results
+  constraints.push(limit(pageSize + 1))
+
+  if (cursor) {
+    constraints.push(startAfter(cursor))
+  }
+
+  const q = query(productsRef, ...constraints)
+  const snapshot = await getDocs(q)
+  const docs = snapshot.docs
+  const hasMore = docs.length > pageSize
+  const resultDocs = hasMore ? docs.slice(0, pageSize) : docs
+  const products = resultDocs.map((doc) => doc.data() as Product)
+  const newLastDoc = resultDocs.length > 0 ? resultDocs[resultDocs.length - 1] : null
+
+  return { products, lastDoc: newLastDoc, hasMore }
 }
 
 // Get active products by store

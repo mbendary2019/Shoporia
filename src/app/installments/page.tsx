@@ -39,14 +39,14 @@ const plans = [
 ]
 
 const partners = [
-  'البنك الأهلي',
-  'بنك مصر',
-  'CIB',
-  'بنك QNB',
-  'بنك الإسكندرية',
-  'valU',
-  'Sympl',
-  'Souhoola',
+  'بنك الكويت الوطني',
+  'بيت التمويل الكويتي',
+  'بنك بوبيان',
+  'بنك الخليج',
+  'بنك برقان',
+  'البنك الأهلي المتحد',
+  'البنك التجاري الكويتي',
+  'بنك وربة',
 ]
 
 export default function InstallmentsPage() {
@@ -93,7 +93,7 @@ export default function InstallmentsPage() {
                     )}
                   </div>
                   <div className="text-sm text-gray-500">
-                    الحد الأدنى: {plan.minAmount} ج.م
+                    الحد الأدنى: {plan.minAmount} د.ك
                   </div>
                 </Card>
               ))}

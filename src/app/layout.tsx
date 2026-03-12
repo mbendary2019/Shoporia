@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import { Cairo, Tajawal } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
+import { QueryProvider } from '@/providers/query-provider'
+import { ErrorBoundaryProvider } from '@/providers/error-boundary-provider'
+import { siteConfig } from '@/lib/metadata'
 import './globals.css'
 
 const cairo = Cairo({
@@ -18,37 +21,48 @@ const tajawal = Tajawal({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteConfig.url),
   title: {
-    default: 'Shoporia - منصة التجارة الإلكترونية الذكية',
-    template: '%s | Shoporia',
+    default: `${siteConfig.name} - منصة التجارة الإلكترونية الذكية`,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    'منصة تجارة إلكترونية ذكية تمكّنك من بناء متجرك وإدارة أعمالك بسهولة باستخدام الذكاء الاصطناعي',
+  description: siteConfig.description,
   keywords: [
     'تجارة إلكترونية',
     'متجر إلكتروني',
     'بيع أونلاين',
-    'مصر',
+    'الكويت',
     'shoporia',
     'ecommerce',
     'marketplace',
   ],
-  authors: [{ name: 'Shoporia' }],
-  creator: 'Shoporia',
+  authors: [{ name: siteConfig.name }],
+  creator: siteConfig.name,
   openGraph: {
     type: 'website',
-    locale: 'ar_EG',
-    url: 'https://shoporia.com',
-    siteName: 'Shoporia',
-    title: 'Shoporia - منصة التجارة الإلكترونية الذكية',
-    description:
-      'منصة تجارة إلكترونية ذكية تمكّنك من بناء متجرك وإدارة أعمالك بسهولة',
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: `${siteConfig.name} - منصة التجارة الإلكترونية الذكية`,
+    description: siteConfig.description,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: siteConfig.name,
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Shoporia - منصة التجارة الإلكترونية الذكية',
-    description:
-      'منصة تجارة إلكترونية ذكية تمكّنك من بناء متجرك وإدارة أعمالك بسهولة',
+    title: `${siteConfig.name} - منصة التجارة الإلكترونية الذكية`,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
+  },
+  icons: {
+    icon: '/app.png',
+    apple: '/app.png',
   },
   robots: {
     index: true,
@@ -72,9 +86,13 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-gray-50 font-sans antialiased dark:bg-gray-900">
-        <NextIntlClientProvider messages={messages}>
-          {children}
-        </NextIntlClientProvider>
+        <ErrorBoundaryProvider>
+          <QueryProvider>
+            <NextIntlClientProvider messages={messages}>
+              {children}
+            </NextIntlClientProvider>
+          </QueryProvider>
+        </ErrorBoundaryProvider>
       </body>
     </html>
   )

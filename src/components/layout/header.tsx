@@ -1,9 +1,11 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAuthStore, useCartStore } from '@/store'
 import { Button, Avatar } from '@/components/ui'
+import { useDebounce } from '@/hooks/use-debounce'
 import {
   Search,
   ShoppingCart,
@@ -43,8 +45,10 @@ export function Header() {
   const categoryRef = useRef<HTMLDivElement>(null)
   const [isAllCategoriesOpen, setIsAllCategoriesOpen] = useState(false)
   const [isMounted, setIsMounted] = useState(false)
+  const router = useRouter()
   const { user, isAuthenticated, logout } = useAuthStore()
   const itemCount = useCartStore((state) => state.getItemCount())
+  const debouncedSearch = useDebounce(searchQuery, 300)
 
   // Handle hydration mismatch for cart count
   useEffect(() => {
@@ -65,15 +69,23 @@ export function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  // Mock search suggestions
-  const searchSuggestions = searchQuery
-    ? [
-        `${searchQuery} للرجال`,
-        `${searchQuery} للنساء`,
-        `${searchQuery} أطفال`,
-        `${searchQuery} تخفيضات`,
-      ]
-    : []
+  // Search suggestions based on debounced query
+  const searchSuggestions = useMemo(() => {
+    if (!debouncedSearch) return []
+    return [
+      `${debouncedSearch} للرجال`,
+      `${debouncedSearch} للنساء`,
+      `${debouncedSearch} أطفال`,
+      `${debouncedSearch} تخفيضات`,
+    ]
+  }, [debouncedSearch])
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      setIsSearchFocused(false)
+      router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}${selectedCategory !== 'all' ? `&category=${selectedCategory}` : ''}`)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full">
@@ -96,7 +108,7 @@ export function Header() {
               <MapPin className="h-5 w-5 text-white/70" />
               <div className="text-start">
                 <span className="block text-xs text-white/70">التوصيل إلى</span>
-                <span className="block text-sm font-bold">القاهرة</span>
+                <span className="block text-sm font-bold">الكويت</span>
               </div>
             </button>
 
@@ -120,7 +132,7 @@ export function Header() {
                   </button>
 
                   {isCategoryOpen && (
-                    <div className="absolute top-full start-0 mt-1 w-56 bg-white rounded-lg shadow-xl border z-50 py-2 max-h-80 overflow-y-auto">
+                    <div className="absolute top-full start-0 mt-1 w-56 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl border z-50 py-2 max-h-80 overflow-y-auto">
                       <button
                         onClick={() => { setSelectedCategory('all'); setIsCategoryOpen(false) }}
                         className={cn(
@@ -152,12 +164,19 @@ export function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
                   placeholder="ابحث في Shoporia..."
                   className="flex-1 h-11 px-4 text-sm focus:outline-none"
+                  aria-label="البحث في المنتجات"
+                  role="searchbox"
                 />
 
                 {/* Search Button */}
-                <button className="h-11 px-5 bg-amazon-yellow hover:bg-amazon-yellowHover transition-colors">
+                <button
+                  onClick={handleSearch}
+                  className="h-11 px-5 bg-amazon-yellow hover:bg-amazon-yellowHover transition-colors"
+                  aria-label="بحث"
+                >
                   <Search className="h-5 w-5 text-amazon-navy" />
                 </button>
               </div>
@@ -180,7 +199,7 @@ export function Header() {
 
             {/* Language/Region */}
             <button className="hidden md:flex items-center gap-1 text-white p-2 rounded hover:outline hover:outline-1 hover:outline-white">
-              <span className="text-lg">🇪🇬</span>
+              <span className="text-lg">🇰🇼</span>
               <span className="text-sm font-bold">AR</span>
               <ChevronDown className="h-3 w-3" />
             </button>
@@ -192,7 +211,8 @@ export function Header() {
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="flex items-center gap-2 text-white p-2 rounded hover:outline hover:outline-1 hover:outline-white"
                 >
-                  <div className="text-start">
+                  <User className="h-6 w-6 sm:hidden" />
+                  <div className="text-start hidden sm:block">
                     <span className="block text-xs text-white/70">مرحباً، {user?.displayName?.split(' ')[0]}</span>
                     <span className="block text-sm font-bold flex items-center gap-1">
                       الحساب والقوائم
@@ -205,7 +225,7 @@ export function Header() {
                 {isProfileOpen && (
                   <>
                     <div className="fixed inset-0 z-40" onClick={() => setIsProfileOpen(false)} />
-                    <div className="absolute end-0 top-full z-50 mt-2 w-72 rounded-lg border bg-white shadow-xl">
+                    <div className="absolute end-0 top-full z-50 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-lg border bg-white shadow-xl">
                       {/* User Info */}
                       <div className="p-4 border-b text-center">
                         <Avatar src={user?.photoURL} fallback={user?.displayName} size="lg" />
@@ -268,9 +288,10 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="hidden sm:flex items-center text-white p-2 rounded hover:outline hover:outline-1 hover:outline-white"
+                className="flex items-center text-white p-2 rounded hover:outline hover:outline-1 hover:outline-white"
               >
-                <div className="text-start">
+                <User className="h-6 w-6 sm:hidden" />
+                <div className="text-start hidden sm:block">
                   <span className="block text-xs text-white/70">مرحباً، سجل دخولك</span>
                   <span className="block text-sm font-bold flex items-center gap-1">
                     الحساب والقوائم
@@ -295,6 +316,7 @@ export function Header() {
             <Link
               href="/cart"
               className="flex items-center text-white p-2 rounded hover:outline hover:outline-1 hover:outline-white relative"
+              aria-label={`سلة التسوق${isMounted && itemCount > 0 ? ` (${itemCount} منتجات)` : ''}`}
             >
               <div className="relative">
                 <ShoppingCart className="h-8 w-8" />
@@ -311,6 +333,8 @@ export function Header() {
               size="icon"
               className="md:hidden text-white hover:bg-white/10"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+              aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
@@ -319,72 +343,73 @@ export function Header() {
       </div>
 
       {/* Secondary Navigation Bar */}
-      <div className="bg-amazon-navyLight">
+      <div className="bg-amazon-navyLight relative">
         <div className="container-custom">
           <div className="flex items-center gap-1 h-10 overflow-x-auto scrollbar-hide">
             {/* All Categories Button */}
-            <div className="relative">
-              <button
-                onClick={() => setIsAllCategoriesOpen(!isAllCategoriesOpen)}
-                className="flex items-center gap-2 text-white text-sm font-medium px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap"
-              >
-                <Menu className="h-4 w-4" />
-                <span>جميع الأقسام</span>
-              </button>
-
-              {/* Mega Menu */}
-              {isAllCategoriesOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-[60] bg-black/30"
-                    onClick={() => setIsAllCategoriesOpen(false)}
-                  />
-                  <div
-                    className="absolute top-full start-0 mt-1 w-72 bg-white rounded-lg shadow-xl z-[70] py-2 max-h-[70vh] overflow-y-auto"
-                  >
-                    <div className="px-4 py-2 border-b">
-                      <h3 className="font-bold text-gray-900">تسوق حسب القسم</h3>
-                    </div>
-                    {STORE_CATEGORIES.map((category) => (
-                      <Link
-                        key={category.id}
-                        href={`/category/${category.id}`}
-                        className="flex items-center justify-between px-4 py-3 hover:bg-amazon-orange/10 group"
-                        onClick={() => setIsAllCategoriesOpen(false)}
-                      >
-                        <span className="text-sm text-gray-700 group-hover:text-amazon-orange">
-                          {category.nameAr}
-                        </span>
-                        <ChevronDown className="h-4 w-4 -rotate-90 text-gray-400" />
-                      </Link>
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
+            <button
+              onClick={() => setIsAllCategoriesOpen(!isAllCategoriesOpen)}
+              className="flex items-center gap-2 text-white text-sm font-medium px-2 sm:px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap shrink-0"
+            >
+              <Menu className="h-4 w-4" />
+              <span>الأقسام</span>
+            </button>
 
             {/* Quick Links */}
-            {quickLinks.map((link) => (
+            {quickLinks.map((link, index) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="flex items-center gap-1.5 text-white text-sm px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap"
+                className={cn(
+                  "flex items-center gap-1.5 text-white text-sm px-2 sm:px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap",
+                  index > 1 && "hidden sm:flex"
+                )}
               >
                 <link.icon className="h-4 w-4" />
-                <span>{link.name}</span>
+                <span className="hidden sm:inline">{link.name}</span>
               </Link>
             ))}
 
             {/* Seller Link */}
             <Link
               href="/seller/register"
-              className="flex items-center gap-1.5 text-white text-sm px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap ms-auto"
+              className="hidden sm:flex items-center gap-1.5 text-white text-sm px-2 sm:px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap ms-auto"
             >
               <Store className="h-4 w-4" />
-              <span>بيع على Shoporia</span>
+              <span className="hidden md:inline">بيع على Shoporia</span>
             </Link>
           </div>
         </div>
+
+        {/* Categories Mega Menu - Outside overflow container */}
+        {isAllCategoriesOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-[60] bg-black/30"
+              onClick={() => setIsAllCategoriesOpen(false)}
+            />
+            <div
+              className="absolute top-full start-4 mt-1 w-72 max-w-[calc(100vw-2rem)] bg-white rounded-lg shadow-xl z-[70] py-2 max-h-[70vh] overflow-y-auto"
+            >
+              <div className="px-4 py-2 border-b">
+                <h3 className="font-bold text-gray-900">تسوق حسب القسم</h3>
+              </div>
+              {STORE_CATEGORIES.map((category) => (
+                <Link
+                  key={category.id}
+                  href={`/category/${category.id}`}
+                  className="flex items-center justify-between px-4 py-3 hover:bg-amazon-orange/10 group"
+                  onClick={() => setIsAllCategoriesOpen(false)}
+                >
+                  <span className="text-sm text-gray-700 group-hover:text-amazon-orange">
+                    {category.nameAr}
+                  </span>
+                  <ChevronDown className="h-4 w-4 -rotate-90 text-gray-400" />
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
       </div>
 
       {/* Mobile Search */}

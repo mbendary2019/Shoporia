@@ -11,12 +11,20 @@ import {
   startAfter,
   serverTimestamp,
   DocumentSnapshot,
+  QueryConstraint,
   runTransaction,
 } from 'firebase/firestore'
 import { db, ordersRef, orderDoc } from '@/lib/firebase'
 import { updateProductInventory, incrementProductSoldCount } from './product'
 import { incrementOrderCount } from './store'
 import type { Order, OrderItem, OrderStatus, PaymentMethod, Address } from '@/types'
+
+// Paginated order query result
+export type PaginatedOrdersResult = {
+  orders: Order[]
+  lastDoc: DocumentSnapshot | null
+  hasMore: boolean
+}
 
 // Generate order number
 function generateOrderNumber(): string {
@@ -182,6 +190,52 @@ export async function getOrdersByStore(
   const newLastDoc = snapshot.docs.length > 0 ? snapshot.docs[snapshot.docs.length - 1] : null
 
   return { orders, lastDoc: newLastDoc }
+}
+
+// Get orders with cursor-based pagination
+export async function getOrdersPaginated(options: {
+  pageSize?: number
+  lastDoc?: DocumentSnapshot
+  storeId?: string
+  customerId?: string
+  status?: OrderStatus
+}): Promise<PaginatedOrdersResult> {
+  const {
+    pageSize = 10,
+    lastDoc: cursor,
+    storeId,
+    customerId,
+    status,
+  } = options
+
+  const constraints: QueryConstraint[] = []
+
+  if (storeId) {
+    constraints.push(where('storeId', '==', storeId))
+  }
+  if (customerId) {
+    constraints.push(where('customerId', '==', customerId))
+  }
+  if (status) {
+    constraints.push(where('status', '==', status))
+  }
+
+  constraints.push(orderBy('createdAt', 'desc'))
+  constraints.push(limit(pageSize + 1))
+
+  if (cursor) {
+    constraints.push(startAfter(cursor))
+  }
+
+  const q = query(ordersRef, ...constraints)
+  const snapshot = await getDocs(q)
+  const docs = snapshot.docs
+  const hasMore = docs.length > pageSize
+  const resultDocs = hasMore ? docs.slice(0, pageSize) : docs
+  const orders = resultDocs.map((doc) => doc.data() as Order)
+  const newLastDoc = resultDocs.length > 0 ? resultDocs[resultDocs.length - 1] : null
+
+  return { orders, lastDoc: newLastDoc, hasMore }
 }
 
 // Update order status

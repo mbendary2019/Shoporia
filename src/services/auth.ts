@@ -124,7 +124,6 @@ export async function signInWithGoogle(): Promise<User> {
     return user
   } catch (error) {
     // If Firestore is offline, return user data from Firebase Auth directly
-    console.warn('Firestore offline, using Firebase Auth data:', error)
     return {
       id: firebaseUser.uid,
       email: firebaseUser.email || '',
@@ -170,7 +169,7 @@ export function initRecaptcha(containerId: string) {
 export async function sendPhoneOtp(phoneNumber: string): Promise<void> {
   const formattedPhone = phoneNumber.startsWith('+')
     ? phoneNumber
-    : `+2${phoneNumber}` // Egypt country code
+    : `+965${phoneNumber}` // Kuwait country code
 
   const recaptchaVerifier = window.recaptchaVerifier
   if (!recaptchaVerifier) {

@@ -12,6 +12,7 @@ import {
   CreditCard,
   Smartphone,
 } from 'lucide-react'
+import { APP_CONFIG } from '@/utils/constants'
 
 const footerLinks = {
   getToKnowUs: [
@@ -50,10 +51,10 @@ const socialLinks = [
 const paymentMethods = [
   'Visa',
   'Mastercard',
-  'فودافون كاش',
-  'اورنج كاش',
-  'فوري',
-  'انستاباي',
+  'كي نت',
+  'بطاقة ائتمان',
+  'نقد عند الاستلام',
+  'تحويل بنكي',
 ]
 
 export function Footer() {
@@ -177,8 +178,8 @@ export function Footer() {
             {/* Language & Region */}
             <div className="flex items-center gap-3">
               <button className="flex items-center gap-2 px-4 py-2 rounded border border-gray-600 hover:border-white text-sm">
-                <span>🇪🇬</span>
-                <span>مصر</span>
+                <span>🇰🇼</span>
+                <span>الكويت</span>
               </button>
               <button className="flex items-center gap-2 px-4 py-2 rounded border border-gray-600 hover:border-white text-sm">
                 <span>العربية</span>
@@ -230,17 +231,17 @@ export function Footer() {
 
           {/* Contact Info */}
           <div className="flex flex-wrap items-center justify-center gap-6 mt-4 text-xs">
-            <a href="mailto:support@shoporia.com" className="flex items-center gap-1 hover:text-white">
+            <a href={`mailto:${APP_CONFIG.supportEmail}`} className="flex items-center gap-1 hover:text-white">
               <Mail className="h-3 w-3" />
-              support@shoporia.com
+              {APP_CONFIG.supportEmail}
             </a>
-            <a href="tel:+201000000000" className="flex items-center gap-1 hover:text-white">
+            <a href={`tel:${APP_CONFIG.supportPhone}`} className="flex items-center gap-1 hover:text-white">
               <Phone className="h-3 w-3" />
-              +20 100 000 0000
+              {APP_CONFIG.supportPhone}
             </a>
             <span className="flex items-center gap-1">
               <MapPin className="h-3 w-3" />
-              القاهرة، مصر
+              الكويت
             </span>
           </div>
         </div>

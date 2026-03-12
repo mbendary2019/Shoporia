@@ -7,20 +7,74 @@ import {
   where,
   orderBy,
   limit,
+  QueryConstraint,
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase/config'
 import { COLLECTIONS } from '@/lib/firebase/collections'
+import { z } from 'zod'
+import { rateLimit, rateLimitResponse, getClientIP } from '@/lib/rate-limit'
+import { getAuthUser, unauthorizedResponse, forbiddenResponse } from '@/lib/api-auth'
+
+const createOrderSchema = z.object({
+  customerId: z.string().min(1, 'معرف العميل مطلوب'),
+  storeId: z.string().min(1, 'معرف المتجر مطلوب'),
+  items: z.array(z.object({
+    productId: z.string().min(1),
+    variantId: z.string().optional(),
+    name: z.string().min(1),
+    image: z.string(),
+    quantity: z.number().int().positive(),
+    price: z.number().nonnegative(),
+    total: z.number().nonnegative(),
+    options: z.record(z.string()).optional(),
+  })).min(1, 'يجب إضافة منتج واحد على الأقل'),
+  shippingAddress: z.object({
+    fullName: z.string().min(1),
+    phone: z.string().min(1),
+    street: z.string().min(1),
+    city: z.string().min(1),
+    governorate: z.string().min(1),
+  }),
+  paymentMethod: z.enum(['cash', 'card', 'knet', 'bank_transfer']),
+  subtotal: z.number().nonnegative(),
+  shippingCost: z.number().nonnegative().optional(),
+  discount: z.number().nonnegative().optional(),
+  total: z.number().nonnegative(),
+  couponCode: z.string().optional(),
+})
 
 // GET /api/orders - Get orders
 export async function GET(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`orders-get:${ip}`, { maxRequests: 30 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const user = getAuthUser(request)
+  if (!user) return unauthorizedResponse()
+
   try {
     const searchParams = request.nextUrl.searchParams
     const userId = searchParams.get('userId')
     const storeId = searchParams.get('storeId')
     const status = searchParams.get('status')
-    const pageSize = parseInt(searchParams.get('pageSize') || '20')
+    const pageSize = Math.min(parseInt(searchParams.get('pageSize') || '20'), 100)
 
-    const constraints: any[] = []
+    // Users can only access their own orders or their store's orders
+    if (userId && userId !== user.id && user.role !== 'admin') {
+      return forbiddenResponse()
+    }
+    if (storeId && storeId !== user.storeId && user.role !== 'admin') {
+      return forbiddenResponse()
+    }
+
+    if (!userId && !storeId) {
+      return NextResponse.json(
+        { success: false, error: 'userId or storeId is required' },
+        { status: 400 }
+      )
+    }
+
+    const constraints: QueryConstraint[] = []
 
     if (userId) {
       constraints.push(where('customerId', '==', userId))
@@ -50,7 +104,7 @@ export async function GET(request: NextRequest) {
       data: orders,
     })
   } catch (error) {
-    console.error('Error fetching orders:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error fetching orders:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to fetch orders' },
       { status: 500 }
@@ -60,8 +114,23 @@ export async function GET(request: NextRequest) {
 
 // POST /api/orders - Create new order
 export async function POST(request: NextRequest) {
+  const ip = getClientIP(request)
+  const limiter = rateLimit(`orders-post:${ip}`, { maxRequests: 20 })
+  if (!limiter.success) return rateLimitResponse()
+
+  const orderUser = getAuthUser(request)
+  if (!orderUser) return unauthorizedResponse()
+
   try {
     const body = await request.json()
+
+    const result = createOrderSchema.safeParse(body)
+    if (!result.success) {
+      return NextResponse.json(
+        { success: false, error: 'بيانات غير صالحة', details: result.error.flatten() },
+        { status: 400 }
+      )
+    }
 
     const {
       customerId,
@@ -74,22 +143,15 @@ export async function POST(request: NextRequest) {
       discount,
       total,
       couponCode,
-    } = body
-
-    // Validate required fields
-    if (!customerId || !storeId || !items || items.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required fields' },
-        { status: 400 }
-      )
-    }
+    } = result.data
 
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`
 
+    // Force customerId to authenticated user to prevent impersonation
     const orderData = {
       orderNumber,
-      customerId,
+      customerId: orderUser.id,
       storeId,
       items,
       shippingAddress,
@@ -117,7 +179,7 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error creating order:', error)
+    if (process.env.NODE_ENV === 'development') console.error('Error creating order:', error)
     return NextResponse.json(
       { success: false, error: 'Failed to create order' },
       { status: 500 }

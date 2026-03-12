@@ -3,6 +3,9 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
+import { signOut } from 'firebase/auth'
+import { auth } from '@/lib/firebase/config'
+import { useAuthStore } from '@/store'
 import { Avatar, Button } from '@/components/ui'
 import { cn } from '@/utils/cn'
 import {
@@ -26,10 +29,12 @@ import {
   Megaphone,
   Loader2,
   UserCog,
+  FolderTree,
 } from 'lucide-react'
 
 const navigation = [
   { name: 'لوحة التحكم', href: '/admin', icon: LayoutDashboard },
+  { name: 'الأقسام', href: '/admin/categories', icon: FolderTree },
   { name: 'المتاجر', href: '/admin/stores', icon: Store },
   { name: 'المنتجات', href: '/admin/products', icon: Package },
   { name: 'الطلبات', href: '/admin/orders', icon: ShoppingCart },
@@ -53,47 +58,32 @@ export default function AdminLayout({
   const pathname = usePathname()
   const router = useRouter()
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const { user, isAuthenticated, isLoading, logout } = useAuthStore()
 
   // Check admin authentication
   useEffect(() => {
     // Skip auth check for login page
     if (pathname === '/admin/login') {
-      setIsLoading(false)
-      setIsAuthenticated(true)
       return
     }
 
-    const checkAuth = () => {
-      const adminAuth = localStorage.getItem('adminAuth')
-      if (adminAuth) {
-        try {
-          const auth = JSON.parse(adminAuth)
-          if (auth.isAdmin) {
-            setIsAuthenticated(true)
-          } else {
-            router.push('/admin/login')
-          }
-        } catch {
-          router.push('/admin/login')
-        }
-      } else {
-        router.push('/admin/login')
-      }
-      setIsLoading(false)
+    if (!isLoading && (!isAuthenticated || !user || user.role !== 'admin')) {
+      router.push('/admin/login')
     }
+  }, [pathname, router, isLoading, isAuthenticated, user])
 
-    checkAuth()
-  }, [pathname, router])
-
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth')
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+    } catch {
+      // Continue with local logout even if Firebase signOut fails
+    }
+    logout()
     router.push('/admin/login')
   }
 
   // Show loading while checking auth
-  if (isLoading) {
+  if (isLoading && pathname !== '/admin/login') {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100 dark:bg-gray-900">
         <div className="text-center">
@@ -109,8 +99,8 @@ export default function AdminLayout({
     return <>{children}</>
   }
 
-  // If not authenticated, don't render (redirect handled in useEffect)
-  if (!isAuthenticated) {
+  // If not authenticated or not admin, don't render (redirect handled in useEffect)
+  if (!isAuthenticated || !user || user.role !== 'admin') {
     return null
   }
 
@@ -127,7 +117,7 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 start-0 z-50 w-64 transform bg-gray-900 transition-transform duration-200 lg:static lg:translate-x-0',
+          'fixed inset-y-0 start-0 z-50 w-64 max-w-[85vw] transform bg-gray-900 transition-transform duration-200 lg:static lg:max-w-none lg:translate-x-0',
           sidebarOpen ? 'translate-x-0' : '-translate-x-full rtl:translate-x-full'
         )}
       >
@@ -226,12 +216,12 @@ export default function AdminLayout({
             {/* Profile */}
             <div className="flex items-center gap-3">
               <Avatar
-                fallback="Admin"
+                fallback={user?.displayName || 'Admin'}
                 size="sm"
               />
               <div className="hidden md:block">
                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                  مدير النظام
+                  {user?.displayName || 'مدير النظام'}
                 </p>
                 <p className="text-xs text-gray-500">Super Admin</p>
               </div>

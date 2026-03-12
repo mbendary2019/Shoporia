@@ -20,11 +20,11 @@ const initialAddresses = [
     label: 'المنزل',
     type: 'home',
     name: 'أحمد محمد',
-    phone: '01012345678',
-    street: 'شارع التحرير، عمارة 15، شقة 7',
-    city: 'القاهرة',
-    governorate: 'القاهرة',
-    postalCode: '11511',
+    phone: '50001234',
+    street: 'شارع سالم المبارك، عمارة 15، شقة 7',
+    city: 'السالمية',
+    governorate: 'حولي',
+    postalCode: '22001',
     isDefault: true,
   },
   {
@@ -32,11 +32,11 @@ const initialAddresses = [
     label: 'العمل',
     type: 'work',
     name: 'أحمد محمد',
-    phone: '01012345678',
-    street: 'شارع النيل، برج السلام، الدور 5',
-    city: 'الجيزة',
-    governorate: 'الجيزة',
-    postalCode: '12511',
+    phone: '50001234',
+    street: 'شارع أحمد الجابر، برج السلام، الدور 5',
+    city: 'الشويخ',
+    governorate: 'العاصمة',
+    postalCode: '13001',
     isDefault: false,
   },
 ]
@@ -223,11 +223,12 @@ export default function AccountAddressesPage() {
             className="mt-1 h-10 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-800"
           >
             <option value="">اختر المحافظة</option>
-            <option value="القاهرة">القاهرة</option>
-            <option value="الجيزة">الجيزة</option>
-            <option value="الإسكندرية">الإسكندرية</option>
-            <option value="الدقهلية">الدقهلية</option>
-            <option value="الشرقية">الشرقية</option>
+            <option value="العاصمة">العاصمة</option>
+            <option value="حولي">حولي</option>
+            <option value="الفروانية">الفروانية</option>
+            <option value="الأحمدي">الأحمدي</option>
+            <option value="الجهراء">الجهراء</option>
+            <option value="مبارك الكبير">مبارك الكبير</option>
           </select>
         </div>
 
