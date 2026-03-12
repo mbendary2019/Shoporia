@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { LanguageSwitcher } from '@/components/ui'
 import {
@@ -17,15 +18,15 @@ import {
 } from 'lucide-react'
 import { APP_CONFIG } from '@/utils/constants'
 
-const footerLinks = {
+const getFooterLinks = (t: ReturnType<typeof useTranslations>) => ({
   getToKnowUs: [
-    { name: 'من نحن', href: '/about' },
-    { name: 'الوظائف', href: '/careers' },
-    { name: 'المدونة', href: '/blog' },
+    { name: t('footer.aboutUs'), href: '/about' },
+    { name: t('footer.careers'), href: '/careers' },
+    { name: t('footer.blog'), href: '/blog' },
     { name: 'علاقات المستثمرين', href: '/investors' },
   ],
   makeMoney: [
-    { name: 'بيع على Shoporia', href: '/seller/register' },
+    { name: t('footer.openStore'), href: '/seller/register' },
     { name: 'برنامج الأفلييت', href: '/affiliate' },
     { name: 'أعلن عن منتجاتك', href: '/advertise' },
     { name: 'انشر كتابك', href: '/publish' },
@@ -38,11 +39,11 @@ const footerLinks = {
   ],
   help: [
     { name: 'حسابك', href: '/account' },
-    { name: 'المرتجعات والاستبدال', href: '/returns' },
+    { name: t('footer.returnPolicy'), href: '/returns' },
     { name: 'تتبع طلباتك', href: '/track' },
-    { name: 'المساعدة', href: '/help' },
+    { name: t('footer.helpCenter'), href: '/help' },
   ],
-}
+})
 
 const socialLinks = [
   { name: 'Facebook', icon: Facebook, href: '#' },
@@ -61,6 +62,8 @@ const paymentMethods = [
 ]
 
 export function Footer() {
+  const t = useTranslations()
+  const footerLinks = getFooterLinks(t)
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -82,7 +85,7 @@ export function Footer() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
             {/* Get to Know Us */}
             <div>
-              <h4 className="font-bold text-lg mb-4">تعرف علينا</h4>
+              <h4 className="font-bold text-lg mb-4">{t('footer.company')}</h4>
               <ul className="space-y-3">
                 {footerLinks.getToKnowUs.map((link) => (
                   <li key={link.href}>
@@ -99,7 +102,7 @@ export function Footer() {
 
             {/* Make Money */}
             <div>
-              <h4 className="font-bold text-lg mb-4">اربح معنا</h4>
+              <h4 className="font-bold text-lg mb-4">{t('footer.sellers')}</h4>
               <ul className="space-y-3">
                 {footerLinks.makeMoney.map((link) => (
                   <li key={link.href}>
@@ -116,7 +119,7 @@ export function Footer() {
 
             {/* Payment Products */}
             <div>
-              <h4 className="font-bold text-lg mb-4">طرق الدفع</h4>
+              <h4 className="font-bold text-lg mb-4">{t('footer.pricing')}</h4>
               <ul className="space-y-3">
                 {footerLinks.paymentProducts.map((link) => (
                   <li key={link.href}>
@@ -133,7 +136,7 @@ export function Footer() {
 
             {/* Help */}
             <div>
-              <h4 className="font-bold text-lg mb-4">دعنا نساعدك</h4>
+              <h4 className="font-bold text-lg mb-4">{t('footer.support')}</h4>
               <ul className="space-y-3">
                 {footerLinks.help.map((link) => (
                   <li key={link.href}>
@@ -209,11 +212,11 @@ export function Footer() {
           {/* Legal Links */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs mb-4">
             <Link href="/terms" className="hover:text-white hover:underline">
-              شروط الاستخدام
+              {t('footer.terms')}
             </Link>
             <span>|</span>
             <Link href="/privacy" className="hover:text-white hover:underline">
-              سياسة الخصوصية
+              {t('footer.privacy')}
             </Link>
             <span>|</span>
             <Link href="/cookies" className="hover:text-white hover:underline">
@@ -227,7 +230,7 @@ export function Footer() {
 
           {/* Copyright */}
           <p className="text-center text-xs">
-            © {new Date().getFullYear()} Shoporia.com, Inc. أو الشركات التابعة لها. جميع الحقوق محفوظة.
+            © {new Date().getFullYear()} Shoporia.com, Inc. أو الشركات التابعة لها. {t('footer.copyright')}.
           </p>
 
           {/* Contact Info */}

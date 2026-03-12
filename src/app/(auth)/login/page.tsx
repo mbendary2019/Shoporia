@@ -10,8 +10,10 @@ import { loginSchema, type LoginInput } from '@/lib/validations'
 import { signInWithEmail, signInWithGoogle, handleRedirectResult } from '@/services/auth'
 import { useAuthStore } from '@/store'
 import { Mail, Lock, Eye, EyeOff, Shield } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 export default function LoginPage() {
+  const t = useTranslations()
   const router = useRouter()
   const { setUser } = useAuthStore()
   const [showPassword, setShowPassword] = useState(false)
@@ -88,15 +90,15 @@ export default function LoginPage() {
     <>
       <div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          تسجيل الدخول
+          {t('auth.login')}
         </h2>
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          ليس لديك حساب؟{' '}
+          {t('auth.noAccount')}{' '}
           <Link
             href="/register"
             className="font-medium text-primary-500 hover:text-primary-600"
           >
-            إنشاء حساب جديد
+            {t('auth.register')}
           </Link>
         </p>
       </div>
@@ -109,7 +111,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
         <Input
-          label="البريد الإلكتروني"
+          label={t('auth.email')}
           type="email"
           placeholder="example@email.com"
           leftIcon={<Mail className="h-5 w-5" />}
@@ -118,7 +120,7 @@ export default function LoginPage() {
         />
 
         <Input
-          label="كلمة المرور"
+          label={t('auth.password')}
           type={showPassword ? 'text' : 'password'}
           placeholder="••••••••"
           leftIcon={<Lock className="h-5 w-5" />}
@@ -154,12 +156,12 @@ export default function LoginPage() {
             href="/forgot-password"
             className="text-sm font-medium text-primary-500 hover:text-primary-600"
           >
-            نسيت كلمة المرور؟
+            {t('auth.forgotPassword')}
           </Link>
         </div>
 
         <Button type="submit" className="w-full" isLoading={isLoading}>
-          تسجيل الدخول
+          {t('auth.login')}
         </Button>
       </form>
 
@@ -201,12 +203,12 @@ export default function LoginPage() {
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            الدخول بحساب Google
+            {t('auth.loginWithGoogle')}
           </Button>
 
           <Link href="/login/phone">
             <Button type="button" variant="outline" className="w-full">
-              الدخول برقم الهاتف
+              {t('auth.loginWithPhone')}
             </Button>
           </Link>
         </div>

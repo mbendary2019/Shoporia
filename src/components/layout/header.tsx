@@ -24,6 +24,7 @@ import {
   Gift,
   Headphones,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/utils/cn'
 import { STORE_CATEGORIES } from '@/utils/constants'
 
@@ -35,6 +36,7 @@ const quickLinks = [
 ]
 
 export function Header() {
+  const t = useTranslations()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isCategoryOpen, setIsCategoryOpen] = useState(false)
@@ -165,7 +167,7 @@ export function Header() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSearch() }}
-                  placeholder="ابحث في Shoporia..."
+                  placeholder={`${t('common.search')} Shoporia...`}
                   className="flex-1 h-11 px-4 text-sm focus:outline-none"
                   aria-label="البحث في المنتجات"
                   role="searchbox"
@@ -242,7 +244,7 @@ export function Header() {
                             onClick={() => setIsProfileOpen(false)}
                           >
                             <Store className="h-5 w-5" />
-                            لوحة تحكم البائع
+                            {t('nav.dashboard')}
                           </Link>
                         )}
                         <Link
@@ -251,7 +253,7 @@ export function Header() {
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <Package className="h-5 w-5 text-gray-600" />
-                          طلباتي
+                          {t('nav.orders')}
                         </Link>
                         <Link
                           href="/account/wishlist"
@@ -259,7 +261,7 @@ export function Header() {
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <Heart className="h-5 w-5 text-gray-600" />
-                          قائمة الأمنيات
+                          {t('nav.wishlist')}
                         </Link>
                         <Link
                           href="/account"
@@ -267,7 +269,7 @@ export function Header() {
                           onClick={() => setIsProfileOpen(false)}
                         >
                           <Settings className="h-5 w-5 text-gray-600" />
-                          إعدادات الحساب
+                          {t('nav.settings')}
                         </Link>
                       </div>
 
@@ -278,7 +280,7 @@ export function Header() {
                           className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-red-600 hover:bg-red-50"
                         >
                           <LogOut className="h-5 w-5" />
-                          تسجيل الخروج
+                          {t('auth.logout')}
                         </button>
                       </div>
                     </div>
@@ -307,8 +309,8 @@ export function Header() {
               className="hidden lg:flex items-center text-white p-2 rounded hover:outline hover:outline-1 hover:outline-white"
             >
               <div className="text-start">
-                <span className="block text-xs text-white/70">المرتجعات</span>
-                <span className="block text-sm font-bold">والطلبات</span>
+                <span className="block text-xs text-white/70">{t('order.return')}</span>
+                <span className="block text-sm font-bold">{t('nav.orders')}</span>
               </div>
             </Link>
 
@@ -327,7 +329,7 @@ export function Header() {
                   {isMounted ? itemCount : 0}
                 </span>
               </div>
-              <span className="hidden sm:block text-sm font-bold mt-3">السلة</span>
+              <span className="hidden sm:block text-sm font-bold mt-3">{t('nav.cart')}</span>
             </Link>
 
             {/* Mobile Menu Toggle */}
@@ -355,7 +357,7 @@ export function Header() {
               className="flex items-center gap-2 text-white text-sm font-medium px-2 sm:px-3 py-1.5 rounded hover:outline hover:outline-1 hover:outline-white whitespace-nowrap shrink-0"
             >
               <Menu className="h-4 w-4" />
-              <span>الأقسام</span>
+              <span>{t('nav.categories')}</span>
             </button>
 
             {/* Quick Links */}
@@ -420,7 +422,7 @@ export function Header() {
         <div className="flex rounded-lg overflow-hidden">
           <input
             type="search"
-            placeholder="ابحث في Shoporia..."
+            placeholder={`${t('common.search')} Shoporia...`}
             className="flex-1 h-10 px-4 text-sm focus:outline-none"
           />
           <button className="h-10 px-4 bg-amazon-yellow">
@@ -465,7 +467,7 @@ export function Header() {
                 </>
               ) : (
                 <Link href="/login" className="font-bold" onClick={() => setIsMenuOpen(false)}>
-                  تسجيل الدخول
+                  {t('auth.login')}
                 </Link>
               )}
             </div>
@@ -511,7 +513,7 @@ export function Header() {
 
           {/* Settings & Help */}
           <div className="py-4">
-            <h3 className="px-4 font-bold text-gray-900 mb-2">الإعدادات والمساعدة</h3>
+            <h3 className="px-4 font-bold text-gray-900 mb-2">{t('nav.settings')}</h3>
             <Link
               href="/account"
               className="flex items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100"
@@ -534,7 +536,7 @@ export function Header() {
                 className="flex w-full items-center gap-3 px-4 py-3 text-sm hover:bg-gray-100 text-red-600"
               >
                 <LogOut className="h-5 w-5" />
-                تسجيل الخروج
+                {t('auth.logout')}
               </button>
             )}
           </div>
